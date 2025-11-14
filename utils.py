@@ -44,6 +44,39 @@ def save_transcription(audio_path: str, text: str, language: str, model: str) ->
     print(f"[INFO] Transcription saved -> {output_path}")
     print(f"       + Added entry for: {entry['path']}")
 
+def save_wer_results(
+    params: AttributeDict,
+    test_set_name: str,
+    results_dict: Dict[str, List[Tuple[str, List[str], List[str]]]],
+):
+    test_set_wers = dict()
+    for key, results in results_dict.items():
+        errs_filename = params.res_dir / f"errs-{test_set_name}-{params.suffix}.txt"
+        with open(errs_filename, "w", encoding="utf8") as fd:
+            wer = write_error_stats(
+                fd, f"{test_set_name}-{key}", results, enable_log=True
+            )
+            test_set_wers[key] = wer
+
+        logging.info(f"详细错误统计已写入到 {errs_filename}")
+
+    test_set_wers = sorted(test_set_wers.items(), key=lambda x: x[1])
+
+    wer_filename = params.res_dir / f"wer-summary-{test_set_name}-{params.suffix}.txt"
+
+    with open(wer_filename, "w", encoding="utf8") as fd:
+        print("settings\tWER", file=fd)
+        for key, val in test_set_wers:
+            print(f"{key}\t{val}", file=fd)
+
+    s = f"\n对于 {test_set_name}，不同设置的 WER 如下:\n"
+    note = f"\t{test_set_name} 的最佳结果"
+    for key, val in test_set_wers:
+        s += f"{key}\t{val}{note}\n"
+        note = ""
+    logging.info(s)
+
+
 
 # Test 
 if __name__ == "__main__":
