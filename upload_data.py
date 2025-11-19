@@ -4,7 +4,9 @@ HF_TOKEN = "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"
 
 api = HfApi(token=HF_TOKEN)
 
-LOCAL_FOLDER = "/root/shared-nvme/yujietu/data/ASR-Bench/testbatch"
+# 注意这里最好是保持结构一致，即文件放在text/hyp/testbatch下，上传test文件夹
+
+LOCAL_FOLDER = "/root/shared-nvme/yujietu/data/ASR-Bench/text" 
 
 api.upload_folder(
     folder_path=LOCAL_FOLDER,
