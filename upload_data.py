@@ -12,7 +12,7 @@ api.upload_folder(
     folder_path=LOCAL_FOLDER,
     repo_id="AlexTYJ/Multilingual-ASR-Benchmark",
     repo_type="dataset",
-    path_in_repo="testbatch",
+    path_in_repo="text",
 )
 
 print("Upload Done!")
