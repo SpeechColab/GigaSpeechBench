@@ -45,7 +45,7 @@ def load_transcribed_segments(language: str, model: str) -> set:
     Returns:
         set: 包含已转录segment的元组集合，每个元组格式为 (path, start_time, end_time)
     """
-    results_dir = os.path.join(os.getcwd(), "results_scribe_v2")
+    results_dir = os.path.join(os.getcwd(), "results")
     filename = f"{language}_{model}.json"
     output_path = os.path.join(results_dir, filename)
 
@@ -349,7 +349,7 @@ def main():
                     )
                     
                     # 修正保存的路径格式，确保使用 Linux 风格的路径分隔符
-                    results_dir = os.path.join(os.getcwd(), "results_scribe_v2")
+                    results_dir = os.path.join(os.getcwd(), "results")
                     filename = f"{language_code}_elevenlabs.json"
                     output_path = os.path.join(results_dir, filename)
                     
