@@ -2,13 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-evaluate_asr_bench.py
-
-自动从 ref/hyp 加载所有国家、模型，对每个组合计算 WER，
-输出到结果目录：
-/root/shared-nvme/yujietu/Multilingual-ASR-Benchmark/data/results/testbatch/{country}/{model}/
-
-生成三个文件：
+output files:
 - recogs-COUNTRY-MODEL.txt
 - errs-COUNTRY-MODEL.txt
 - wer-summary-COUNTRY-MODEL.txt
@@ -105,23 +99,23 @@ def evaluate_model(country: str, model: str, ref_items, hyp_items):
     summary_path = out_dir / f"wer-summary-{country}-{model}.txt"
 
     store_transcripts(recogs_path, results)
-    logging.info(f"生成 recogs: {recogs_path}")
+    logging.info(f"generate recogs: {recogs_path}")
 
     with open(errs_path, "w", encoding="utf8") as f:
         wer = write_error_stats(f, f"{country}-{model}", results)
-    logging.info(f"生成 errs: {errs_path}")
+    logging.info(f"generate errs: {errs_path}")
 
     with open(summary_path, "w", encoding="utf8") as f:
         print("model\tWER", file=f)
         print(f"{model}\t{wer:.2f}", file=f)
-    logging.info(f"生成 summary: {summary_path}")
+    logging.info(f"generate summary: {summary_path}")
 
     return wer
 
 
 def main():
     countries = [f[:-5] for f in os.listdir(REF_ROOT) if f.endswith(".json")]
-    logging.info(f"发现国家：{countries}")
+    logging.info(f"Find countries:{countries}")
 
     for country in countries:
         ref_path = os.path.join(REF_ROOT, f"{country}.json")
@@ -130,11 +124,11 @@ def main():
 
         hyp_country_dir = os.path.join(HYP_ROOT, country)
         if not os.path.exists(hyp_country_dir):
-            logging.warning(f"{country} 没有 hyp，跳过")
+            logging.warning(f"{country} No hyp, skipped.")
             continue
 
         models = [f[:-5] for f in os.listdir(hyp_country_dir) if f.endswith(".json")]
-        logging.info(f"[{country}] 模型列表：{models}")
+        logging.info(f"[{country}] model list: {models}")
 
         for model_file in models:
             model = model_file.split(".", 1)[0]
@@ -144,7 +138,7 @@ def main():
             with open(hyp_path, "r", encoding="utf-8") as f:
                 hyp_items = json.load(f)
 
-            logging.info(f"开始评估 {country}-{model}")
+            logging.info(f"Begin Evaluating {country}-{model}")
             evaluate_model(country, model, ref_items, hyp_items)
 
 
