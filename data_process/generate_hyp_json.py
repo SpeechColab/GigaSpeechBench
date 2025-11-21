@@ -25,8 +25,10 @@ PUNCT_REGEX = re.compile(
 )
 
 num_map = {
-    "0":"zero","1":"one","2":"two","3":"three","4":"four","5":"five","6":"six","7":"seven","8":"eight","9":"nine",
-    "一":"one","二":"two","三":"three","四":"four","五":"five","六":"six","七":"seven","八":"eight","九":"nine","十":"ten"
+    "0": "zero", "1": "one", "2": "two", "3": "three", "4": "four",
+    "5": "five", "6": "six", "7": "seven", "8": "eight", "9": "nine",
+    "一":"one","二":"two","三":"three","四":"four","五":"five",
+    "六":"six","七":"seven","八":"eight","九":"nine","十":"ten"
 }
 
 def remove_punctuation(text: str) -> str:
@@ -69,7 +71,7 @@ def process_file(json_path: str):
 
     ref_path, ref_index = load_ref(country)
     if ref_path is None:
-        return
+        return False  # not modified
 
     out_country_dir = os.path.join(OUT_ROOT, country)
     os.makedirs(out_country_dir, exist_ok=True)
@@ -81,7 +83,7 @@ def process_file(json_path: str):
         with open(json_path, "r", encoding="utf-8") as f:
             hyp_items = json.load(f)
     except:
-        return
+        return False
 
     new_items = []
     matched = 0
@@ -128,14 +130,27 @@ def process_file(json_path: str):
 
     print(f"{country} {filename} added {matched}, empty {empty_text}, total {len(all_items)}")
 
+    return matched > 0 
+
 def main():
     files = [
         os.path.join(HYP_ROOT, f)
         for f in os.listdir(HYP_ROOT)
         if f.endswith(".json")
     ]
+
+    modified = []  
+
     for jf in tqdm(files, ncols=100):
-        process_file(jf)
+        if process_file(jf):
+            modified.append(os.path.basename(jf))
+
+    print("\n=== Modified files (appended new items) ===")
+    if modified:
+        for name in modified:
+            print(name)
+    else:
+        print("No file was modified.")
 
 if __name__ == "__main__":
     main()
