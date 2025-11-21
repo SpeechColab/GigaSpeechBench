@@ -64,7 +64,7 @@ def load_existing_hyp(out_path: str):
         return [], set()
     existed = {(d["audio_name"], float(d["start"])) for d in items}
     return items, existed
-
+    
 def process_file(json_path: str):
     filename = os.path.basename(json_path)
     country = filename[:3]
@@ -90,7 +90,11 @@ def process_file(json_path: str):
     empty_text = 0
 
     for item in hyp_items:
-        path = item.get("path", "").replace("\\", "/")
+
+        # ←←← 新增：兼容 path 和 audio_path
+        raw_path = item.get("path") or item.get("audio_path") or ""
+        path = raw_path.replace("\\", "/")
+
         base = os.path.basename(path)
 
         if base.lower().endswith(".wav"):
@@ -130,7 +134,8 @@ def process_file(json_path: str):
 
     print(f"{country} {filename} added {matched}, empty {empty_text}, total {len(all_items)}")
 
-    return matched > 0 
+    return matched > 0  # whether file modified
+
 
 def main():
     files = [
