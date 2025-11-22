@@ -11,9 +11,11 @@
 ```
 whisper-large-v3/
 ├── results/               # 固定，和utils里的save_transcription保持对齐
-├── auto_infer.py          # 批量推理主脚本
+├── auto_infer.py          # 整个音频文件批量推理脚本
+├── auto_infer_with_segments.py  # 基于时间戳的分段推理脚本（新功能）
 ├── whisper_asr.py         # Whisper ASR封装类
 ├── language_mapping.py    # 国家代码到语言映射
+├── timestamp/             # 时间戳标注数据目录（用于分段处理）
 ├── pyproject.toml         # uv项目配置
 ├── uv.lock               # 依赖锁定文件
 ├── hfd.sh                # Hugging Face下载工具
@@ -62,6 +64,9 @@ bash install_model.sh
 
 确保数据目录存在并包含按国家代码组织的音频文件：
 
+并更换auto_infer_with_segments.py中相应为真实路经()
+
+#### 音频文件目录结构
 ```
 data/testbatch_processed/testbatch_processed/
 ├── IRQ/                  # 伊拉克音频文件
@@ -74,6 +79,46 @@ data/testbatch_processed/testbatch_processed/
 └── CHN/                  # 中国音频文件
     ├── audio1.wav
     └── ...
+```
+
+#### 时间戳标注目录结构（用于分段处理）
+```
+timestamp/
+├── KOR/                  # 韩国时间戳标注
+│   ├── KOR_audio1.json
+│   ├── KOR_audio2.json
+│   └── ...
+├── JPN/                  # 日本时间戳标注
+│   ├── JPN_audio1.json
+│   └── ...
+└── ...                   # 其他国家标注
+```
+
+**时间戳JSON格式示例：**
+```json
+{
+  "audio_name": "KOR_UCkinYTS9IHqOEwR1Sze2JTw_4IhvQA7h6uI_raw",
+  "segments": [
+    {
+      "index": 1,
+      "start": 0.0,
+      "end": 8.48,
+      "status": "valid"
+    },
+    {
+      "index": 2,
+      "start": 8.48,
+      "end": 17.92,
+      "status": "valid"
+    },
+    {
+      "index": 3,
+      "start": 62.14,
+      "end": 63.35,
+      "status": "invalid"
+    }
+  ]
+}
 ```
 
 ## 🔧 使用方法
@@ -96,9 +141,11 @@ print(f'转录结果: {text}')
 "
 ```
 
-### 批量推理（主要功能）
+### 批量推理
 
-#### 基本用法
+#### 1. 整个音频文件推理（auto_infer.py）
+
+**基本用法**
 ```bash
 # 处理新的国家（跳过已处理的）
 python auto_infer.py
@@ -113,31 +160,97 @@ python auto_infer.py --direct
 python auto_infer.py --force --direct
 ```
 
-#### 命令行参数详解
-
+**命令行参数详解**
 | 参数 | 说明 | 默认值 |
 |------|------|--------|
 | `--force` | 强制重新处理所有国家，清除现有结果 | False |
 | `--no-force` | 跳过已有结果的国家（默认行为） | False |
 | `--direct` | 使用Whisper自动语言检测，跳过语言映射 | False |
 
+#### 2. 基于时间戳的分段推理（auto_infer_with_segments.py）⭐ 新功能
+
+**适用场景：**
+- 有精确的时间戳标注数据
+- 需要对音频进行分段转录
+- 支持无效分段的处理（保存空转录）
+- 与elevenlabs实现格式对齐
+
+**基本用法**
+```bash
+# 处理指定国家的分段数据
+python auto_infer_with_segments.py --countries KOR
+
+# 处理多个国家
+python auto_infer_with_segments.py --countries KOR JPN THA
+
+# 强制重新处理所有国家
+python auto_infer_with_segments.py --force
+
+# 使用自动语言检测模式
+python auto_infer_with_segments.py --direct
+
+# 处理无效分段（默认跳过无效分段）
+python auto_infer_with_segments.py --countries KOR --no-skip-invalid
+
+# 自定义目录路径
+python auto_infer_with_segments.py \
+  --timestamp-dir ./custom_timestamp \
+  --audio-dir ./custom_audio
+```
+
+**命令行参数详解**
+| 参数 | 说明 | 默认值 |
+|------|------|--------|
+| `--countries` | 指定要处理的国家代码列表（空格分隔） | 处理所有可用国家 |
+| `--force` | 强制重新处理所有国家，清除现有结果 | False |
+| `--direct` | 使用Whisper自动语言检测，跳过语言映射 | False |
+| `--no-skip-invalid` | 处理包括无效分段在内的所有分段 | False（默认跳过无效分段） |
+| `--timestamp-dir` | 时间戳JSON文件目录路径 | `./timestamp` |
+| `--audio-dir` | 音频文件目录路径 | 配置中的默认路径 |
+
+**输出特点：**
+- 每个音频分段独立调用 `save_transcription()`
+- 无效分段保存空字符串 `""`
+- 输出格式与elevenlabs实现完全对齐
+- 支持WER计算系统
+
 #### 输出格式
 
-结果保存在 `auto_infer_results/` 目录中，文件命名格式：
+**统一输出格式**
+两种脚本都使用相同的输出格式，结果保存在 `./results/` 目录中，文件命名格式：
 - `{country_code}_whisper-large-v3.json`
 
-JSON格式遵循项目标准：
+**标准JSON格式**
 ```json
 [
     {
-        "path": "/absolute/path/to/audio.wav",
-        "text": "转录的文本内容",
-        "language": "IRQ",
-        "model": "whisper-large-v3"
+        "path": "KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_4IhvQA7h6uI_raw.wav",
+        "text": "지금까지 오클릭이었습니다. 끝으로 캄보디아에서 한국인 납치 감금 사건이 잇따르자...",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 0.0,
+        "end_time": 8.484
     },
-    ...
+    {
+        "path": "KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_4IhvQA7h6uI_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 62.141,
+        "end_time": 63.347
+    }
 ]
 ```
+
+**字段说明**
+| 字段 | 说明 | 示例 |
+|------|------|------|
+| `path` | 音频文件路径，格式为 `{country_code}/{filename}` | `KOR/audio.wav` |
+| `text` | 转录文本，无效分段为空字符串 | `"转录内容"` 或 `""` |
+| `language` | 3字母国家代码 | `"KOR"` |
+| `model` | 模型名称，固定为 `"whisper-large-v3"` | `"whisper-large-v3"` |
+| `start_time` | 分段开始时间（秒） | `0.0` |
+| `end_time` | 分段结束时间（秒） | `8.484` |
 
 ## 🌍 语言支持
 
@@ -191,6 +304,8 @@ COUNTRY_CODE_TO_LANGUAGE = {
 ## 🔍 监控和调试
 
 ### 查看处理进度
+
+**整个音频文件推理**
 ```bash
 # 运行时会显示详细进度
 python auto_infer.py
@@ -208,27 +323,144 @@ python auto_infer.py
 #     ✓ Transcribed: 这是第一段音频的转录内容...
 ```
 
+**分段推理**
+```bash
+# 分段推理的进度显示
+python auto_infer_with_segments.py --countries KOR
+
+# 输出示例：
+# === Whisper ASR Segment-based Batch Inference ===
+# Found 1 countries: KOR
+# ✓ All countries have language mapping
+#
+# --- Processing KOR segments ---
+#   Loaded 1 timestamp files
+#   Processing KOR_UCkinYTS9IHqOEwR1Sze2JTw_4IhvQA7h6uI_raw: 12 segments
+#     [1/12] Segment 1: 0.00s - 8.48s
+#       ✓ Transcribed: 지금까지 오클릭이었습니다...
+#     [2/12] Segment 2: 8.48s - 17.92s
+#       ✓ Transcribed: 결혼 이민자로 지금 18년째...
+#     [3/12] Segment 3: 17.92s - 25.25s
+#       ✓ Transcribed: 그러나 너희 나라로 돌아가라는...
+#   Summary: 10/12 segments processed successfully, 0 failed
+```
+
 ### 检查结果文件
 ```bash
 # 查看结果目录
-ls -la auto_infer_results/
+ls -la results/
 
-# 查看具体结果
-cat auto_infer_results/IRQ_whisper-large-v3.json | jq '.'
+# 查看具体结果（推荐使用jq格式化）
+cat results/KOR_whisper-large-v3.json | jq '.'
+
+# 统计分段数量
+cat results/KOR_whisper-large-v3.json | jq 'length'
+
+# 查看无效分段（空文本）
+cat results/KOR_whisper-large-v3.json | jq '.[] | select(.text == "")'
 ```
+
+### 性能对比
+
+| 功能 | auto_infer.py | auto_infer_with_segments.py |
+|------|---------------|-----------------------------|
+| 处理单位 | 整个音频文件 | 音频分段 |
+| 适用场景 | 快速批量处理 | 精确分段转录 |
+| 输出精度 | 文件级别 | 分段级别（精确到秒） |
+| 内存使用 | 较高 | 较低（分段处理） |
+| 错误恢复 | 文件级别 | 分段级别 |
+| WER兼容性 | ✅ | ✅ |
+| elevenlabs兼容 | ✅ | ✅ |
 
 ## 🔄 持续集成
 
 ### 重新运行处理
+
+**整个音频文件推理**
 ```bash
 # 检查哪些国家已处理
-ls auto_infer_results/ | sed 's/_whisper-large-v3.json//'
+ls results/ | sed 's/_whisper-large-v3.json//'
 
 # 重新处理特定国家（删除对应结果文件）
-rm auto_infer_results/IRQ_whisper-large-v3.json
+rm results/IRQ_whisper-large-v3.json
 python auto_infer.py
 ```
 
+**分段推理**
+```bash
+# 检查哪些国家已处理
+ls results/ | sed 's/_whisper-large-v3.json//'
+
+# 重新处理特定国家
+python auto_infer_with_segments.py --countries IRQ --force
+
+# 处理新增的时间戳文件
+# 只需将新的JSON文件放入 timestamp/对应国家/ 目录即可
+```
+
 ### 增量处理
-当有新的音频文件时，只需将文件放入对应国家目录，重新运行脚本即可自动处理新文件。
+
+**音频文件增量**
+- 当有新的音频文件时，只需将文件放入对应国家目录
+- 重新运行脚本即可自动处理新文件
+
+**时间戳标注增量**
+- 将新的时间戳JSON文件放入 `timestamp/{country_code}/` 目录
+- 重新运行分段推理脚本即可处理新分段
+
+### 故障排除
+
+**常见问题**
+1. **时间戳文件找不到音频**
+   ```
+   ⚠ Audio file not found: KOR_audio_name
+   ```
+   - 检查音频文件名是否匹配（忽略扩展名）
+   - 确认音频文件存在于对应国家目录
+
+2. **无效分段过多**
+   - 检查时间戳JSON中的 `status` 字段
+   - 使用 `--no-skip-invalid` 强制处理所有分段
+
+3. **内存不足**
+   - 分段推理通常比整个文件推理内存使用更低
+   - 可以考虑减少并发处理的文件数量
+
+**调试模式**
+```bash
+# 处理单个国家进行调试
+python auto_infer_with_segments.py --countries KOR
+
+# 使用自动语言检测排查语言映射问题
+python auto_infer_with_segments.py --countries KOR --direct
+```
+
+## 📋 使用建议
+
+### 选择合适的推理方式
+
+| 场景 | 推荐脚本 | 理由 |
+|------|----------|------|
+| 快速批量转录 | `auto_infer.py` | 处理速度快，适合大量文件 |
+| 精确分段转录 | `auto_infer_with_segments.py` | 分段级别精度，支持时间戳 |
+| WER计算需求 | 两者皆可 | 都输出标准格式，支持WER计算 |
+| elevenlabs兼容 | `auto_infer_with_segments.py` | 完全对齐elevenlabs格式 |
+| 混合语言音频 | `auto_infer_with_segments.py --direct` | 自动检测每段语言 |
+
+### 最佳实践
+
+1. **预处理阶段**
+   - 确保时间戳标注质量
+   - 验证音频文件与标注的对应关系
+   - 检查国家代码的语言映射
+
+2. **处理阶段**
+   - 先用小批量测试参数
+   - 监控内存使用情况
+   - 定期检查输出质量
+
+3. **后处理阶段**
+   - 验证输出格式正确性
+   - 检查无效分段的处理情况
+   - 进行WER计算评估质量
 

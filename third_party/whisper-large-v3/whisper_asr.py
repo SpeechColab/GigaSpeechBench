@@ -2,7 +2,8 @@ import torch
 from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
 import torchaudio
 import os
-from typing import Optional
+import numpy as np
+from typing import Optional, Union
 from language_mapping import country_code_to_language
 
 class WhisperASR:
@@ -112,6 +113,85 @@ class WhisperASR:
 
         # Transcribe the audio with language specification
         text = self.transcribe(audio_path, language_code)
+
+        # Save using the project's standard format
+        save_transcription(audio_path, text, language_code, "whisper-large-v3")
+
+        return text
+
+    def transcribe_audio_array(self, audio_array: np.ndarray, language_code: Optional[str] = None, sample_rate: int = 16000) -> str:
+        """
+        Transcribe audio array to text
+
+        Args:
+            audio_array (np.ndarray): Audio data as numpy array
+            language_code (str, optional): 3-letter country code (e.g., "IRQ", "USA")
+            sample_rate (int): Sample rate of the audio array (default: 16000)
+
+        Returns:
+            str: Transcribed text
+        """
+        if not isinstance(audio_array, np.ndarray):
+            raise ValueError("Audio input must be a numpy array")
+
+        if len(audio_array) == 0:
+            return ""
+
+        print(f"[INFO] Transcribing audio array: {len(audio_array)} samples at {sample_rate}Hz")
+
+        # Convert country code to Whisper language name if provided
+        whisper_language = None
+        if language_code:
+            try:
+                whisper_language = country_code_to_language(language_code)
+                print(f"[INFO] Using language: {whisper_language} (from country code: {language_code})")
+            except ValueError as e:
+                print(f"[WARN] {e}. Using auto-detection.")
+
+        try:
+            # Convert numpy array to the format expected by the pipeline
+            # The pipeline expects either a file path or raw audio data
+            # For raw audio, we need to ensure it's in the right format
+
+            # Use the pipeline to transcribe with language if specified
+            kwargs = {
+                "return_timestamps": True
+            }
+
+            if whisper_language:
+                kwargs["generate_kwargs"] = {"language": whisper_language}
+
+            # Process the audio array directly
+            result = self.pipe(audio_array, **kwargs)
+            text = result["text"].strip()
+
+            print(f"[INFO] Array transcription completed")
+            return text
+
+        except Exception as e:
+            print(f"[ERROR] Audio array transcription failed: {e}")
+            raise
+
+    def transcribe_audio_array_and_save(self, audio_array: np.ndarray, audio_path: str, language_code: str, sample_rate: int = 16000) -> str:
+        """
+        Transcribe audio array and save result using utils.py format
+
+        Args:
+            audio_array (np.ndarray): Audio data as numpy array
+            audio_path (str): Original audio file path for saving metadata
+            language_code (str): 3-letter country code (e.g., "IRQ", "ENG")
+            sample_rate (int): Sample rate of the audio array (default: 16000)
+
+        Returns:
+            str: Transcribed text
+        """
+        # Transcribe the audio array
+        text = self.transcribe_audio_array(audio_array, language_code, sample_rate)
+
+        # Import here to avoid circular imports
+        import sys
+        sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+        from utils import save_transcription
 
         # Save using the project's standard format
         save_transcription(audio_path, text, language_code, "whisper-large-v3")

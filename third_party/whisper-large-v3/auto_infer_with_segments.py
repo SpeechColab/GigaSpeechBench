@@ -179,9 +179,8 @@ def process_country_segments(asr: WhisperASR, country_code: str, direct: bool = 
                             # Use auto-detection mode
                             text = asr.transcribe_audio_array(audio_segment, language_code=None)
                         else:
-                            # Use country-specific language
-                            language = COUNTRY_CODE_TO_LANGUAGE.get(country_code, 'english')
-                            text = asr.transcribe_audio_array(audio_segment, language_code=language)
+                            # Use country-specific language - pass country code directly
+                            text = asr.transcribe_audio_array(audio_segment, language_code=country_code)
 
                         # Save transcription using standard format
                         save_transcription(
