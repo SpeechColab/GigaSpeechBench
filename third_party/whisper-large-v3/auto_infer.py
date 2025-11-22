@@ -17,7 +17,7 @@ from language_mapping import get_supported_country_codes, COUNTRY_CODE_TO_LANGUA
 # Configuration
 DATA_DIR = '/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/examples/whisper-large-v3/data/testbatch_processed/testbatch_processed'
 RESULTS_DIR = './results'
-MODEL_DIR = './whisper_model'
+MODEL_DIR = '/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/examples/whisper-large-v3/whisper_model'
 MODEL_NAME = 'whisper-large-v3'
 
 def get_country_directories() -> List[str]:
@@ -168,18 +168,35 @@ def batch_infer_countries(force: bool = False, direct: bool = False):
             try:
                 print(f"  [{i}/{len(audio_files)}] Processing: {os.path.basename(audio_path)}")
 
+                # Get audio duration for proper time stamps
+                import torchaudio
+                try:
+                    waveform, sr = torchaudio.load(audio_path)
+                    duration = waveform.shape[1] / sr
+                except:
+                    duration = 0.0
+
+                # Format audio path as {country_code}/{filename}
+                audio_filename = os.path.basename(audio_path)
+                formatted_path = f"{country_code}/{audio_filename}"
+
                 if direct:
                     # Use auto-detection mode
                     text = asr.transcribe(audio_path, language_code=None)
-                    # Save with country code but without language specification
+                    # Save with proper timestamps
                     import sys
                     sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
                     from utils import save_transcription
-                    save_transcription(audio_path, text, country_code, MODEL_NAME)
+                    save_transcription(formatted_path, text, country_code, MODEL_NAME, 0.0, duration)
                     print(f"    ✓ Auto-detected language: {text[:50]}...")
                 else:
                     # Use country-specific language
-                    text = asr.transcribe_and_save(audio_path, country_code)
+                    text = asr.transcribe(audio_path, country_code)
+                    # Save with proper timestamps
+                    import sys
+                    sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+                    from utils import save_transcription
+                    save_transcription(formatted_path, text, country_code, MODEL_NAME, 0.0, duration)
                     print(f"    ✓ Transcribed: {text[:50]}...")
 
                 processed_files += 1

@@ -1,32 +1,2914 @@
 [
     {
-        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/examples/whisper-large-v3/data/testbatch_processed/testbatch_processed/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_4IhvQA7h6uI_raw.wav",
-        "text": "SBS 이준범입니다. 끝으로 캄보디아에서 한국인 납치 감금 사건이 잇따르자 캄보디아 국가 전체에 대한 혐오가 퍼지고 있다는 소식이네요. 결혼 이민자로 지금 18년째 우리나라에 살고 있는 한 캄보디아인이 불미스러운 일로 마음이 아프다면서 SNS에 사과글을 올렸습니다. 그러나 너희 나라로 돌아가라는 등 악성 댓글이 쏟아지자 결국 그 댓글창을 닫을 수밖에 없었는데요. 전문가들은 이번 사태가 특정 범죄를 특정 범죄를 넘어서 국가 전체에 대한 혐오로 번지고 있다고 지적하고 있습니다. 실제 이주노동자들 사이에서는 캄보디아인이면 버스에서 내리라는 폭언을 들었다는 제보도 나오고 있는데요. 현지 교민사회도 불안을 호소하고 있습니다. 제 캄보디아 한인회는 불법 취업이나 납치 사건은 일부 지역의 문제일 뿐이라며 캄보디아 전체를 범죄 국가로 보는 것은 지나친 일반화라고 강조했습니다. 행정안전부에 따르면 국내 체류 중인 칸보디아인은 2021년 4만 5천여 명에서 지난해에는 6만 명 가까이로 늘어났습니다. 일어났습니다.",
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_4IhvQA7h6uI_raw.wav",
+        "text": "지금까지 오클릭이었습니다. 끝으로 캄보디아에서 한국인 납치 감금 사건이 잇따르자 캄보디아 국가 전체에 대한 혐오가 퍼지고 있다는 소식이네요.",
         "language": "KOR",
-        "model": "whisper-large-v3"
+        "model": "whisper-large-v3",
+        "start_time": 0.0,
+        "end_time": 8.484
     },
     {
-        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/examples/whisper-large-v3/data/testbatch_processed/testbatch_processed/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
-        "text": "대부분의 캄보디아 범죄단지는 중국인 운영자를 정점으로 한 피라미드 점조직 형태로 구성돼 있습니다. 중국 국적 총책 밑에 조직원을 관리하는 국가별 팀장이 있고 조직원을 구하거나 피해자로부터 돈을 뜯어내는 모집책과 유인책 등으로 역할을 분담하는 구조입니다. 모집책은 주로 지인들을 상대로 항공권과 숙박을 제공하는 고수익 알바라고 속여 신규 조직원으로 포섭했고 관리책은 이 친분을 족쇄 삼아 조직원들이 한국으로 귀국할 때 조직 내 다른 지인을 인질로 잡아 섣불리 도망칠 수 없게 만들었습니다. CCTV로 조직원들을 실시간 감시하고 사무실에 총을 든 경비원을 배치했습니다. 미국의 한 인권정책연구기관은 중국이 범죄 조직을 대대적으로 단속한 지난 2018년 이후 중국 국적의 범죄자들이 캄보디아로 숨어들기 시작했다고 밝혔습니다. 지난 10년간 캄보디아 정부가 중국 국적 범죄자들에게 돈을 받고 시민권을 부여하는 등 범죄 조직과 정치권이 유착됐다는 분석입니다. 중국의 마피아들이 자본을 들고 캄보디아로 들어올 수 있게 된 배경이 되겠죠. 지난 5월 유엔인권최고대표사무소는 캄보디아 등 동남아 범죄단지에서 벌어지는 인권침해 행위에 대해 긴급조치를 취해야 한다고 우리 정부에 메시지를 보낸 걸로 파악됐습니다. SBS 김진우입니다. 캄보디아에서 한국인을 대상으로 납치, 감금 등을 저지른 범죄조직이 대규모 이동을 시도하는 정황이 포착됐습니다. 텔레그램 채널에는 캄보디아 시아누크빌에서 범죄 조직들이 대규모 이사를 시작했다는 글들이 올라오고 있습니다. 해당 게시물에는 한국인들이 감금당한 건물과 비슷한 외형의 주거단지에서 사람들이 모니터 같은 짐을 화물차에 싣는 사진과 함께 구역 내 회사들이 긴급 대피 준비, 올해 미국에서 발표한 인신매매 보고서에서 시아누크빌이 주요하게 언급돼 당국이 정비를 의도한 것이라는 말도 있다는 등의 설명이 달렸습니다. 이 때문에 캄보디아 범죄 조직이 한국 언론 등의 주목을 받자 라오스나 태국, 베트남 등 주변 다른 동남아 국가로 이동하는 거 아니냐는 관측이 나오고 있습니다. 캄보디아 한인 대상 범죄를 추적해온 자경단 천마도 정부 대응이 너무 늦었다며 이미 한국인을 대상으로 한 범죄 조직 상당수가 캄보디아를 떠나 다른 곳으로 간 거로 안다고 밝혔습니다. 문제는 범죄 조직이 캄보디아를 떠나 다른 지역으로 이동할 경우 감금된 한국인들 구조가 더 어려워질 수 있다는 겁니다. 경찰은 오늘 박성주 경찰청 국가수사본부장을 급파하고 현지에 코리안 데스크를 설치하는 등 감금된 한국인들 구출에 나섰지만 이렇게 범죄 조직이 캄보디아 국경을 넘어갈 경우 다시 이를 추적해야 해 구조에 시간이 걸릴 거란 우려가 나오고 있습니다. SBS 이호건입니다. 미국과 영국 정부는 캄보디아의 프린스그룹과 30대 중국계인 천지회장 그리고 117개 계열사에 대해 146건의 대규모 제재를 발표했습니다. 여러 계열사를 거느린 프린스그룹은 카지노, 부동산, 금융투자업을 내세우고 있지만 실제로는 스캔 네트워크, 즉 사기 단지를 운영하며 인신매매와 온라인 사기, 자금 세탁을 벌여왔다는 게 양국 정부의 조사 내용입니다. 프린스그룹과 연계된 카지노 호텔 기업 호텔 기업 진베이그룹, 범죄 자금을 세탁한 가상화폐 플랫폼 바이엑스 거래소 그리고 대규모 범죄단지를 제공한 자회사도 제재 대상에 올랐습니다. 프린스그룹은 이른바 돼지 도살이라는 사기 수법을 썼습니다. 돼지를 살찌운 뒤 한 번에 잡는 것처럼 SNS 등으로 피해자와 일단 친분을 쌓아놓고 투자나 거래를 가장해 큰 돈을 빼내가는 겁니다. 겁니다. 이들은 최소 10개의 사기 조직을 운영하면서 대규모 인신매매와 고문도 자행해온 것으로 조사됐습니다. 미 법무부는 도주 중인 천지 회장을 최대 40년 징역형이 선고될 수 있는 온라인 금융 사기 및 자금 세탁 혐의로 기소했습니다. 또 2,200억 원 규모에 달하는 해외 부동산 자산을 동결하고 역대 최대 규모인 21조 4,500억 원 상당의 암호화폐 압류 소송도 시작했습니다. 조직적인 초국경 범죄에 강력하고 선제적으로 대응하겠다는 의지로 풀이됩니다. SBS 장선희입니다. 지난 2월 광둥성 출신 17살 황 군은 큰 돈 벌러가자는 여자친구에 이끌려간 태국에서 태국에서 끔찍한 일을 겪었습니다. 여자친구가 2천만 원의 황군을 미얀마 통신 사기 조직에 팔아넘긴 겁니다. 지난 4월 고수익 아르바이트를 구했다며 집을 떠난 뒤 연락두잘된 18살 청년은 미얀마 중국 범죄 조직에 납치됐습니다. 범죄 조직에 납치됐습니다. 중국인 범죄 조직이 기승을 부리는 가운데 중국 당국이 미얀마 북부 폭항을 근거지로 납치와 구금, 온라인 사기 범죄 등을 벌인 거대 범죄 조직 가문 두 곳을 적발해 기소했다고 발표했습니다. 지난 2009년부터 59곳에 사기 단지를 차려놓고 약 1조 5천억 원을 벌어들였는데 조직 보호를 위해 군대 요직에 조직원을 심어놓기도 했습니다. 확인된 피해자만 1만여 명, 그중 8명은 목숨까지 잃었습니다. 중국 당국은 지난 2023년부터 체포한 미얀마 중국 범죄 조직원이 5만 7천여 명이라면서 조사 장면까지 대대적으로 공개했습니다. 캄보디아 당국도 중국인 범죄 용의자 6명을 체포했다고 발표하며 그동안 범죄 조직을 방치했다는 의혹을 불식하려는 모습입니다. 베이징에서 SBS 권란입니다.",
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_4IhvQA7h6uI_raw.wav",
+        "text": "결혼 이민자로 지금 18년째 우리나라에 살고 있는 한 캄보디아인이 불미스러운 일로 마음이 아프다면서 SNS에 사과글을 올렸습니다.",
         "language": "KOR",
-        "model": "whisper-large-v3"
+        "model": "whisper-large-v3",
+        "start_time": 8.484,
+        "end_time": 17.92
     },
     {
-        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/examples/whisper-large-v3/data/testbatch_processed/testbatch_processed/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_qb3R_NxqJ-s_raw.wav",
-        "text": "그럼 캄보디아에 파견된 취재기자 연결해서 현장 상황도 짚어보겠습니다. 시용길 기자, 우리 정부의 합동대응팀이 이 범죄단지를 직접 찾았다고요? 저는 지금 캄보디아 범죄단지 가운데 하나인 스캠단지 앞에 나와 있습니다. 우리 정부 합동대응팀이 캄보디아 당국자들과 함께 이곳 현장 점검을 했고 조금 전 마무리됐습니다. 앞서 합동대응팀은 훈 마넷 캄보디아 총리도 만났습니다. 이번 사태가 불거진 뒤 양국 정부 대표가 만난 건 처음인데요. 합동대응팀은 한국인을 대상으로 한 사기 감금 피해가 지속적으로 발생한 데 대해 강한 우려를 표명하며 캄보디아 정부에 적극적인 협조를 요청했습니다. 마넷 캄보디아 총리는 유감과 안타까움을 표하고 용의자들이 체포되도록 노력하겠다면서도 몇 가지 요구사항을 제시했습니다. 제시했습니다. 한국 정부가 최근 캄보디아 여행경보 단계를 높인 걸 두고 투자와 관광의 악영향이 우려된다며 단계를 낮춰달라 이렇게 요구했는데 합동대응팀은 불가피한 결정이었고 상황이 나아지면 하향 조정을 검토하겠다고 답했습니다. 그리고 현지에서는 이 범죄 조직들이 캄보디아를 탈출하는 움직임이 계속해서 포착되고 있다고요? 그렇습니다. 캄보디아 범죄 조직에 대한 우리 정부 그리고 국제사회의 압박이 거세지자 범죄 조직이 속속 이곳 캄보디아를 떠나고 있습니다. 시아누크빌 범죄단지 밀집 지역에서 수백 명의 조직원이 대거 짐을 싸 야반도주하는 모습이 영상에 포착되기도 했는데요. 현지 사정을 잘 아는 관계자들에 따르면 조직원들이 대형 버스와 승합차에 컴퓨터와 휴대전화 등 범행 도구를 싣고 도구를 싣고 집단으로 도피하고 있다고 합니다. 이들은 국경을 넘거나 캄보디아 내 깊숙한 산악지대와 외딴섬으로 숨어든 걸로 전해졌습니다. 지금까지 캄보디아 따케우에서 SBS 신용일입니다. 캄보디아에서 한국인을 대상으로 한 납치, 감금, 살인 등 강력 범죄가 잇따르는 가운데 직격탄을 맞은 캄보디아 관광업계에서 이재명 대통령의 발언을 콕 집어 반격에 나섰습니다. 캄보디아는 평화로운 나라인데 일부 범죄에 자발적으로 가담한 사람들이 문제란 겁니다. 샘속행 캄보디아 한국관광가이드협회장은 현지시간 13일 푸논펜포스트와의 인터뷰에서 캄보디아는 일반 한국 여행객들에게 위험한 나라가 아니라며 희생자 대부분이 불법 일자리에 지원했다가 속은 사람들이라고 주장했습니다. 사기 조직에 연루된 극히 일부 사람들에게 발생한 일이라고 강조한 겁니다. 그러면서 한국 지도자가 사기 사건과 관광을 구분하지 않고 말한 점이 유감스럽다며 어제 국무회의에서 캄보디아에 대한 여행 제한 강화 조치를 서둘러야 한다고 밝힌 이재명 대통령을 직격했습니다. 그는 한국 정부가 먼저 할 일은 자국민에게 온라인 사기에 속지 않도록 잘 교육하는 것이라고 주장했습니다. 정부 관계자의 책임 회피성 발언도 이어졌는데 터치 소카 캄보디아 내무부 대변인은 한국인 대상 온라인 사기 사건은 캄보디아 뿐 아니라 다른 국가가 오히려 더 심각하다며 양국 관계가 흔들리면 오히려 국제 범죄 조직이 더 활개칠 것이라고 했습니다. 사르 소카 캄보디아 내무 장관은 최근 사이버 범죄 대응 세미나에서 사이버 범죄 퇴치는 캄보디아만의 책임이 아니라 여러 국가들이 협력해야 하는 국제적 과제라고 주장했습니다. 우리 외교부는 최근 캄보디아 수도 푸논펜 지역에 대한 여행경보를 기존 2단계 여행자재에서 2.5단계인 특별여행주의보로 높였습니다. SBS 김민정입니다.",
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_4IhvQA7h6uI_raw.wav",
+        "text": "그러나 너희 나라로 돌아가라는 등 악성 댓글이 쏟아지자 결국 그 댓글 창을 닫을 수밖에 없었는데요.",
         "language": "KOR",
-        "model": "whisper-large-v3"
+        "model": "whisper-large-v3",
+        "start_time": 17.92,
+        "end_time": 25.25
     },
     {
-        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/examples/whisper-large-v3/data/testbatch_processed/testbatch_processed/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
-        "text": "자리도 빠진 것 같습니다. 자리도 빠진 것 같다. 오늘 미팅이 어떻게 되셨을까요? 아, 저기... 그러니까 어제 도착해가지고요. G20, 그 다음에 IMF, 월드뱅크, 가을 총회 이렇게 참석했었습니다. 참석했는데, 이번 미팅 관련해서 이렇게 좀 말씀드리면은 그러면 결국은 IMF나 월뱅, G20에서도 지금 미중 갈등이라든지 이런 국제사회의 자국 중심의 논리가 그대로 표출되지 않는가 이렇게 저는 보고 있습니다. 첫째는 미국하고 유럽, EU가 사실은 같은 방향을 봐야 되는데 기후변화 분야에 있어서는 완전히 다른 방향을 보고 있거든요. 그리고 IMF나 월드뱅크 지분구조도 만약에 지금 변화를 시킨다면 GDP 규모에 따라서 해야 되니까 미국이나 또 서방에서는 중국의 지분 올라가는 걸 막기 위해서 강력하게 반대하고 있고 또 중국에서는 지분구조 변화를 위해서 계속해야 된다 하는 이런 변화 과정에 있는 것 같습니다. 그리고 모든 의사결정을 이렇게 보면 자국 또는 자기 지역의 이해관계에 많은 관심을 두고 있는 것 같아요. 지금은 G20 의장국이 남아공인데 남아공은 계속 아프리카의 어떤 발전 이런 쪽에 많은 관심을 가지는 것 같고요. 아마 내년부터는 12월부터는 미국이 G20 의장국이 되는데 지금 들리는 얘기로는 미국이 아마 의장국이 되면 G20의 구조라든지 이런 부분을 좀 바꾸고 그 다음에 IMF나 월드뱅크의 재원 활용하는 부분도 예를 들면 이런 거죠. 히토류를 중국에서 통제를 하니까 아프리카나 이런 나라에 히토류를 개발하는데 돈을 투자하겠는다든지 이런 식의 변화가 있는 점이 큰 차이라고 느껴집니다. 그래서 그런 점을 봤을 때 한국도 국익 우선 관점에서 정신을 바짝 차리고 국제사회에서나 국제기구에서 한국의 포지션도 정하고 또 미리 그런 부분의 변화 가능성에 대해서 한국도 선제적으로 대응해야 되지 않나 하는 그런 것 좀 묻겠습니다. 한미 무역 협상이 진행 중인데 3,500억 달러 대입 투자 포기제 관련해서 최대 10년 분할 투자하는 방향과 원화로 투자하는 방향을 미국 쪽에 공개하시는 게 맞을까요? 지금 언론에 오늘 갑자기 떴는데 그게 어디서 나온지 저도 사실은 좀 확인을 해봐야 됩니다. 3,500불 10년에 한다는 그런 소스를 제가 그게 정확하게 알기 어렵거든요. 그리고 원화로 한다는 것도 저도 신문에 관한 그 얘기는 저도 처음 듣는 얘기니까 좀 확인을 정확하게 해봐야 될 것 같습니다. 미국 정부에서 우리 정부의 미국산 대비 수익을 요구한 것은 확인될까요? 그런 부분은 지금 제가 협상 과정 중이니까 확인하기는 어렵고요. 아마 협상 과정에서는 다양한 형태의 얘기는 왔다 갔다 하는 거고 그게 상황에 따라서 좀 달라질 수 있으니까 지금 뭐 듣다 듣다 얘기하는 것은 협상의 상대방이 있기 때문에 말씀드리기 어렵다는 점을 좀 양해해 주시면 감사하겠습니다. 원화로 투자한다는 이야기를 들어본 적 없다고 말씀하셨죠? 네. 원화로 해서 그게 원화를 베이스에서 달러를 하고 달러가 국채를 사고 하는데 그런 얘기는 저는 사실은 들어본 게 없습니다. 그런 논의가 없다고 말씀하셨을까요? 최근에는 근래에는 IMF 연차총회에 참여해야 하니까 외환 쪽에 한국의 나중에 외환의 안정성을 확보할 수 있는 그 방안에 저는 지금 집중을 하고 있기 때문에 그 부분은 조금 전에 말씀하신 원화 그 부분은 갑자기 뜨더라고요. 최근에. 그래서 그 부분은 저도 확인해봐야 된다고 말씀드리겠습니다. 잘 모르고 또 답변하는 것도 맞지 않을 것 같아요. 외환 안정성 문제가 확인되면 3,500억을 투자하는데 걸림돌이 없다고 생각하십니까? 아니죠. 그게 3,500억을 어떻게 하느냐 그 스킴에 따라서 외환 안정성을 점검해야 합니다. 말씀드리면 3,500억을 업그레이드하게 되면 외환 안정성에 문제가 있죠. 그러면 그게 불가능하다고 외환 쪽에서 얘기를 해주는 거죠. 그런데 그 스킨이 또 달라져서 한국의 입장이 충분히 반영이 된다면 또 외환안정성은 역량이 별로 적으면 또 그것에 대해서는 또 저희들이 보완해야 할 사항이 적어지는 그런 두 개가 되어 있는데 가장 메인은 협상의 어떤 그게 가장 중요한 거죠. 거기에 따라서 외환이 왔다 갔다 하는 거니까요. 저희가 선불로 투자한다는 건 완전히 가능성을 배제하기 어려운 부분인가요? 저희 입장에서는 외환사정상 한국에서는 그렇게 하기가 굉장히 어렵다는 걸 저는 저희 카운터파트인 베센트 장관을 통해서 계속 설득을 했고 상황도 설명을 했는데 베센트 장관은 충분히 그 부분을 이해를 하고 있습니다. 한국이 그게 한꺼번에 어프런트로 내기가 어렵다는 걸 알고 있고 아마 베스트센스 장관이 그런 부분을 저는 루터넥 장관이나 행정부 내부에서 얘기를 해달라고 계속 얘기를 하고 있고 베스트센스 장관은 그런 면에서는 저희들한테 긍정적인 답변을 해왔으면 자기가 설득을 하고 충분히 설명을 하겠다는 얘기를 했었어요. 무제한 통화 수확을 요구했었는데 그게 어렵다면 제한이 있는 무제한, 일부 한도 내에서의 수확도 이런 것들도 논의 대상에 포함되어 있나요? 제가 계속 말씀드린 것처럼 산업부하고 상무부부 간의 스킴이 확정되고 나면 거기에 따라서 외환수요가 나올 겁니다. 오프라인으로 내면 외환소유성 안된다고 했기 때문에 어떤 다른 대안이 나오고 이렇게 되면 거기에 따라서 외환소유가 어떻게 되냐 나오고 그러면 그 외환소유를 한국 시장의 외환시장의 안정성을 확보하는 범위 내에서 가능하냐 판단이 될 겁니다. 그런 식으로 저희들은 이렇게 정리를 하기 때문에 그 부분이 변동에 따라서 통화사업이 완전히 불가능하다. 또 해야 된다, 안 해야 된다, 한다면 얼마만큼 해야 되고 그게 과연 실현 가능성이냐 이런 부분에 대한 판단을 하게 될 거기 때문에 지금 각종 100% 물 건너갔다, 또 무조건 해야만 된다 하는 이런 얘기도 사실은 은밀하게 따지면 맞을 수도 있고 틀릴 수도 있다 이렇게 말씀을 드리겠습니다. 대출과 보증을 포함하는 형식으로는 여전히 얘기가 되고 있나요? 저희들 주장은 계속 그런 주장은 계속 보았었죠. 저희들이 한꺼번에 일본처럼 한꺼번에 출자를 못한다는 것은 언더스탠딩을 하고 있지 않느냐 저는 그렇게 판단합니다. 현재 3,500억 자체는 불변인가요? 그 부분도 여러 가지로 저희들이 얘기를 하고 있는 거죠. 다양한 형태의 어떤 다른 대안이 있다면 그게 미국에 수용이 된다면 또 그 부분도 변화 가능성을 저희들은 계속 주장을 하고 있고 미국은 또 미국 나름대로 얘기를 하고 있고 그래서 지금 양국 간에 많은 얘기를 하고 있기 때문에 길은 열어놓고 봐야 되지 않을까 보고 있습니다. 그런데 미국은 굉장히 강하게 얘기를 하고 있죠. 외신에서도 3,500억 달러 이상 모이고 있다 이런 외신이 예전에 나온 적이 있고 보조가 된 적이 있어요? 그것은 나왔는데 저는 더 3,500억 이상은 저희들이 생각하기 사실은 어렵고요. 저는 미국 측에서 이렇게 들은 바는 없어요. 2층에서 그런 요구를 한 적이 그때도 없을까요? 제가 알기로는 3,500억 불 이상을 더 늘려야 된다는 얘기는 하지 않고 3,500억 불을 빨리 업프런트로 하라는 게 미국의 강한 주장이라고 저는 알고 있습니다. 업프런트 이야기, 베슨트 장관이 이해를 했다고 하셨는데 철회를 시사했다 이렇게까지 보도가 나왔는데 그렇게 봐도 될까요? 그러니까 철회라기보다는 그렇게 내는 게 한국 외환시장의 안정성을 저해할 수 있다고 배센터 장관은 알고 있기 때문에 아마 그런 부분을 저는 요청한 게 루터닉 장관이나 정부 내부에서는 불가능한 거니까 얘기를 좀 해달라 이렇게 얘기를 하고 있는 상황입니다. 그게 아직까지는 철회했다 안 했다 답변하기가 어렵습니다. 트럼프 대통령은 계속 어제도 선거 얘기를 또 하셨는데 이게 베산트 장관이나 이런 행정부 내에서 공감대가 이해를 하더라도 여전히 안심할 수 없는 막판 대통령의 변신이. 맞습니다. 그래서 그 부분을 아마 실무장관들은 이해를 하고 있는데 이것을 얼마나 대통령을 설득을 해서 트럼프 대통령이 이걸 수용하느냐 부분은 진짜 그 부분은 불확실성이 있는 거죠. 그래서 저희들이 이게 장담할 수도 없고 계속 조심스럽게 얘기하는 부분이 그 부분이라고 이렇게 이해를 해주시면 될 겁니다. 어쨌거나 하여튼 베셀드 장관한테는 저는 지속적으로 몇 번 얘기했고 어제도 만나서 또 얘기를 했고 본인은 충분히 알고 있다고 하고 그래서 제가 정부 내부에서 좀 설득을 해달라 이렇게 얘기를 제가 강하게 요청을 많이 했다는 점에서 계속 지속적으로 요청하고 있습니다. 부총리님 오시고 정책실 국장님도 오시고 장관님도 오시고 한데 이게 에이팩 전에 타결이 될 수 있는 분위기라고 보세요? 네, 저희들로서는 국익의 관점에서 서둘러서는 안 되겠지만 국익의 관점에서 한국이 요청하고 있는 대로 협상이 이루어진다면 빨리 하는 게 국익에 도움이 되니까 그렇게 생각하고 있고 두 번째 그러면 어느 계기로 할 것이냐 하는 게 에이펙 계기로 할 수만 있다면 하는 게 국외의 관점이 도움이 된다면 그래도 가장 트닝포인트가 될 수 있고 그렇게 되는 게 자동차 관세율이 25%에서 15% 낮아질 수 있는 요인이 되기 때문에 저희들은 그런 계기를 활용해서 최대한 노력하고 있다는 말씀을 드립니다. 반도체나 제약에 대한 통역국 관세도 같이 함께 패키지로 여전히 논의되고 있는 건가요? 이게 아마 MOU가 사인이 되면 그런 부분은 당초에도 최혜국 대우를 해준다 했기 때문에 아마 그런 대우를 받을 수 있지 않을까 이렇게 생각합니다. 그래서 MOU 사인이 중요한 거죠. APEC 협상 기간을 일종의 데드라이너로 하자는 양측의 공감대라든가 이런 형상이 되어있는 거죠? 거기에 대해서 APEC까지 했으면 좋겠다고 양측이 생각할 수는 있다고 보여지는데 그걸 가지고 공식적으로 그때까지 하기로 했다고 그런 건 없고요. 지금 베센트 장관이 CNBC에서 얘기한 거라든지 이런 걸 봤을 때는 미국도 조금 긍정적으로 그런 식으로 노력하고 있지 않느냐 보여지고요. 그래서 저희들도 가능하다면 국익의 관점에서 협상이 내용만 잘 정리가 되면 그런 계기, APEC 계기로 하는 게 좋겠다 이렇게 생각을 하고 있습니다. 오늘 김용범 시장과 대각관 예산관리부장 만났는데 마스가 관련 문의 내용은 혹시 공유 받으신 거였을까요? 저는 아직 IMBFC하고 지금 이거 하느라고 지금 정신이 없어가지고 공유를 받지는 못했는데 아마 조선업 관련해서 OMB도 뭔가 하여튼 하고 있으니까 그 부분에 대해서 좀 이해를 높이려고 하지 않았느냐 이렇게 생각을 하고 있습니다. 최근 중국의 하나오션 자회사 제재국치 관련해서 한미 양국의 공동으로서 기조를 맞추려는 그런 계기가 있습니까? 그래서 그 부분은 저도 지금 제가 좀 더 확인을 해본다든지 뭔가 좀 알아봐야 되는데 그 부분까지는 제가 못했습니다. 요즘 IMF나 월뱅크 회의 참여하느라고 하루 종일 오늘 오전에도 계시겠습니까? 어제 미국에서는 중국의 수출 통제 강화와 관련해서 동맹국들이랑 같이 대응할 수 있다 이렇게 얘기를 했는데 혹시 관련해서도 논의... 네, 아직까지는 그런 부분은... 제안이 온다면 저희는 적극적으로... 제안이 오면 저희는 한번 검토를 해봐야 될 거라고 저는 주로 요즘은 베센트 장관하고 얘기를 하기 때문에 배승진 장관이 그런 부분까지 저한테 얘기하지는 않았습니다. 배승진 장관은 몇 번 만나시고 네? 배승진 장관은 몇 번 만나시고 어제 만났고요. 그래서 오늘도 보기는 봤는데 배승진 장관이 그냥 짧게 왔다가 짧게 가고 이래가지고 좀 있으면 더 얘기를 할 건데 내일도 한번 보려고 하는데 어제 만나서 충분히 얘기를 했기 때문에 또 만나도 지금 당장은 배승진 장관한테 우리가 더 요청할 거는 안 보이고 기회가 되면 내일도 만나고 또 같은 얘기도 반복하고 어떻게 내부에서 되고 있느냐 물어볼 수는 있겠는데 내일도 아침에 회의는 있는데 교수님 장관이 굉장히 바쁜 것 같아요. 잠깐 왔다가 그냥 뭐 하다 보면 가버리고 이렇게 돼서 하여튼 최선을 노력을 다해서 계속 접촉을 늘려나가도록 하겠습니다. 처음에 팀을 마련할 때 우리 마스과를 1500억 달러 진행 따로 전용으로 하겠다는 아이디어가 있었는데 중간에 8월 달에는 그런 얘기가 좀 사라졌었거든요. 지금 마쓰가 전용 펀드라는 아이디어가 아직 있나요? 저희들은 계속하고, 그래서 오늘 OMB 간 것도 하여튼 마쓰가 쪽에 저희들이 관련 부처를 좀 설득하는 게 한국에서는 그래도 유리하기 때문에 아마 그렇게 지금 김용호 실장이 이렇게 가서 설명을 하지 않나 이렇게 생각합니다. 미국 측을 설득해야 되는 이유가 뭔가요? 본인들이 투자를 받으신다고 하면서 설득을 해야 되는 이유가? 설득이 하는 게 분야가 중요합니다. 우리 입장에서 분야. 한국이 원하는 분야에 투자하는 게 제일 좋으니까요. 나스가 중요해요? 나스가는 한국이 잘하고 미국도 굉장히 필요한 분야니까 미국하고 한국하고 접점이 가장 맞아있는 분야라고 생각하기 때문에 그 부분을 여러 부처한테 설득을 해놓으면 저는 나쁘지 않다고 보여지고요. 그런 차원에서 아마 OMB도 예산도 들고 있고 조직도 담당하기 때문에 닿지 않는가 보여지고 저도 같이 가려고 했는데 아침에 회의가 계속 있고 내년부터는 미국이 G20의 의장국이 되면서 배센터 장관이 무슨 얘기하는지를 듣고 이러느라고 제가 조인을 못했었습니다. 이상입니다. 저녁 식사 가시죠. 감사합니다. 지난번에 7월 달에 트럼프 대통령이 수정을 금액을 3,500억 달러를 수정을 안 했다고 처음에 말씀하셨다가 그때 7월 말 기준에 기자회견을 하시면서 수정을 안 했다고 하셨다가 오르내림이 있었다고 하셨어요. 그러면 그때 그 금액은 3,500억 달러는 그날 조정이 되었었나요? 안 되었었나요? 원래 이게 협상이라는 한국은 적게 얘기하고 트럼프 대통령은 더 많이 요구하고 그래서 이게 그래서 이렇게 이 사이에서 이렇게. 즉석에서 그러니까 트럼프 대통령이 금액을 올렸다고 하시면. 그 즉석으로 올렸죠. 얼마나 올렸어요? 그거는 얘기하기 어려워요. 그게 많이 많이 올렸었어요. 네 이상입니다. 저녁 식사 때 뵐게요. 김용범 대통령실 정책실장과 김정관 산업장관은 미국에 도착하자마자 백악관을 찾아갔습니다. 러셀보트 백악관 예산관리국장을 만나 한미-조선협력 사업을 뜻하는 마스가 프로젝트에 대해 논의했습니다. 예산관리국이 직접 관세협상을 하지는 않지만 한미-조선협력을 강조함으로써 대미투자금 3,500억 달러를 둘러싼 이견을 조율하는데 긍정적 영향을 미칠 것으로 우리 대표단은 기대하고 있습니다. 앞서 김 실장은 한미가 가장 진지하고 건설적인 분위기에서 협상하고 있다고 밝혔습니다. 미 재무장관이 10일 안에 결과가 나올 것으로 예상한 데 대해서는 나쁘지 않은 신호라고 평가했습니다. 미국이 많은 양보를 할 것 같죠, 그럼? 우리에게는 나쁘지 않은 사인으로 읽고 있고 그만큼 미국이 좀 더 유연하게 우리 입장으로 최대한 반응해 주면 좋겠습니다. 그러면서 이달 말 경주 APEC 계기로 열리는 한미정상회담이 매우 중요할 것이라고 말했습니다. 한미 간 공식 협상 채널은 김정관 산업장관과 러트닉 상무장관이지만 김 실장은 물론 IMF 총회 참석 차 워싱턴에 와 있는 구윤철 경제부총리도 측면 지원에 나섰습니다. 구 부총리는 베선트 미 재무장관을 만났다며 미 측이 요구한 3,500억 달러 선불 지급은 한국이 받아들이기 힘들다는 것을 베선트 장관이 잘 이해하고 있다고 말했습니다. 우리 측 관세협상 4인방이 이곳 워싱턴에 머물고 있지만 협상 세부 내용이나 타결 시점 등에 대해서는 여전히 신중한 반응을 보이고 있습니다. 워싱턴에서 SBS 김용태입니다. 한미 관세협상의 우리 측 4인방 가운데 김용범 대통령실 정책실장과 김정관 산업통상부 장관이 오늘 미국행 비행기를 탔습니다. 구윤철 경제부총리와 여한구 통상교섭본부장은 이미 미국에 가 있습니다. 지난 8월 한미정상회담에 배석했던 김용범 실장까지 실무협상을 위해 미국으로 향하면서 협상이 막바지에 이른 것 아니냐는 관측도 나옵니다. 미국 재무부 그리어쪽, 상무부가 아주 긴밀하게 서로 소통하는 모습을 보여주고 있습니다. 긍정적으로 보고 있습니다. 김정관 장관도 협상 진전에 기대감을 내비쳤습니다. 우리 측이 3,500억 달러 대미 투자의 전제 조건으로 내걸었던 한미 통화 스와프 협상에도 물고가 트인 건지 관심이 쏠립니다. 그동안 한미협의에서는 우리 정부가 연간 조달 가능한 200억에서 300억 달러를 초과하는 대미 투자액에 대해 일부 원화로 투자를 진행하는 방안 등이 논의돼 온 걸로 전해집니다. 일각에선 미국과 아르헨티나가 맺은 제한적 통화 스와프도 대안일 수 있다는 분석이 있습니다. 미국 중앙은행인 연방준비제도가 체결 여부를 결정하는 통화스와프 대신 미국 재무부의 ESF, 즉 외환안정화기금을 활용해 일정 규모의 원달러 스와프를 한미가 약정하는 방식입니다. 위성락 국가안보실장은 오늘 오후 통화스와프 논의에는 별로 진전이 없다고 부정적 견해를 밝혔는데 대통령실은 위 실장의 발언은 아직 양국이 합의하지 않았고 협의 중이라는 취지라고 설명했습니다. SBS 강청완입니다. 스콧 베선트 미 재무장관은 미국시 NBC 방송에 출연해 어떤 무역 협상에 가장 집중하고 있느냐는 질문에 대해 우리는 한국과 마무리하려는 참이라고 말했습니다. 이어 한국에 대미 투자를 두고 이견이 있지 않느냐는 질문에 대해서는 악마는 디테일에 있지만 디테일을 해결하고 있다고 설명했습니다. 디테일에 대해 구체적인 내용을 밝히진 않았지만 최대 쟁점인 한국이 약속한 대미투자금 3,500억 달러의 조달 방식과 현금이냐 보증이냐 투자 방법을 놓고 한미 사이의 접점을 찾고 있다는 뜻으로 해석됩니다 베선트 장관은 재무부에서 열린 기자간담회에서는 향후 10일 내로 무언가를 예상한다고 자신있게 말했습니다 한국이 미국에 요청한 무제한 통화 스와프를 제공할 의향이 있느냐는 질문에 대해서는 그건 연방준비제도의 소관이라고 선을 그었습니다 다만 만약 자신이 연준 의장이라면 한국은 이미 싱가포르와 같은 통화 스와프를 가지고 있을 거라고 밝혔습니다 주요 20개국 재무장관 회의 등에 참석하기 위해 미국을 찾은 구윤철 경제부총리도 협상 타결이 가시권에 접어들었음을 시사했습니다 조율하는 단계니까 저는 베스트센터 장관 만나고 하여튼 다양한 방법, 총력 대응을 해야 된다고 이렇게 보고 있습니다. 한미 협상을 주도하는 김용범 정책실장과 김정관 산업통상부장관도 오늘 밤 워싱턴D.C에 도착해 하워드 러트닉 및 상무장관을 만나 막바지 협상을 벌일 계획입니다. 워싱턴에서 SBS 이한석입니다. SBS 이한석입니다.",
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_4IhvQA7h6uI_raw.wav",
+        "text": "전문가들은 이번 사태가 특정 범죄를 넘어서 국가 전체에 대한 혐오로 번지고 있다고 지적하고 있습니다.",
         "language": "KOR",
-        "model": "whisper-large-v3"
+        "model": "whisper-large-v3",
+        "start_time": 25.25,
+        "end_time": 31.894
     },
     {
-        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/examples/whisper-large-v3/data/testbatch_processed/testbatch_processed/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_zP092Igcl2c_raw.wav",
-        "text": "어제 이재명 대통령과 첫 통화를 한 아누틴 찬위락군 태국 총리. 태국 언론 더 네이션은 태국 총리가 이 자리에서 캄보디아를 근거지로 한 온라인 사기 조직 단속을 위해 한국과 협력할 의지를 확인했다고 보도했습니다. 최근 캄보디아와 관련한 대규모 사기 사건으로 국제사회의 압력이 높아지는 가운데 태국이 영내 공동 노력을 적극 지원하겠다는 뜻을 강조했다고 전했습니다. 통화가 이뤄지기 전에도 아누틴 총리는 캄보디아 범죄에 피해를 본 한국 국민들에 대한 협력 방안이 주로 논의될 것으로 예상된다고 밝히기도 했습니다. 그러자 캄보디아가 즉각 반발하고 나섰습니다. 훗날에 캄보디아 총리는 캄보디아에 파견된 김진아 외교부 2차관에게 캄보디아는 어떤 주변국도 우리나라를 대신해 그런 일을 해줄 필요가 없다고 이재명 대통령에게 전해달라고 할 것이라고 말했습니다. 또 태국 총리를 겨냥해서는 그 나라의 지도자는 다른 나라의 문제에 관여하기보다 자국의 국내 문제를 제대로 해결하는 데 집중해야 할 것이라며 비난하고 나섰습니다. 국경을 맞대고 있는 태국과 캄보디아는 지난 7월에도 전투기, 다연장 로켓포 등 중화기를 동원해 닷새 동안 격렬한 전투를 벌인 바 있습니다. 대통령실은 어제 서면 브리핑을 통해 이 대통령이 태국 총리와의 통화에서 포괄적 경제 동반자 협정 타결을 비롯한 양국 간의 협력 관계를 강화하기로 했다고 밝혔지만 캄보디아 문제와 관련한 구체적인 내용을 언급하진 않았습니다 SBS 정경윤입니다 자막 제공 및 자막 제공 및 광고를 포함하고 있습니다.",
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_4IhvQA7h6uI_raw.wav",
+        "text": "실제 이주 노동자들 사이에서는 캄보디아인이면 버스에서 내리라는 폭언을 들었다는 제보도 나오고 있는데요.",
         "language": "KOR",
-        "model": "whisper-large-v3"
+        "model": "whisper-large-v3",
+        "start_time": 31.894,
+        "end_time": 39.895
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_4IhvQA7h6uI_raw.wav",
+        "text": "현지 교민사회도 불안을 호소하고 있습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 39.895,
+        "end_time": 43.156
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_4IhvQA7h6uI_raw.wav",
+        "text": "제 캄보디아 한인회는 불법 취업이나 납치 사건은 일부 지역의 문제일 뿐이라며",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 43.156,
+        "end_time": 48.661
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_4IhvQA7h6uI_raw.wav",
+        "text": "전체를 범죄 국가로 보는 것은 지나친 일반화라고 강조했습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 48.661,
+        "end_time": 53.427
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_4IhvQA7h6uI_raw.wav",
+        "text": "행정안전부에 따르면 국내 체류 중인 캄보디아인은 2021년 4만 5천여 명에서 지난해는 6만 명 가까이로 늘어났습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 53.427,
+        "end_time": 62.141
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_4IhvQA7h6uI_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 62.141,
+        "end_time": 63.347
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_4IhvQA7h6uI_raw.wav",
+        "text": "이번 주도 잘 들었습니다. 고맙습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 63.347,
+        "end_time": 65.54
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_4IhvQA7h6uI_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 65.54,
+        "end_time": 79.68
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "대부분의 캄보디아 범죄단지는 중국인 운영자를 정점으로 한 피라미드 점조직 형태로 구성돼 있습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 0.0,
+        "end_time": 7.23
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "중국 국적 총책 밑에 조직원을 관리하는",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 7.23,
+        "end_time": 12.278
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "조직원을 구하거나 피해자로부터 돈을 뜯어내는 모집책과 유인책 등으로 역할을 분담하는 구조입니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 12.278,
+        "end_time": 19.317
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "전 세계 각 나라 국민들 상대로 피싱 사기를 실행을 하고 있었는데요.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 19.317,
+        "end_time": 28.607
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "한국인들 상대로는 한국인 팀이 따로 별도로 조직되어 있고.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 28.607,
+        "end_time": 33.42
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "모집책은 주로 지인들을 상대로 항공권과 숙박을 제공하는 고수익 알바라고 속여 신규 조직원으로 포섭했고",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 33.42,
+        "end_time": 41.497
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "관리 측은 이 친분을 족쇄 삼아 조직원들이 한국으로 귀국할 때 조직 내 다른 지인을 인질로 잡아 섣불리 도망칠 수 없게 만들었습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 41.497,
+        "end_time": 51.45
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "CCTV로 조직원들을 실시간 감시하고 사무실에 총을 든 경비원을 배치했습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 51.45,
+        "end_time": 58.08
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "미국의 한 인권정책연구기관은 중국이 범죄 조직을 대대적으로 단속한 지난 2018년 이후 중국의 인권정책연구기관",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 58.08,
+        "end_time": 64.81
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "중국 국적의 범죄자들이 캄보디아로 숨어들기 시작했다고 밝혔습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 64.81,
+        "end_time": 69.99
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "지난 10년간 캄보디아 정부가 중국 국적 범죄자들에게 돈을 받고 시민권을 부여하는 등 범죄 조직과 정치권이 유착됐다는 분석입니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 69.99,
+        "end_time": 79.57
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "그 자본들이 쉽게 들어오니까 캄보디아 정부는 당연히 그러한 편의를 줬을 거고 심지어 그것들이",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 79.57,
+        "end_time": 86.387
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "쉽게 중국의 마피아들이 자본을 들고 캄보디아로 들어올 수 있게 된 배경이 되겠죠.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 86.387,
+        "end_time": 94.12
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "지난 5월 유엔인권최고대표사무소는 캄보디아 등 동남아 범죄단지에서 벌어지는 인권 침해 행위에 대해 인권",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 94.12,
+        "end_time": 101.525
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "긴급 조치를 취해야 한다고 우리 정부에 메시지를 보낸 걸로 파악됐습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 101.525,
+        "end_time": 107.91
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 107.91,
+        "end_time": 109.44
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "캄보디아에서 한국인을 대상으로 납치, 감금 등을 저지른 범죄 조직이 대규모 이동을 시도하는 정황이 포착됐습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 109.44,
+        "end_time": 116.56
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "텔레그램 채널에는 캄보디아 시아누크빌에서 범죄 조직들이 대규모 이사를 시작했다는 글들이 올라오고 있습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 116.56,
+        "end_time": 123.72
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "해당 게시물에는 한국인들이 감금당한 건물과 비슷한 외형의 주거단지에서 사람들이 모니터 같은 짐을 화물차에 싣는 사진과 함께",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 123.72,
+        "end_time": 131.94
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "구역 내 회사들이 긴급 대피 준비, 올해 미국에서 발표한 인신매매보고서에서 시아누쿠빌이 주요하게 언급돼",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 131.94,
+        "end_time": 139.03
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "당국이 정비를 의도한 것이라는 말도 있다는 등의 설명이 달렸습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 139.03,
+        "end_time": 143.005
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "이 때문에 캄보디아 범죄 조직이 한국 언론 등의 주목을 받자 라오스나 태국, 베트남 등 주변 다른 동남아 국가로 이동하는 거 아니냐는 관측이 나오고 있습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 143.005,
+        "end_time": 152.847
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "캄보디아 한인 대상 범죄를 추적해온 자경단 천마도 정부 대응이 너무 늦었다며 이미 한국인을 대상으로 한 범죄 조직 상당수가",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 152.847,
+        "end_time": 161.52
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "캄보디아를 떠나 다른 곳으로 간 거로 안다고 밝혔습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 161.52,
+        "end_time": 165.15
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "문제는 범죄 조직이 캄보디아를 떠나 다른 지역으로 이동할 경우 감금된 한국인들 구조가 더 어려워질 수 있다는 겁니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 165.15,
+        "end_time": 172.13
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "경찰은 오늘 박성주 경찰청 국가수사본부장을 급파하고 현지에 코리안 데스크를 설치하는 등 감금된 한국인들 구출했습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 172.13,
+        "end_time": 180.0
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "나섰지만 이렇게 범죄 조직이 캄보디아 국경을 넘어갈 경우 다시 이를 추적해야 해 구조에 시간이 걸릴 거란 우려가 나오고 있습니다. SBS 이호건입니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 180.0,
+        "end_time": 189.79
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 189.79,
+        "end_time": 192.435
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "미국과 영국 정부는 캄보디아의 프린스 그룹과 30대 중국계인 천지 회장 그리고 117개 계열사에 대해 146건의 개혁을",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 192.435,
+        "end_time": 200.934
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "대규모 제재를 발표했습니다. 여러 계열사를 거느린 프린스그룹은 카지노, 부동산, 금융투자업을 내세우고",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 200.934,
+        "end_time": 209.61
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "실제로는 스캔 네트워크, 즉 사기 단지를 운영하며 인신매매와 온라인 사기, 자금",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 209.61,
+        "end_time": 217.93
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "양국 정부의 조사 내용입니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 217.93,
+        "end_time": 220.45
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "프린스그룹과 연계된 카지노 호텔 기업",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 220.45,
+        "end_time": 224.35
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "범죄자금을 세탁한 가상화폐 플랫폼 바이엑스 거래소 그리고 대규모 범죄단지를 제공한 자회사도 제재 대상에 올랐습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 224.35,
+        "end_time": 234.345
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "프린스그룹은 이른바 돼지 도살이라는 사기 수법을 썼습니다. 돼지를 살찌운 뒤 한 번에 잡는 것처럼",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 234.345,
+        "end_time": 241.895
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "SNS 등으로 피해자와 일단 친분을 쌓아놓고 투자나 거래를 가장해 큰 돈을 빼내가는 겁니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 241.895,
+        "end_time": 250.05
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "이들은 최소 10개의 사기 조직을 운영하면서 대규모 인신매매와 고문도 자행한 것으로 조사됐습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 250.05,
+        "end_time": 258.57
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "미국이라든가 영국이라든가 이런 부분에 대해지기를 한다면 당연히 프린스웨이의 다른 그런 조직, 유사한 조직들이 당연히 아마 제재가 있을 것이라고 저는 판단이",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 258.57,
+        "end_time": 268.34
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "미국 법무부는 도주 중인 천지 회장을 최대 40년 징역형이 선고될 수 있는 온라인 금융 사기 및 자금 세탁 혐의로 기소했습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 268.34,
+        "end_time": 277.53
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "또 2,200억 원 규모에 달하는 해외 부동산 자산을 동결하고 역대 최대 규모인 21조 4,500억 원 상당의 국가 부동산",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 277.53,
+        "end_time": 285.595
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "암호화폐 압류 소송도 시작했습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 285.595,
+        "end_time": 288.23
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "조직적인 초국경 범죄에 강력하고 선제적으로 대응하겠다는 의지로",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 288.23,
+        "end_time": 295.96
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 295.96,
+        "end_time": 296.71
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "지난 2월 광둥성 출신 17살 황 군은 큰 돈 벌러 가자는 여자친구에 이끌려간 태국에서 끔찍한 일을 겪었습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 296.71,
+        "end_time": 305.79
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "여자친구가 2천만 원에 황 군을 미얀마 통신 사기 조직에 팔아넘긴 겁니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 305.79,
+        "end_time": 311.985
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 311.985,
+        "end_time": 321.15
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "지난 4월 고수익 아르바이트를 구했다며 집을 떠난 뒤 연락두잘된 18살 청년은 미얀마 중국 범죄 조직에 납치됐습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 321.15,
+        "end_time": 330.96
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "중국인 범죄 조직이 기승을 부리는 가운데 중국 당국이 미얀마 북부 폭항을 근거지로 납치와 구금, 온라인 사기 범죄 등을 벌인",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 330.96,
+        "end_time": 340.88
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "거대 범죄 조직 가문 두 곳을 적발해 기소했다고 발표했습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 340.88,
+        "end_time": 345.2
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 345.2,
+        "end_time": 345.71
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "지난 2009년부터 59곳에 사기단지를 차려놓고 약 1조 5천억 원을 벌어들였는데 조직 보호를 위해 사기단지를",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 345.71,
+        "end_time": 354.3
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "군대 요직에 조직원을 심어놓기도 했습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 354.3,
+        "end_time": 357.75
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "확인된 피해자만 1만여 명.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 357.75,
+        "end_time": 360.0
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "그중 8명은 목숨까지 잃었습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 360.0,
+        "end_time": 363.48
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 363.48,
+        "end_time": 370.22
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "중국 당국은 지난 2023년부터 체포한 미얀마 중국 범죄 조직원이 5만 7천여 명이라면서",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 370.22,
+        "end_time": 377.955
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "조사 장면까지 대대적으로 공개했습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 377.955,
+        "end_time": 381.01
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 381.01,
+        "end_time": 381.44
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "캄보디아 당국도 중국인 범죄 용의자 6명을 체포했다고 발표하며 그동안 범죄 조직을 방치했다는 의혹을 불식하려는 모습입니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 381.44,
+        "end_time": 390.661
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "베이징에서 SBS 권란입니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 390.661,
+        "end_time": 392.75
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_bn7ccOETti8_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 392.75,
+        "end_time": 406.84
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_zP092Igcl2c_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 0.0,
+        "end_time": 1.009
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_zP092Igcl2c_raw.wav",
+        "text": "어제 이재명 대통령과 첫 통화를 한 아누틴 찬위락군 태국 총리.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1.009,
+        "end_time": 6.12
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_zP092Igcl2c_raw.wav",
+        "text": "태국 언론 더 네이션은 태국 총리가 이 자리에서 캄보디아를 근거지로 한 온라인 사기 조직 단속을 위해",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 6.12,
+        "end_time": 13.165
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_zP092Igcl2c_raw.wav",
+        "text": "한국과 협력한 의지를 확인했다고 보도했습니다. 최근 캄보디아와 관련한 대규모 사기 사건으로 국제사회의 압력이 높아지는 가운데",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 13.165,
+        "end_time": 22.78
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_zP092Igcl2c_raw.wav",
+        "text": "태국이 영내 공동 노력을 적극 지원하겠다는 뜻을 강조했다고 전했습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 22.78,
+        "end_time": 28.24
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_zP092Igcl2c_raw.wav",
+        "text": "통화가 이뤄지기 전에도 아누틴 총리는 카보디아 범죄의 피해를 본 한국 국민들에 대한 협력 방안이 주로 논의될 것으로 예상된다고 밝히기도 했습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 28.24,
+        "end_time": 38.024
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_zP092Igcl2c_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 38.024,
+        "end_time": 38.76
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_zP092Igcl2c_raw.wav",
+        "text": "그러자 캄보디아가 즉각 반발하고 나섰습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 38.76,
+        "end_time": 42.19
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_zP092Igcl2c_raw.wav",
+        "text": "훗만에 캄보디아 총리는 캄보디아에 파견된 김진아 외교부 2차관에게 캄보디아는 어떤 주변국도",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 42.19,
+        "end_time": 49.505
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_zP092Igcl2c_raw.wav",
+        "text": "우리나라를 대신해 그런 일을 해줄 필요가 없다고 이재명 대통령에게 전해달라고 할 것이라고 말했습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 49.505,
+        "end_time": 56.61
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_zP092Igcl2c_raw.wav",
+        "text": "또 태국 총리를 겨냥해서는 그 나라의 지도자는 다른 나라의 문제에 관여하기보다 자국의 국내 문제를 제대로 해결하는 데 집중해야 할 것이라며.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 56.61,
+        "end_time": 66.505
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_zP092Igcl2c_raw.wav",
+        "text": "비난하고 나섰습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 66.505,
+        "end_time": 68.41
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_zP092Igcl2c_raw.wav",
+        "text": "국경을 맞대고 있는 태국과 캄보디아는 지난 7월에도 전투기, 다연장 로켓포 등 중화기를 동원해 닷새 동안 격렬한 전투를 벌인 바 있습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 68.41,
+        "end_time": 77.97
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_zP092Igcl2c_raw.wav",
+        "text": "대통령실은 어제 서면 브리핑을 통해 이 대통령이 태국 총리와의 통화에서",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 77.97,
+        "end_time": 83.19
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_zP092Igcl2c_raw.wav",
+        "text": "포괄적 경제 동반자 협정 타결을 비롯한 양국 간의 협력 관계를 강화하기로 했다고 밝혔지만",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 83.19,
+        "end_time": 90.11
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_zP092Igcl2c_raw.wav",
+        "text": "캄보디아 문제와 관련한 구체적인 내용을 언급하진 않았습니다. SBS 정경윤입니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 90.11,
+        "end_time": 95.71
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_zP092Igcl2c_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 95.71,
+        "end_time": 111.92
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_qb3R_NxqJ-s_raw.wav",
+        "text": "그럼 캄보디아에 파견된 취재기자 연결해서 현장 상황도 짚어보겠습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 0.0,
+        "end_time": 5.4
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_qb3R_NxqJ-s_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 5.4,
+        "end_time": 6.71
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_qb3R_NxqJ-s_raw.wav",
+        "text": "시영길 기자, 우리 정부의 합동대응팀이 범죄단지를 직접 찾았다고요?",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 6.71,
+        "end_time": 11.61
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_qb3R_NxqJ-s_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 11.61,
+        "end_time": 14.67
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_qb3R_NxqJ-s_raw.wav",
+        "text": "저는 지금 캄보디아 범죄단지 가운데 하나인 스캠단지 앞에 나와 있습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 14.67,
+        "end_time": 19.482
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_qb3R_NxqJ-s_raw.wav",
+        "text": "우리 정부 합동대응팀이 캄보디아 당국자들과 함께 이곳 현장 점검을 했고 조금 전 마무리됐습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 19.482,
+        "end_time": 26.29
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_qb3R_NxqJ-s_raw.wav",
+        "text": "앞서 합동대응팀은 훈 마넷 캄보디아 총리도 만났습니다. 이번 사태가 불거진 뒤 양국 정부 대표가 만난 건 처음인데요.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 26.29,
+        "end_time": 34.955
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_qb3R_NxqJ-s_raw.wav",
+        "text": "합동대응팀은 한국인을 대상으로 한 사기 감금 피해가 지속적으로 발생한 데 대해 강한 우려를 표명하며 캄보디아 정부에 적극적인 협조를 요청했습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 34.955,
+        "end_time": 44.39
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_qb3R_NxqJ-s_raw.wav",
+        "text": "마넷 캄보디아 총리는 유감과 안타까움을 표하고 용의자들이 체포되도록 노력하겠다면서도 몇 가지 요구사항을 제시했습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 44.39,
+        "end_time": 52.58
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_qb3R_NxqJ-s_raw.wav",
+        "text": "한국 정부가 최근 캄보디아 여행경보 단계를 높인 걸 두고 투자와 관광의 악영향이 우려된다며 단계를 낮춰달라 이렇게 요구했는데 한국 정부는",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 52.58,
+        "end_time": 61.32
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_qb3R_NxqJ-s_raw.wav",
+        "text": "합동대응팀은 불가피한 결정이었고 상황이 나아지면 하향 조정을 검토하겠다고",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 61.32,
+        "end_time": 67.15
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_qb3R_NxqJ-s_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 67.15,
+        "end_time": 68.17
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_qb3R_NxqJ-s_raw.wav",
+        "text": "그리고 현지에서는 이 범죄 조직들이 캄보디아를 탈출하는 움직임이 계속해서 포착되고 있다고요.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 68.17,
+        "end_time": 74.41
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_qb3R_NxqJ-s_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 74.41,
+        "end_time": 76.45
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_qb3R_NxqJ-s_raw.wav",
+        "text": "그렇습니다. 캄보디아 범죄 조직에 대한 우리 정부 그리고 국제사회의 압박이 거세지자 범죄 조직이 속속 이곳 캄보디아를 떠나고 있습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 76.45,
+        "end_time": 85.63
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_qb3R_NxqJ-s_raw.wav",
+        "text": "시아누쿠빌 범죄단지 밀집 지역에서 수백 명의 조직원이 대거 짐을 싸 야반도주하는 모습이 영상에 포착되기도 했는데요.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 85.63,
+        "end_time": 93.29
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_qb3R_NxqJ-s_raw.wav",
+        "text": "현지 사정을 잘 아는 관계자들에 따르면 조직원들이 대형 버스와 승합차에",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 93.29,
+        "end_time": 98.315
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_qb3R_NxqJ-s_raw.wav",
+        "text": "컴퓨터와 휴대전화 등 범행 도구를 싣고 집단으로 도피하고 있다고 합니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 98.315,
+        "end_time": 102.847
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_qb3R_NxqJ-s_raw.wav",
+        "text": "이들은 국경을 넘거나 캄보디안의 깊숙한 산악 지도와 외딴 섬으로 숨어든 걸로",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 102.847,
+        "end_time": 108.735
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_qb3R_NxqJ-s_raw.wav",
+        "text": "지금까지 캄보디아 따케우에서 SBS 신용일입니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 108.735,
+        "end_time": 112.52
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_qb3R_NxqJ-s_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 112.52,
+        "end_time": 115.15
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_qb3R_NxqJ-s_raw.wav",
+        "text": "캄보디아에서 한국인을 대상으로 한 납치 감금 살인 등 강력범죄가 잇따르는 가운데",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 115.15,
+        "end_time": 120.447
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_qb3R_NxqJ-s_raw.wav",
+        "text": "직격탄을 맞은 캄보디아 관광업계에서 이재명 대통령의 발언을 콕 집어 반격에 나섰습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 120.447,
+        "end_time": 126.33
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_qb3R_NxqJ-s_raw.wav",
+        "text": "캄보디아는 평화로운 나라인데 일부 범죄에 자발적으로 가담한 사람들이 문제란 겁니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 126.33,
+        "end_time": 132.332
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_qb3R_NxqJ-s_raw.wav",
+        "text": "샘 속행 캄보디아 한국관광가이드협회장은 현지시간 13일 푸논펜포스트와의 인터뷰에서 캄보디아는 일반 한국 여행객들에게 위험한 나라가 아니라며",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 132.332,
+        "end_time": 142.12
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_qb3R_NxqJ-s_raw.wav",
+        "text": "희생자 대부분이 불법 일자리에 지원했다가 속은 사람들이라고 주장했습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 142.12,
+        "end_time": 146.75
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_qb3R_NxqJ-s_raw.wav",
+        "text": "사기 조직에 연루된 극히 일부 사람들에게 발생한 일이라고 강조한 겁니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 146.75,
+        "end_time": 151.63
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_qb3R_NxqJ-s_raw.wav",
+        "text": "그러면서 한국 지도자가 사기 사건과 관광을 구분하지 않고 말한 점이 유감스럽다며",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 151.63,
+        "end_time": 157.105
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_qb3R_NxqJ-s_raw.wav",
+        "text": "어제 국무회의에서 캄보디아에 대한 여행 제한 강화 조치를 서둘러야 한다고 밝힌 이재명 대통령을 직격했습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 157.105,
+        "end_time": 164.195
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_qb3R_NxqJ-s_raw.wav",
+        "text": "그는 한국 정부가 먼저 할 일은 자국민에게 온라인 사기에 속지 않도록 잘 교육하는 것이라고 주장했습니다. 정부 관계자의 책임 회피성 발언도 이어졌는데",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 164.195,
+        "end_time": 173.995
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_qb3R_NxqJ-s_raw.wav",
+        "text": "터치 속하 캄보디아 내무부 대변인은 한국인 대상 온라인 사기 사건은 캄보디아 뿐 아니라 다른 국가에",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 173.995,
+        "end_time": 180.0
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_qb3R_NxqJ-s_raw.wav",
+        "text": "국가가 오히려 더 심각하다며 양국 관계가 흔들리면 오히려 국제 범죄 조직이 더 활개칠 것이라고 했습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 180.0,
+        "end_time": 187.2
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_qb3R_NxqJ-s_raw.wav",
+        "text": "사르소카 캄보디아 내무장관은 최근 사이버 범죄 대응 세미나에서",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 187.2,
+        "end_time": 191.95
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_qb3R_NxqJ-s_raw.wav",
+        "text": "사이버범죄 퇴치는 캄보디아만의 책임이 아니라 여러 국가들이 협력해야 하는 국제적 과제라고 주장했습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 191.95,
+        "end_time": 198.93
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_qb3R_NxqJ-s_raw.wav",
+        "text": "우리 외교부는 최근 캄보디아 수도 푸논펜 지역에 대한 여행 경보를 기존 2단계 여행 자제에서 2.5단계인 특별여행주의보로 높였습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 198.93,
+        "end_time": 207.681
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_qb3R_NxqJ-s_raw.wav",
+        "text": "SBS 김민정입니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 207.681,
+        "end_time": 209.4
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_qb3R_NxqJ-s_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 209.4,
+        "end_time": 223.42
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 0.0,
+        "end_time": 1.234
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1.234,
+        "end_time": 6.722
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "아, 저기...",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 6.722,
+        "end_time": 8.9
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 8.9,
+        "end_time": 9.43
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "어제 도착해서",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 9.43,
+        "end_time": 13.11
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 13.11,
+        "end_time": 13.81
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "G20 그 다음에 IMF 월드뱅크 가을 총회에 이렇게 참석했었습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 13.81,
+        "end_time": 21.35
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "탐색했는데 이번 미팅 관련해서 이렇게 말씀드리면 결국은",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 21.35,
+        "end_time": 30.292
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "IMF나 월뱅, G20에서도",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 30.292,
+        "end_time": 36.29
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "지금 미중 갈등이라든지 이런 국제사회의 자국 중심의 논리가",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 36.29,
+        "end_time": 44.12
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "어 그대로 표출되지 않는가 이렇게 저는 보고 있습니다 첫째는",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 44.12,
+        "end_time": 49.17
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "미국하고 유럽이 EU가 사실은 같은 방향을 봐야 되는데",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 49.17,
+        "end_time": 56.03
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "기후변화 분야에 있어서는 완전히 다른 방향을 보고 있거든요.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 56.03,
+        "end_time": 61.072
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "그리고 IMF나 월드뱅크 지분구조도",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 61.072,
+        "end_time": 69.07
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "만약에 지금 변화를 시킨다면 GDP",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 69.07,
+        "end_time": 73.84
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "규모에 따라서 해야 되니까 미국이나 또 서방에서는 중국의 지분 올라가는 걸 막기 위해서 강력하게 반대하고 있고",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 73.84,
+        "end_time": 83.5
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "또 중국에서는 지분 구조 변화를 위해서 계속해야 된다 하는 이런 변화 과정에 있는 것 같습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 83.5,
+        "end_time": 91.105
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "그리고 모든 의사결정을 이렇게 보면 자국 또는 자기 지역",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 91.105,
+        "end_time": 98.45
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 98.45,
+        "end_time": 99.06
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "이해관계에 많은 관심을 두고 있는 것 같아요. 지금은 G20 의장국이 남아공인데",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 99.06,
+        "end_time": 108.272
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "남아공은 계속 아프리카의 어떤 발전 이런 쪽에 많은 관심을 가지는 것 같고요.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 108.272,
+        "end_time": 115.15
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "아마 내년부터는 12월부터는 미국이 G20 의장국이 되는데 지금 들리는 얘기로는 미국이 아마 의장국이 되면",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 115.15,
+        "end_time": 125.032
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 125.032,
+        "end_time": 126.27
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "G20의 구조라든지 이런 부분을 좀 바꾸고 그 다음에 IMF나 월드뱅크의 재원 활용하는 부분도",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 126.27,
+        "end_time": 136.21
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "예를 들면 이런거죠. 키토류를 중국에서 이렇게 통제를 하니까",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 136.21,
+        "end_time": 142.252
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "아프리카나 이런 나라에 히터료를 개발하는데 돈을 투자하게 된다든지 이런 식의 어떤 변화가 있는 점이",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 142.252,
+        "end_time": 149.88
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "큰 차이라고 느껴집니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 149.88,
+        "end_time": 151.41
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "그래서 그런 점을 봤을 때 한국도 국익 우선 관점에서 정신을 바짝 차리고",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 151.41,
+        "end_time": 159.15
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "국제사회에서나 국제기구에서 한국의 포지션도 정하고",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 159.15,
+        "end_time": 164.75
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "또 미리 그런 부분에 어떤 변화 가능성에 대해서 한국도 선제적으로 대응해야 되지 않나 그런 걸 좀 묻겠습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 164.75,
+        "end_time": 173.3
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "한-미 무역 협상이 진행 중인데 3,500억 달러에",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 173.3,
+        "end_time": 177.122
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 177.122,
+        "end_time": 180.0
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 180.0,
+        "end_time": 185.23
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "지금 언론에 오늘 갑자기 떴는데 그게 어디서 나온지 저도.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 185.23,
+        "end_time": 191.622
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 191.622,
+        "end_time": 192.3
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "사실은 좀 확인을 해봐야 됩니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 192.3,
+        "end_time": 195.272
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "3500불 10년에 한다는 그런 소스를 제가 정확하게 알기 어렵거든요. 제가 봤을 때는.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 195.272,
+        "end_time": 204.45
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "그리고 원화로 한다는 것도 저도 신문에 관한 그 얘기는 저도 처음 듣는 얘기니까.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 204.45,
+        "end_time": 211.422
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "확인을 정확하게 해 봐야 될 것 같습니다。",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 211.422,
+        "end_time": 214.33
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 214.33,
+        "end_time": 215.33
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "미국 정부에서 우리 정부의 미국산 대두 수익을 요구한 거는",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 215.33,
+        "end_time": 219.84
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 219.84,
+        "end_time": 220.87
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "그런 부분은 지금 제가 협상 과정 중이니까 확인하기는 어렵고요.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 220.87,
+        "end_time": 227.5
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "아마 협상 과정에서는 다양한 형태의 얘기는 왔다 갔다 하는 거고",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 227.5,
+        "end_time": 232.84
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "그게 상황에 따라서 좀 달라질 수 있으니까 지금 뭐 어떻다 저렇다 얘기하는 것은",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 232.84,
+        "end_time": 239.55
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "협상의 상대방이 있기 때문에 말씀드리기 어렵다는 점을 양해해 주시면 좋겠습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 239.55,
+        "end_time": 246.347
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "원화로 투자한다는 이야기를 들어본 적 없다고 말씀하셨죠?",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 246.347,
+        "end_time": 249.745
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "원화로 해서 원화를 베이스로 해서 달러를 하고 달러가 국채를 사고 하는데 그런 얘기는 저는 사실은 들어본 게 없어요.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 249.745,
+        "end_time": 258.88
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "네.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 258.88,
+        "end_time": 260.32
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "그런 논의가 없다고 말씀하셨죠?",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 260.32,
+        "end_time": 262.32
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "아니, 저는 들어본 적이 없어요, 저는. 왜냐 그러면 지금 언론에 나오신 거 잘 보시면 아시겠지만",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 262.32,
+        "end_time": 271.285
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "기본적으로 통상협상의 가장 중요한 부분은",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 271.285,
+        "end_time": 279.397
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 279.397,
+        "end_time": 280.74
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "루터닉 장관하고 김정관 장관하고 하는 그게 메인이고요.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 280.74,
+        "end_time": 288.192
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "최근에는 IMF 연차총회에 참여해야 하니까 외환 쪽",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 288.192,
+        "end_time": 296.59
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "외환 쪽에 한국에 나중에 어떤.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 296.59,
+        "end_time": 300.44
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "외환의 안정성을 확보할 수 있는 그 방안에 저는 지금 집중을 하고 있기 때문에 그 부분은 조금 전에 말씀하신 거 워낙 그 부분은",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 300.44,
+        "end_time": 309.63
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "갑자기 뜨더라고요. 최근에. 그래서 그 부분은 저도 확인해 봐야겠네요. 말씀을 드리겠습니다. 잘 모르고 또 답변하는 건 또 맞지 않을 것 같아요.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 309.63,
+        "end_time": 316.77
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "외환안정성 문제 확인이 되면 3500억을 투자하는데 걸림돌이 없다고 생각합니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 316.77,
+        "end_time": 322.69
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "아니죠. 그게 3500불을 어떻게 하느냐, 그 스팀에 따라서 외환 안전성을 점검해야 합니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 322.69,
+        "end_time": 329.82
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 329.82,
+        "end_time": 330.71
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "말씀드리면 3500억을 업프런트 하게 되면 외환안전성이 문제가 있죠.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 330.71,
+        "end_time": 336.53
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "그러면 그게 불가능하다고 외환 쪽에서 얘기를 해주는 거죠.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 336.53,
+        "end_time": 340.24
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "그 스킨이 또 달라져서 또 한국의 입장이 충분히 반영이 된다면 또 외환안전성은 역량이 별로 적으면 또 거기에 대해서는 또 저희들이",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 340.24,
+        "end_time": 350.002
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "보완해야 할 사항이 적어지는 그런 두 개가 되어있는데 가장 메인은 협상의 그게 가장 중요합니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 350.002,
+        "end_time": 360.0
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "중요한 거죠. 거기에 따라서 외환이 왔다 갔다 하는 거니까요.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 360.0,
+        "end_time": 363.402
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "저희가 선불로 투자한다는 건 완전히 가능성을 배제하기 어려운 부분입니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 363.402,
+        "end_time": 368.15
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 368.15,
+        "end_time": 368.99
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "저희 입장에서는 외환사정상 한국에서는 그렇게 하기가 굉장히 어렵다는 걸 저는 저희 카운터파트인 베센트 장관을 통해서",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 368.99,
+        "end_time": 378.61
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "계속 설득을 했고 상황도 설명을 했는데",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 378.61,
+        "end_time": 383.33
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "배센터 장관은 충분히 그 부분을 이해를 하고 있습니다. 한국이 그게 한꺼번에 어프런터로 내기가 어렵다는 걸 알고 있고",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 383.33,
+        "end_time": 392.585
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "아마 베슨스 장관이 그런 부분을 저는 루터넥 장관이나 행정부 내부에서",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 392.585,
+        "end_time": 400.635
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "얘기를 해달라고 계속 얘기를 하고 있고요. 퍼센트 장관은 그런 면에서는 저희들한테 좀 긍정적인 답변을 해왔으면 자기가 할 수가 없었습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 400.635,
+        "end_time": 410.58
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "설득을 하고 충분히 설명을 하겠다 이런 얘기를 할 수 있습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 410.58,
+        "end_time": 413.847
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "무제한 통화 스와프를 요구했었는데 그게 어렵다면",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 413.847,
+        "end_time": 418.23
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "제한이 있는 무제한 일부 한도 내에서의 수확도 이런 것들도 논의 대상에 포함되고",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 418.23,
+        "end_time": 423.285
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "아 제가 계속 말씀드린 것처럼 그 산업부하고 여기",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 423.285,
+        "end_time": 429.9
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 429.9,
+        "end_time": 430.75
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "상무부부 간의 어떤 스킴이 확정되고 나면 거기에 따라서 외환수요가 나올 겁니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 430.75,
+        "end_time": 436.73
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "어플란트로 내면 외환소에서는 안 된다고 했기 때문에 어떤 다른 대안이 나오고 이렇게 되면 거기에 따라서",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 436.73,
+        "end_time": 443.55
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "외환소요가 어떻게 되냐 나오고 그러면 그 외환소요를 한국 시장의 외환시장의 안정성을 확보하는 범위 내에서 가능하냐.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 443.55,
+        "end_time": 452.86
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "판단이 될 겁니다. 그런 식으로 저희들은 이렇게 정리를 하기 때문에 그 부분이 변동에 따라서",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 452.86,
+        "end_time": 461.25
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "통화사업이 완전히 불가능하다 또 해야 된다 안 해야 된다 한다면 얼마만큼 해야 되고 그게 과연",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 461.25,
+        "end_time": 470.145
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "실현 가능성이 있는 이런 부분에 대한 판단을 하게 될 거기 때문에 지금 각종 100% 물 건너갔다 또 무조건 해야만 된다",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 470.145,
+        "end_time": 480.05
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "이런 얘기도 사실은 은밀하게 따지면 맞을 수도 있고 틀릴 수도 있다 이렇게 말씀을 드리겠습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 480.05,
+        "end_time": 486.722
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 486.722,
+        "end_time": 491.03
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "저희도 그런 주장은 계속 보았었죠.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 491.03,
+        "end_time": 494.457
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "가능한 것 같아요.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 494.457,
+        "end_time": 495.49
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "저희들이 한꺼번에 일본처럼 한꺼번에 출자를 못한다는 것은 언더스탠딩을 하고 있지 않느냐 저는 그렇게 판단합니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 495.49,
+        "end_time": 505.23
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 505.23,
+        "end_time": 510.19
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "그 부분도 여러 가지로 저희들이 얘기를 하고 있는 거죠. 다양한 형태의 어떤 다른 대안이 있다면",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 510.19,
+        "end_time": 518.625
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "그게 미국에 수용이 된다면 그 부분도 변화 가능성을 저희들은 계속 주장을 하고 있고",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 518.625,
+        "end_time": 526.417
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "미국은 또 미국 나름대로 얘기를 하고 있고 그래서 지금",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 526.417,
+        "end_time": 531.56
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 531.56,
+        "end_time": 532.25
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "양국 간에 많은 얘기를 하고 있기 때문에 길은 열어놓고 봐야 되지 않을까 보고 있습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 532.25,
+        "end_time": 540.0
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "강하게 얘기를 하고 있죠.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 540.0,
+        "end_time": 542.047
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "오늘",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 542.047,
+        "end_time": 543.1
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "외신에서도 3,500억 달러 이상 뭐 이런 외신이",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 543.1,
+        "end_time": 548.17
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "예전에 나온 적 있어요. 보조가 된 적 있어요.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 548.17,
+        "end_time": 550.372
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "그것은 나왔는데 저는 그 3500 이상은 뭐 그거는 저희들이 뭐",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 550.372,
+        "end_time": 557.13
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "생각하기 사실은 어렵고요. 저는 미국 측에서 이렇게 들은 바는 없어요.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 557.13,
+        "end_time": 563.684
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 563.684,
+        "end_time": 565.959
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "제가 알기로는 3500거리 이상을 더 늘려야 한다는 얘기는",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 565.959,
+        "end_time": 571.31
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "하지 않고 3500억 벌을 빨리 up front로 하라는게 미국의 강한 주장이라고 저는 알고 있습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 571.31,
+        "end_time": 577.12
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 577.12,
+        "end_time": 584.55
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "그 철회를 시사했다고 이렇게까지 보도가 나오는데 그렇게 봐도 될까요?",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 584.55,
+        "end_time": 589.784
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "철회라기보다는 그렇게 내는 게 한국 외환시장의 안정성을 저해할 수 있다고 배센터 장관은 알고 있기 때문에",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 589.784,
+        "end_time": 598.572
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "아마 그런 부분을",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 598.572,
+        "end_time": 600.11
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 600.11,
+        "end_time": 601.36
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "저는 요청한 게 루터닉 장관이나 정부 내부에서는",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 601.36,
+        "end_time": 605.25
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 605.25,
+        "end_time": 605.88
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "불가능한 거니까 얘기를 좀 해달라 이렇게 얘기를 하고 있는 상황입니다. 그게 아직까지는 철회했다 안 했다 답변하기가 어렵습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 605.88,
+        "end_time": 613.52
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "트럼프 대통령은 계속 어제도 선거 얘기를 또 하셨는데 이게 베산트 장관이나 이런 행정부 내에서 공감대가 이해를 했을 때",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 613.52,
+        "end_time": 623.265
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "하더라도 여전히 안심할 수 없는 막판 대통령의 변신이",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 623.265,
+        "end_time": 628.49
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "맞습니다. 그래서 그 부분을 아마 실무장관들은 이해를 하고 있는데",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 628.49,
+        "end_time": 636.75
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "이것을 얼마나 대통령을 설득을 해서.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 636.75,
+        "end_time": 640.21
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "어 트럼프 대통령이 이걸 수용하느냐 부분은 진짜 그 부분은 불확실성이 있는거죠 그래서 저희들이",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 640.21,
+        "end_time": 648.61
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "이게 장담할 수도 없고 계속 조심스럽게 얘기하는 부분이 그 부분이라고 이렇게 이해를 해주시면 될 겁니다. 어쨌거나 하여튼 베셀드 장관한테는 저는",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 648.61,
+        "end_time": 657.905
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "지속적으로 몇 번 얘기했고 어제도 만나서 또 얘기를 했고 본인은 충분히 알고 있다고.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 657.905,
+        "end_time": 664.58
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "그래서 내가 정부 내부에서 좀 설득을 해달라 이렇게 얘기를 제가 강하게 요청을 많이 했다는 점에서 계속 지속적으로 요청하고 있습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 664.58,
+        "end_time": 673.4
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "지구총리님 오시고 정책실 국장님도 오시고 장관님도 오시고 하는데 이게 에이펙 전에 타결이 될 수 있는 분위기라고 보세요?",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 673.4,
+        "end_time": 682.01
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "저희들로서는 고객의 관점에서 서둘러서는 안되겠지만 고객의 관점에서",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 682.01,
+        "end_time": 689.634
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "한국이 요청하고 있는 대로 협상이 이루어진다면 빨리 하는 게 더 도움이 되니까요.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 689.634,
+        "end_time": 696.76
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "그렇게 생각하고 있고, 두 번째, 그러면 어느 계기로 할 것이냐 하는 게 에이펙 계기로 할 수만 있다면 하는 게 국외의 관점이 도움이 된다면",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 696.76,
+        "end_time": 706.552
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "그래도 가장 트닝포인트가 될 수 있고 그렇게 되는 게",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 706.552,
+        "end_time": 711.995
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "또 자동차 관세율이 25%에서 15% 낮아질 수 있는 요인이 되기 때문에 저희들은 그런 계기를 활용해서 최대한",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 711.995,
+        "end_time": 720.0
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "노력하고 있다는 말씀을 드립니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 720.0,
+        "end_time": 722.11
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 722.11,
+        "end_time": 727.109
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 727.109,
+        "end_time": 733.92
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "아마 그런 대우를 받을 수 있지 않을까 생각합니다. 그래서 MOU 사인이 중요한 거죠.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 733.92,
+        "end_time": 739.69
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "에이펙 협상 기간을 일종의 데드라이너로 하지 않을 양측의 공감대라든가 이런 게 형성이 되어 있는데",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 739.69,
+        "end_time": 744.82
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 744.82,
+        "end_time": 745.78
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "거기에 대해서 APEC까지 했으면 좋겠다고 양측이 생각할 수는 있다고 보여지는데 그걸 가지고",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 745.78,
+        "end_time": 753.69
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "공식적으로 그때까지 하기로 했다고 그런 거는 없고요. 지금 배센터 장관이 CNBC에서 얘기한 거라든지 이런 걸 봤을 때는",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 753.69,
+        "end_time": 763.475
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "미국도 조금 긍정적으로 그런 식으로 노력하고 있지 않느냐 보여지고요. 그래서 저희들도 가능하다면 국익의 관점에서",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 763.475,
+        "end_time": 773.01
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "협상의 내용만 잘 정리가 되면 그런 계기에 APA 개교를 하는 게 좋겠다 이렇게 생각을 하고 있습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 773.01,
+        "end_time": 779.846
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 779.846,
+        "end_time": 786.78
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "제가 아직 저는 IMBFC 하고 뭐 지금 이거 하느라고 지금 뭐 정신이 없어가지고 공유를 받지는 못했는데 아마 조선업 관련해서",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 786.78,
+        "end_time": 796.27
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "OMB도 아마 뭔가 하여튼 좀 하고 있으니까 그 부분에 대해서 좀 이해를 높이려고 하지 않았느냐 이렇게 생각을 하고 있습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 796.27,
+        "end_time": 805.65
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "최근 중국의 하나오션 자회사 제재 조치 관련해서 한미 양국이 공동으로서 구조를 맞추는",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 805.65,
+        "end_time": 811.81
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 811.81,
+        "end_time": 814.4
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "그래서 그 부분은 저도 지금 제가 좀 더 확인을 해본다든지 뭔가 좀 알아봐야 되는데",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 814.4,
+        "end_time": 820.67
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 820.67,
+        "end_time": 827.79
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "어제 미국에서는 중국의 수출통제 강화와 관련해서 동맹국들이랑 같이 대응할 수 있다 이렇게 얘기를 했는데",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 827.79,
+        "end_time": 836.52
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 836.52,
+        "end_time": 860.325
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "그래서 뭐 오늘도 보기는 봤는데 배승진 장관이 그냥 짧게 왔다가 짧게 가고 이래가지고 좀 있으면은 좀",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 860.325,
+        "end_time": 868.105
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "더 얘기를 할 텐데 내일도 한번 보려고 하는데 어제 만나서 충분히 얘기를 했기 때문에 또 만나도 지금 당장은 뭐.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 868.105,
+        "end_time": 875.72
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "백선 장관한테 우리가 더 요청할 거는",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 875.72,
+        "end_time": 878.47
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "안 보이고 기회가 되면은 내일도 만나가 또 같은 얘기도 반복하고 어떻게 내부에서 되고 있느냐 물어볼 수는 있겠는데 내일도 아침에 회의는 있는데 그래서",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 878.47,
+        "end_time": 887.47
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "굉장히 바쁜 것 같아요. 잠깐 왔다가 그냥 뭐 하다 보면 가버리고 이렇게 돼서 하여튼 최선을 노력을 다해서 계속 접촉을 늘려나가도록 하겠습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 887.47,
+        "end_time": 896.88
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 896.88,
+        "end_time": 900.0
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "1,500억 달러 어치는 따로 전용으로 하겠다는 아이디어가 있었는데",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 900.0,
+        "end_time": 904.82
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "8월 달에는 그런 일보다 좀 사라졌었거든요. 근데 지금은 마쓰바 전용 펀드라는 아이디어가 아직 있나요?",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 904.82,
+        "end_time": 911.535
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 911.535,
+        "end_time": 918.99
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "관련 부처를 좀 설득하는 게 한국에서는 그래도 유리하기 때문에 아마 그렇게 지금 김명호 실장이 이렇게 가서",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 918.99,
+        "end_time": 927.695
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 927.695,
+        "end_time": 929.384
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "설득해야 되는 이유가 뭔가요? 본인들이 투자를 받고 싶다고 하는 것은",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 929.384,
+        "end_time": 933.234
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "설득하는 게 우리 입장에서 분야가 중요합니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 933.234,
+        "end_time": 937.09
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "한국이 원하는 분야에 투자하는 게 제일 좋으니까 나스가 중요하다고요? 나스가는 한국이 잘하고 미국도 굉장히 필요한 분야니까",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 937.09,
+        "end_time": 945.98
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "가장 미국하고 한국하고 접점이 가장 맞아 있는 분자라고 생각하기 때문에 그 부분을",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 945.98,
+        "end_time": 953.93
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "여러 부처한테 설득을 해놓으면 저는 나쁘지 않다고 보여지고 그런 차원에서 아마 OMB도 예산도 들고 있고",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 953.93,
+        "end_time": 962.38
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "조직도 담당하기 때문에",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 962.38,
+        "end_time": 964.44
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "닿지 않는가 보여지고 저는 저도 같이 가려고 했는데 아침에 회의가 계속 있고 또 내년부터는 또 미국이 또",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 964.44,
+        "end_time": 973.97
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "G20의 의장국이 되면서 배센터 장관이 무슨 얘기하는지를 듣고 이러느라고 제가 조인을 못했었어요.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 973.97,
+        "end_time": 980.29
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 980.29,
+        "end_time": 981.207
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "예상입니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 981.207,
+        "end_time": 983.14
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 983.14,
+        "end_time": 983.96
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "저녁 식사 가시죠. 감사합니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 983.96,
+        "end_time": 987.99
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 987.99,
+        "end_time": 990.36
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "지난번에 7월달에 트럼프 대통령이 금액을 3,500억 달러를 수정을 안 했다고 처음에 말씀하셨다가 그때 이제 7월 말 기준이에요",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 990.36,
+        "end_time": 1000.28
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "기자회견을 하시면서 수정을 안 했다고 하셨다가 그다음에 오르내림이 있었다고 하셨어요. 그러면 그때 그 금액은 3,500억 달러는 그날 조정이 되었었나요? 안 되었었나요?",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1000.28,
+        "end_time": 1008.9
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "원래 이게 협상이라 한국어는 적게 얘기하고",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1008.9,
+        "end_time": 1012.37
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1012.37,
+        "end_time": 1013.06
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "트럼프 전 대통령은 더 많이 요구하고",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1013.06,
+        "end_time": 1018.44
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1018.44,
+        "end_time": 1018.94
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "그래서 이렇게 이 사이에서 이렇게 돼요.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1018.94,
+        "end_time": 1021.197
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "즉석에서 그러니까 트럼프 대통령이 금액을 올렸다고 하시면 얼마나 올렸을까요?",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1021.197,
+        "end_time": 1026.512
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "그거는 얘기하기 어려워요. 굉장히 많이 해요.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1026.512,
+        "end_time": 1029.41
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1029.41,
+        "end_time": 1030.259
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "MBC 뉴스 이덕영입니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1030.259,
+        "end_time": 1030.86
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1030.86,
+        "end_time": 1031.29
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "네, 이상입니다. 저녁 식사는 뵐게요.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1031.29,
+        "end_time": 1034.85
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1034.85,
+        "end_time": 1036.24
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "김용범 대통령실 정책실장과 김정관 산업장관은 미국에 도착하자마자 백악관을 찾아갔습니다. 러셀보트.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1036.24,
+        "end_time": 1044.355
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "백악관 예산관리국장을 만나 한미 조선협력 사업을 뜻하는 마스가 프로젝트에 대해 논의했습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1044.355,
+        "end_time": 1051.65
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "우리나라와 미국의 조선산업 협력이 가지는 그런 의미 이런 쪽에 대해서 서로 인식을 좀 공유했으면 좋겠다 그런 차원입니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1051.65,
+        "end_time": 1061.275
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "예산관리국이 직접 관세 협상을 하지는 않지만 한미조선협력을 강조함으로써 대미 투자금 3,500억 달러를 둘러싼 이견을 조율하는 데",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1061.275,
+        "end_time": 1071.085
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "영향을 미칠 것으로 우리 대표단은 기대하고 있습니다. 앞서 김 실장은 한미가 가장 진지하고",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1071.085,
+        "end_time": 1080.0
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "협상하고 있다고 밝혔습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1080.0,
+        "end_time": 1082.04
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "미 재무장관이 10일 안에 결과가 나올 것으로 예상한 데 대해서는 나쁘지 않은 신호라고 평가했습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1082.04,
+        "end_time": 1088.69
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "미국이 많은 양보를 할 것 같죠, 그럼? 우리에게는 나쁘지 않은...",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1088.69,
+        "end_time": 1093.58
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "사인으로 읽고 있고 그만큼 미국이 좀 더 유연하게 우리 입장으로 최대한 반응해주면 좋겠습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1093.58,
+        "end_time": 1099.734
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "그러면서 이달 말 경주 APEC 계기로 열리는 한미정상회담이 매우 중요할 것이라고 말했습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1099.734,
+        "end_time": 1107.16
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "한미 간 공식 협상 채널은 김정관 산업장관과 러트닉 상무장관이지만 김 실장은 물론 IMF 총회 참석 차 워싱턴에 와 있는",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1107.16,
+        "end_time": 1116.74
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "구윤철 경제부총리도 측면 지원에 나섰습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1116.74,
+        "end_time": 1120.78
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "구 부총리는 베스턴트 미 재무장관을 만났다며 미측이 요구한 3,500억 달러 선불 지급은 한국이 받아들이기 힘들다는 것을",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1120.78,
+        "end_time": 1129.925
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "베선트 장관이 잘 이해하고 있다고 말했습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1129.925,
+        "end_time": 1133.05
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1133.05,
+        "end_time": 1133.61
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "우리 측 관세협상 4인방이 이곳 워싱턴에 머물고 있지만 전국에 있는",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1133.61,
+        "end_time": 1137.86
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "협상 세부 내용이나 타결 시점 등에 대해서는 여전히 신중한 반응을 보이고",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1137.86,
+        "end_time": 1146.21
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1146.21,
+        "end_time": 1147.95
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "한미관세협상의 우리 측 4인방 가운데 김용범 대통령실 정책실장과 김정관 산업통상부장관이 오늘 미국행 비행기를 탔습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1147.95,
+        "end_time": 1157.732
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "구윤철 경제부총리와 여한구 통상교섭본부장은 이미 미국에 가 있습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1157.732,
+        "end_time": 1163.62
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1163.62,
+        "end_time": 1164.19
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "지난 8월 한미정상회담에 배석했던 김용범 실장까지 실무협상을 위해 미국으로 향하면서 협상이 막바지에 이른 것 아니냐는 관측도 나옵니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1164.19,
+        "end_time": 1173.26
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1173.26,
+        "end_time": 1174.027
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "미국 재무부 그리오 쪽, 그다음에",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1174.027,
+        "end_time": 1177.83
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "상무부가 아주 긴밀하게 서로 소통하는 그런 모습을 보여주고 있습니다. 굉장히 긍정적으로 보고 있습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1177.83,
+        "end_time": 1185.28
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "김정관 장관도 협상 진전에 기대감을 내비쳤습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1185.28,
+        "end_time": 1189.06
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "외환시장 관련된 여러 가지 부분에서 미국 측과 상당 부분",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1189.06,
+        "end_time": 1194.24
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "어떤 오해란 오해, 격차 이해의 공격이 많이 좁혀졌다는 정도로 말씀드렸습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1194.24,
+        "end_time": 1200.109
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1200.109,
+        "end_time": 1201.54
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "우리 측이 3,500억 달러 대미 투자에 전제조건으로 내걸었던 한미통화스와프 협상에도 물고가 트인 건지 관심이 쏠립니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1201.54,
+        "end_time": 1210.419
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "그동안 한미협의회에서는 우리 정부가 연간 조달 가능한 200억에서 300억 달러를 초과하는 대미 투자액에 대해 일부 원화로 투자를 진행하는 방안 등이",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1210.419,
+        "end_time": 1220.32
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "논의돼 온 걸로 전해집니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1220.32,
+        "end_time": 1221.96
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1221.96,
+        "end_time": 1222.53
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "일각에서는 미국과 아르헨티나가 맺은 제한적 통화 스와프도 대안일 수 있다는 분석이 있습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1222.53,
+        "end_time": 1228.93
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "미국 중앙은행인 연방준비제도가 체결 여부를 결정하는 통화 스와프 대신 미국",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1228.93,
+        "end_time": 1236.16
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "즉 외환 안정화 기금을 활용해 일정 규모의 원달러 스와프를 한미가 약정하는 방식입니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1236.16,
+        "end_time": 1242.127
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1242.127,
+        "end_time": 1242.757
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "위성락 국가안보실장은 오늘 오후 통화 수업 논의에는 별로 진전이 없다고",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1242.757,
+        "end_time": 1249.15
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1249.15,
+        "end_time": 1249.67
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "대통령실은 위 실장의 발언은 아직 양국이 합의하지 않았고 협의 중이라는 취지라고",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1249.67,
+        "end_time": 1258.415
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1258.415,
+        "end_time": 1260.0
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "스콧 베선트 미 재무장관은 미국시 NBC 방송에 출연해 어떤 무역 협상에 가장 집중하고 있느냐는 질문에 대해",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1260.0,
+        "end_time": 1267.4
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "우리는 한국과 마무리하려는 참이라고 말했습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1267.4,
+        "end_time": 1271.25
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "이어 한국에 대미 투자를 두고 이견이 있지 않느냐는 질문에 대해서는 악마는 디테일에 있지만 디테일을 해결하고 있다고 설명했습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1271.25,
+        "end_time": 1280.93
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "디테일에 대해 구체적인 내용을 밝히지는 않았지만 최대 쟁점인 한국이 약속한 대미 투자금 3,500억 달러의 조달 방식과 국가의 투자 방식에 대해서는",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1280.93,
+        "end_time": 1290.255
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "현금이냐, 보증이냐, 투자 방법을 놓고 한미 사이의 접점을 찾고 있다는 뜻으로 해석됩니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1290.255,
+        "end_time": 1297.18
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "베선트 장관은 재무부에서 열린 기자간담회에서는 향후 10일 내로 무언가를 예상한다고 자신 있게 말했습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1297.18,
+        "end_time": 1304.885
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "한국이 미국에 요청한 무제한 통화 스와프를 제공할 의향이 있느냐는 질문에 대해서는 그건 연방준비제도의 소관이라고 선을 그었습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1304.885,
+        "end_time": 1314.25
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "다만 만약 자신이 연준 의장이라면 한국은 이미 싱가포르와 같은 통화 스와프를 가지고 있을 거라고 밝혔습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1314.25,
+        "end_time": 1322.69
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "주요 20개국 재무장관 회의 등에 참석하기 위해 미국을 찾은 구윤철 경제부총리도 협상 타결이 가시권에 접어들었음을 시사했습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1322.69,
+        "end_time": 1332.095
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "조율을 하는 단계니까 저는 베스트센터 장관 만나고 다양한 방법, 총력 대응을 해야 한다고 보고 있습니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1332.095,
+        "end_time": 1341.29
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "한미 협상을 주도하는 김용범 정책실장과 김정관 산업통상부 장관도 오늘 밤 워싱턴D.C에 도착해 한미 협상을",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1341.29,
+        "end_time": 1348.77
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "하워드 러트닉 및 상무장관을 만나 막바지 협상을 벌일 계획입니다.",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1348.77,
+        "end_time": 1355.45
+    },
+    {
+        "path": "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/KOR/KOR_UCkinYTS9IHqOEwR1Sze2JTw_sdS3RvlpJyE_raw.wav",
+        "text": "",
+        "language": "KOR",
+        "model": "whisper-large-v3",
+        "start_time": 1355.45,
+        "end_time": 1369.44
     }
 ]
