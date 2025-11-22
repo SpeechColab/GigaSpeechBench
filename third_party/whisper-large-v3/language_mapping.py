@@ -1,208 +1,88 @@
 """
-Language code mapping for Whisper ASR
-Maps 3-letter country codes to Whisper language names
+语言代码映射表 - Whisper ASR
+将3字母国家代码映射到Whisper语言名称
+仅包含timestamp目录中实际存在的国家
 """
 
-# Mapping from 3-letter country codes to Whisper language names
+# 国家代码到Whisper语言名称的映射表
 COUNTRY_CODE_TO_LANGUAGE = {
-    # Arabic countries
-    "IRQ": "arabic",    # Iraq
-    "SAU": "arabic",    # Saudi Arabia
-    "EGY": "arabic",    # Egypt
-    "ARE": "arabic",    # UAE
-    "JOR": "arabic",    # Jordan
-    "SYR": "arabic",    # Syria
-    "LBN": "arabic",    # Lebanon
-    "DZA": "arabic",    # Algeria
+    # 中东地区 - 阿拉伯语
+    "ARE": "arabic",    # ARE - 阿联酋 - arabic - 阿拉伯语
+    "IRQ": "arabic",    # IRQ - 伊拉克 - arabic - 阿拉伯语
+    "EGY": "arabic",    # EGY - 埃及 - arabic - 阿拉伯语
+    "SAU": "arabic",    # SAU - 沙特阿拉伯 - arabic - 阿拉伯语
+    "DZA": "arabic",    # DZA - 阿尔及利亚 - arabic - 阿拉伯语
+    "MAR": "arabic",    # MAR - 摩洛哥 - arabic - 阿拉伯语
 
-    # English countries
-    "USA": "english",   # United States
-    "GBR": "english",   # United Kingdom
-    "AUS": "english",   # Australia
-    "CAN": "english",   # Canada
-    "IND": "english",   # India
-    "NGA": "english",   # Nigeria
-    "KEN": "english",   # Kenya
-    "ZAF": "english",   # South Africa
-
-    # Chinese
-    "CHN": "chinese",   # China
-    "TWN": "chinese",   # Taiwan
-    "HKG": "chinese",   # Hong Kong
-    "SGP": "chinese",   # Singapore
-
-    # Spanish
-    "ESP": "spanish",   # Spain
-    "MEX": "spanish",   # Mexico
-    "ARG": "spanish",   # Argentina
-    "COL": "spanish",   # Colombia
-    "PER": "spanish",   # Peru
-    "VEN": "spanish",   # Venezuela
-
-    # French
-    "FRA": "french",    # France
-    "CAN": "french",    # Canada (French speaking)
-    "BEL": "french",    # Belgium
-    "CHE": "french",    # Switzerland
-    "MAR": "french",    # Morocco
-    "TUN": "french",    # Tunisia
-
-    # German
-    "DEU": "german",    # Germany
-    "AUT": "german",    # Austria
-    "CHE": "german",    # Switzerland
-
-    # Russian
-    "RUS": "russian",   # Russia
-    "BLR": "russian",   # Belarus
-    "KAZ": "russian",   # Kazakhstan
-
-    # Portuguese
-    "BRA": "portuguese", # Brazil
-    "PRT": "portuguese", # Portugal
-    "AGO": "portuguese", # Angola
-    "MOZ": "portuguese", # Mozambique
-
-    # Italian
-    "ITA": "italian",   # Italy
-    "CHE": "italian",   # Switzerland
-
-    # Japanese
-    "JPN": "japanese",  # Japan
-
-    # Korean
-    "KOR": "korean",    # South Korea
-
-    # Hindi
-    "IND": "hindi",     # India
-
-    # Turkish
-    "TUR": "turkish",   # Turkey
-
-    # Dutch
-    "NLD": "dutch",     # Netherlands
-    "BEL": "dutch",     # Belgium
-
-    # Swedish
-    "SWE": "swedish",   # Sweden
-
-    # Norwegian
-    "NOR": "norwegian", # Norway
-
-    # Danish
-    "DNK": "danish",    # Denmark
-
-    # Finnish
-    "FIN": "finnish",   # Finland
-
-    # Polish
-    "POL": "polish",    # Poland
-
-    # Czech
-    "CZE": "czech",     # Czech Republic
-
-    # Hungarian
-    "HUN": "hungarian", # Hungary
-
-    # Romanian
-    "ROU": "romanian",  # Romania
-
-    # Bulgarian
-    "BGR": "bulgarian", # Bulgaria
-
-    # Croatian
-    "HRV": "croatian",  # Croatia
-
-    # Serbian
-    "SRB": "serbian",   # Serbia
-
-    # Ukrainian
-    "UKR": "ukrainian", # Ukraine
-
-    # Greek
-    "GRC": "greek",     # Greece
-
-    # Hebrew
-    "ISR": "hebrew",    # Israel
-
-    # Thai
-    "THA": "thai",      # Thailand
-
-    # Vietnamese
-    "VNM": "vietnamese", # Vietnam
-
-    # Indonesian
-    "IDN": "indonesian", # Indonesia
-
-    # Malaysian
-    "MYS": "malay",     # Malaysia
-
-    # Filipino/Tagalog
-    "PHL": "tagalog",   # Philippines
-
-    # Bengali
-    "BGD": "bengali",   # Bangladesh
-
-    # Tamil
-    "LKA": "tamil",     # Sri Lanka
-
-    # Urdu
-    "PAK": "urdu",      # Pakistan
-
-    # Persian/Farsi
-    "IRN": "persian",   # Iran
-    "AFG": "persian",   # Afghanistan
+    # 亚洲地区
+    "KOR": "korean",    # KOR - 韩国 - korean - 韩语
+    "JPN": "japanese",  # JPN - 日本 - japanese - 日语
+    "THA": "thai",      # THA - 泰国 - thai - 泰语
+    "VNM": "vietnamese", # VNM - 越南 - vietnamese - 越南语
+    "IDN": "indonesian", # IDN - 印度尼西亚 - indonesian - 印尼语
+    "MYS": "malay",     # MYS - 马来西亚 - malay - 马来语
+    "PHL": "tagalog",   # PHL - 菲律宾 - tagalog - 塔加洛语（菲律宾语）
 }
 
 def country_code_to_language(country_code: str) -> str:
     """
-    Convert 3-letter country code to Whisper language name
+    将3字母国家代码转换为Whisper语言名称
 
     Args:
-        country_code (str): 3-letter country code (e.g., "IRQ", "USA")
+        country_code (str): 3字母国家代码 (例如: "ARE", "KOR")
 
     Returns:
-        str: Whisper language name (e.g., "arabic", "english")
+        str: Whisper语言名称 (例如: "arabic", "korean")
 
     Raises:
-        ValueError: If country code is not supported
+        ValueError: 如果不支持该国家代码
     """
     country_code = country_code.upper().strip()
 
     if country_code not in COUNTRY_CODE_TO_LANGUAGE:
-        # Try to guess based on common patterns
-        if country_code.startswith("AR"):
-            return "arabic"
-        elif country_code.startswith("EN"):
-            return "english"
-        elif country_code.startswith("ZH"):
-            return "chinese"
-        elif country_code.startswith("ES"):
-            return "spanish"
-        elif country_code.startswith("FR"):
-            return "french"
-        elif country_code.startswith("DE"):
-            return "german"
-        elif country_code.startswith("RU"):
-            return "russian"
-        else:
-            raise ValueError(f"Unsupported country code: {country_code}. "
-                           f"Supported codes: {list(COUNTRY_CODE_TO_LANGUAGE.keys())}")
+        raise ValueError(f"不支持的国家代码: {country_code}. "
+                       f"支持的国家代码: {list(COUNTRY_CODE_TO_LANGUAGE.keys())}")
 
     return COUNTRY_CODE_TO_LANGUAGE[country_code]
 
 def get_supported_country_codes() -> list:
-    """Get list of all supported 3-letter country codes"""
+    """获取所有支持的3字母国家代码列表"""
     return list(COUNTRY_CODE_TO_LANGUAGE.keys())
 
-# Test function
-if __name__ == "__main__":
-    # Test some conversions
-    test_codes = ["IRQ", "USA", "CHN", "ESP", "FRA", "UNKNOWN","DZA"]
+def get_language_info() -> dict:
+    """
+    获取详细的语言信息映射表
+    返回格式: {国家代码: {"国家中文名": "", "语言代码": "", "语言中文名": ""}}
+    """
+    language_info = {
+        "ARE": {"国家中文名": "阿联酋", "语言代码": "arabic", "语言中文名": "阿拉伯语"},
+        "IRQ": {"国家中文名": "伊拉克", "语言代码": "arabic", "语言中文名": "阿拉伯语"},
+        "EGY": {"国家中文名": "埃及", "语言代码": "arabic", "语言中文名": "阿拉伯语"},
+        "SAU": {"国家中文名": "沙特阿拉伯", "语言代码": "arabic", "语言中文名": "阿拉伯语"},
+        "DZA": {"国家中文名": "阿尔及利亚", "语言代码": "arabic", "语言中文名": "阿拉伯语"},
+        "MAR": {"国家中文名": "摩洛哥", "语言代码": "arabic", "语言中文名": "阿拉伯语"},
+        "KOR": {"国家中文名": "韩国", "语言代码": "korean", "语言中文名": "韩语"},
+        "JPN": {"国家中文名": "日本", "语言代码": "japanese", "语言中文名": "日语"},
+        "THA": {"国家中文名": "泰国", "语言代码": "thai", "语言中文名": "泰语"},
+        "VNM": {"国家中文名": "越南", "语言代码": "vietnamese", "语言中文名": "越南语"},
+        "IDN": {"国家中文名": "印度尼西亚", "语言代码": "indonesian", "语言中文名": "印尼语"},
+        "MYS": {"国家中文名": "马来西亚", "语言代码": "malay", "语言中文名": "马来语"},
+        "PHL": {"国家中文名": "菲律宾", "语言代码": "tagalog", "语言中文名": "塔加洛语"},
+    }
+    return language_info
 
-    for code in test_codes:
-        try:
-            language = country_code_to_language(code)
-            print(f"{code} -> {language}")
-        except ValueError as e:
-            print(f"{code} -> ERROR: {e}")
+# 测试函数
+if __name__ == "__main__":
+    # 测试所有支持的国家代码
+    print("支持的国家代码和语言映射:")
+    print("-" * 60)
+
+    lang_info = get_language_info()
+    for code in sorted(COUNTRY_CODE_TO_LANGUAGE.keys()):
+        country = lang_info[code]["国家中文名"]
+        lang_code = lang_info[code]["语言代码"]
+        lang_name = lang_info[code]["语言中文名"]
+        print(f"{code} - {country} -> {lang_code} ({lang_name})")
+
+    print("-" * 60)
+    print(f"总计支持 {len(COUNTRY_CODE_TO_LANGUAGE)} 个国家/地区")
