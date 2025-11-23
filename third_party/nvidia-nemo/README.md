@@ -1,4 +1,7 @@
 <MARKDOWN>
+# NEMO ASR 工具包
+
+使用NVIDIA NEMO工具包实现阿拉伯语、韩语和日语的多语言自动语音识别(ASR)。
 
 ## 📂 目录结构
 nemo_asr/
@@ -39,7 +42,6 @@ python download.py
 日语	python jpn_asr.py
 韩语	python kor_asr.py
 阿拉伯语	python ar_asr.py
-
 ⚙️ 系统配置
 配置文件通过代码直接设置：
 
@@ -54,5 +56,3 @@ CONFIG = {
     # ASR结果输出目录
     "result_dir": "./Nvidia_Nemo_results"
 }
-
-
