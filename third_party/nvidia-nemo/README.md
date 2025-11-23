@@ -55,16 +55,17 @@ python ar_asr.py
 
 ```<PYTHON>
 CONFIG = {
-    # 音频输入目录（按语言分类存储）
+    # 音频输入目录（按语言分类输入）
     "audio_dir": "/root/shared-nvme/haoranwang/nemo_asr/testbatch_processed",
     
-    # 标签文件目录（需与音频目录保持相同结构）
+    # 标签文件目录（需与音频目录保持相同语言）
     "label_dir": "/root/shared-nvme/haoranwang/nemo_asr/labeled",
     
     # 识别结果输出路径
     "result_dir": "./Nvidia_Nemo_results"
 }
 ```
+
 
 
 
