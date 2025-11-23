@@ -18,7 +18,6 @@ nemo_asr/
 
 ## 🚀 快速开始
 
-### 1. 环境初始化
 ## 🛠️ 环境配置
 
 ### 系统要求
@@ -29,10 +28,7 @@ nemo_asr/
 ```bash
 pip install nemo_toolkit['asr']==1.23.0
 pip install librosa pydub soundfile tqdm
-### 3. 下载Whisper模型
 
-#### 使用自动化脚本下载（推荐）
-```bash
-bash install_model.sh
 ```
+
 
