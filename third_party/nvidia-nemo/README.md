@@ -27,7 +27,7 @@ nemo_asr/
 pip install nemo_toolkit['asr']==1.23.0
 pip install librosa pydub soundfile tqdm
 
-🚀 快速开始
+### 快速开始
 1. 下载预训练模型
 <BASH>
 python download.py
@@ -53,4 +53,5 @@ CONFIG = {
     # ASR结果输出目录
     "result_dir": "./Nvidia_Nemo_results"
 }
+
 
