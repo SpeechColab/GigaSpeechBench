@@ -35,7 +35,8 @@ python download.py
 ```
 注：模型将自动下载至 ~/.cache/huggingface/hub/ 目录和指定目录
 
-### 运行语音识别脚本	
+## ⚡运行语音识别脚本	
+
 ### 日语
 ```bash
 python jpn_asr.py
@@ -50,6 +51,7 @@ python ar_asr.py
 ```
 
 ### 配置文件
+
 <PYTHON>
 CONFIG = {
     # 音频输入目录（按语言分类存储）
@@ -61,5 +63,6 @@ CONFIG = {
     # 识别结果输出路径
     "result_dir": "./Nvidia_Nemo_results"
 }
+
 
 
