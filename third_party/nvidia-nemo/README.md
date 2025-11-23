@@ -1,58 +1,48 @@
-<MARKDOWN>
-# NEMO ASR 工具包
-
-使用NVIDIA NEMO工具包实现阿拉伯语、韩语和日语的多语言自动语音识别(ASR)。
-
-## 📂 目录结构
+## 📂 项目目录结构
 nemo_asr/
 ├── ar_asr.py             # 阿拉伯语ASR处理脚本
 ├── kor_asr.py            # 韩语ASR处理脚本
 ├── jpn_asr.py            # 日语ASR处理脚本
 ├── download.py           # 模型下载脚本
 ├── upload_data.py        # 数据上传脚本
-
-├── utils.py              # 工具函数
+├── utils.py              # 工具函数模块
 │
-├── Nvidia_Nemo_results/  # ASR结果输出目录
-
-├── labeled/              # 标注数据存放目录
+├── Nvidia_Nemo_results/  # 识别结果输出目录
+├── labeled/              # 已标注数据目录
 │
-├── *.nemo                # 各语言ASR模型文件
-└── pycache/              # Python缓存目录
+├── *.nemo                # ASR模型文件
+└── pycache/          # Python编译缓存
 
 
 ## 🛠️ 环境配置
 
 ### 系统要求
-- Python 3.8+
+- Python 3.8或更高版本
 - Linux系统 (推荐Ubuntu 18.04+)
-
-### 安装依赖
+### 依赖安装
 ```bash
 pip install nemo_toolkit['asr']==1.23.0
 pip install librosa pydub soundfile tqdm
+
 ⚡ 快速开始
-下载预训练模型
+1、下载预训练模型
 <BASH>
 python download.py
-📌 模型会自动下载到 ~/.cache/huggingface/hub/ 目录和本地指定目录下
+注：模型将自动下载至 ~/.cache/huggingface/hub/ 目录和项目指定目录
 
-运行ASR处理脚本
-语言	运行命令
+2、运行语音识别脚本
+语言	执行命令
 日语	python jpn_asr.py
 韩语	python kor_asr.py
 阿拉伯语	python ar_asr.py
-⚙️ 系统配置
-配置文件通过代码直接设置：
 
+⚙️ 配置文件
 <PYTHON>
 CONFIG = {
-    # 输入音频目录（按语言分文件夹存放）
+    # 音频输入目录（按语言分类存储）
     "audio_dir": "/root/shared-nvme/haoranwang/nemo_asr/testbatch_processed",
-    
-    # 标注文件目录（结构需与音频目录一致）
+    # 标签文件目录（需与音频目录保持相同结构）
     "label_dir": "/root/shared-nvme/haoranwang/nemo_asr/labeled",
-    
-    # ASR结果输出目录
+    # 识别结果输出路径
     "result_dir": "./Nvidia_Nemo_results"
 }
