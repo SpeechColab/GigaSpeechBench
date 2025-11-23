@@ -1,48 +1,49 @@
-## 📂 项目目录结构
+## 📁 项目结构
+
+```
 nemo_asr/
-├── ar_asr.py                 # 阿拉伯语 ASR 推理脚本
-├── kor_asr.py                # 韩语 ASR 推理脚本
-├── jpn_asr.py                # 日语 ASR 推理脚本
-├── download.py               # 预训练模型下载脚本
-├── upload_data.py            # 数据上传脚本
-├── utils.py                  # 通用工具函数
+├── ar_asr.py             # 阿拉伯语ASR处理脚本
+├── kor_asr.py            # 韩语ASR处理脚本
+├── jpn_asr.py            # 日语ASR处理脚本
+├── download.py           # 模型下载脚本
+├── upload_data.py        # 数据上传脚本
+├── utils.py              # 工具函数模块
 │
-├── Nvidia_Nemo_results/      # ASR 识别结果输出目录
-├── labeled/                  # 人工标注文件（与音频目录结构保持一致）
+├── Nvidia_Nemo_results/  # 识别结果输出目录
+├── labeled/              # 已标注数据目录
 │
-└── *.nemo                    # 各语言本地模型权重（可选）
+├── *.nemo                # ASR模型文件
+└── pycache/          # Python编译缓
+```
+
+## 🚀 快速开始
+
+### 1. 环境初始化
+`说明，遇到网络问题，推荐对  apt、uv、pip、hf 等进行换源，推荐工具 chsrc 和 镜像网站hf-mirror，本代码中 hf 下载已经换源`
 
 
-## 🛠️ 环境配置
 
-### 系统要求
-- Python 3.8或更高版本
-- Linux系统 (推荐Ubuntu 18.04+)
-### 依赖安装
+#### 安装uv（如果尚未安装）
+
+
+#### 创建并激活虚拟环境
 ```bash
-pip install nemo_toolkit['asr']==1.23.0
-pip install librosa pydub soundfile tqdm
+# 进入项目目录
+cd /path/to/Multilingual-ASR-Benchmark/examples/whisper-large-v3
 
-⚡ 快速开始
-1、下载预训练模型
-<BASH>
-python download.py
-注：模型将自动下载至 ~/.cache/huggingface/hub/ 目录和项目指定目录
+# 安装项目依赖
+uv sync
+```
 
-2、运行语音识别脚本
-语言	执行命令
-日语	python jpn_asr.py
-韩语	python kor_asr.py
-阿拉伯语	python ar_asr.py
+### 2. 安装系统依赖
 
-⚙️ 配置文件
-<PYTHON>
-CONFIG = {
-    # 音频输入目录（按语言分类存储）
-    "audio_dir": "/root/shared-nvme/haoranwang/nemo_asr/testbatch_processed",
-    # 标签文件目录（需与音频目录保持相同结构）
-    "label_dir": "/root/shared-nvme/haoranwang/nemo_asr/labeled",
-    # 识别结果输出路径
-    "result_dir": "./Nvidia_Nemo_results"
-}
+#### 系统工具
+- `ffmpeg`（音频处理），使用`install_ffmpeg.sh`
+- `aria2c`（模型下载，可选）,`install_model.sh`会自动下载 aria2c
 
+### 3. 下载Whisper模型
+
+#### 使用自动化脚本下载（推荐）
+```bash
+bash install_model.sh
+```
