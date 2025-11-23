@@ -11,7 +11,7 @@ nemo_asr/
 │
 ├── Nvidia_Nemo_results/  # 识别结果输出目录
 ├── labeled/              # 已标注数据目录
-├── testbatch_processed/  #音频目录
+├── testbatch_processed/  # 音频目录
 │
 ├── *.nemo                # ASR模型文件
 └── pycache/              # Python编译缓
@@ -51,20 +51,16 @@ python kor_asr.py
 python ar_asr.py
 ```
 
-### 配置文件
+### 配置文件（在脚本中）
 
 ```<PYTHON>
 CONFIG = {
-    # 音频输入目录（按语言分类输入）
-    "audio_dir": "/root/shared-nvme/haoranwang/nemo_asr/testbatch_processed",
-    
-    # 标签文件目录（需与音频目录保持相同语言）
-    "label_dir": "/root/shared-nvme/haoranwang/nemo_asr/labeled",
-    
-    # 识别结果输出路径
-    "result_dir": "./Nvidia_Nemo_results"
+    "audio_dir": "/root/shared-nvme/haoranwang/nemo_asr/testbatch_processed",   # 音频输入目录（按语言分类输入）
+    "label_dir": "/root/shared-nvme/haoranwang/nemo_asr/labeled",  # 标签文件目录（需与音频目录保持相同语言）
+    "result_dir": "./Nvidia_Nemo_results"  # 识别结果输出路径
 }
 ```
+
 
 
 
