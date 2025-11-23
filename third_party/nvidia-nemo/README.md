@@ -1,17 +1,16 @@
 ## 📂 项目目录结构
 nemo_asr/
-├── ar_asr.py             # 阿拉伯语ASR处理脚本
-├── kor_asr.py            # 韩语ASR处理脚本
-├── jpn_asr.py            # 日语ASR处理脚本
-├── download.py           # 模型下载脚本
-├── upload_data.py        # 数据上传脚本
-├── utils.py              # 工具函数模块
+├── ar_asr.py                 # 阿拉伯语 ASR 推理脚本
+├── kor_asr.py                # 韩语 ASR 推理脚本
+├── jpn_asr.py                # 日语 ASR 推理脚本
+├── download.py               # 预训练模型下载脚本
+├── upload_data.py            # 数据上传脚本
+├── utils.py                  # 通用工具函数
 │
-├── Nvidia_Nemo_results/  # 识别结果输出目录
-├── labeled/              # 已标注数据目录
+├── Nvidia_Nemo_results/      # ASR 识别结果输出目录
+├── labeled/                  # 人工标注文件（与音频目录结构保持一致）
 │
-├── *.nemo                # ASR模型文件
-└── pycache/          # Python编译缓存
+└── *.nemo                    # 各语言本地模型权重（可选）
 
 
 ## 🛠️ 环境配置
@@ -46,3 +45,4 @@ CONFIG = {
     # 识别结果输出路径
     "result_dir": "./Nvidia_Nemo_results"
 }
+
