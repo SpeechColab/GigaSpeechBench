@@ -1,19 +1,21 @@
 <MARKDOWN>
 
-## 目录结构
+## 📂 目录结构
 nemo_asr/
 ├── ar_asr.py             # 阿拉伯语ASR处理脚本
 ├── kor_asr.py            # 韩语ASR处理脚本
 ├── jpn_asr.py            # 日语ASR处理脚本
 ├── download.py           # 模型下载脚本
-├── upload_data.py        
-├── utils.py              
+├── upload_data.py        # 数据上传脚本
+
+├── utils.py              # 工具函数
 │
 ├── Nvidia_Nemo_results/  # ASR结果输出目录
+
 ├── labeled/              # 标注数据存放目录
 │
 ├── *.nemo                # 各语言ASR模型文件
-└── pycache/
+└── pycache/              # Python缓存目录
 
 
 ## 🛠️ 环境配置
@@ -26,21 +28,20 @@ nemo_asr/
 ```bash
 pip install nemo_toolkit['asr']==1.23.0
 pip install librosa pydub soundfile tqdm
-
-### 快速开始
-1. 下载预训练模型
+⚡ 快速开始
+下载预训练模型
 <BASH>
 python download.py
-📍 模型会自动下载到 ~/.cache/huggingface/hub/ 目录和本地指定目录下
+📌 模型会自动下载到 ~/.cache/huggingface/hub/ 目录和本地指定目录下
 
-2. 运行ASR处理脚本
+运行ASR处理脚本
 语言	运行命令
 日语	python jpn_asr.py
 韩语	python kor_asr.py
 阿拉伯语	python ar_asr.py
 
 ⚙️ 系统配置
-配置文件通过代码硬编码设置：
+配置文件通过代码直接设置：
 
 <PYTHON>
 CONFIG = {
