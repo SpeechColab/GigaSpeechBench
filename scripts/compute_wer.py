@@ -17,8 +17,8 @@ import kaldialign
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
-REF_ROOT = "/root/shared-nvme/yujietu/Multilingual-ASR-Benchmark/data/text/testbatch/ref"
-HYP_ROOT = "/root/shared-nvme/yujietu/Multilingual-ASR-Benchmark/data/text/testbatch/hyp"
+REF_ROOT = "/root/shared-nvme/yujietu/Multilingual-ASR-Benchmark/data/text_normalized/testbatch/ref"
+HYP_ROOT = "/root/shared-nvme/yujietu/Multilingual-ASR-Benchmark/data/text_normalized/testbatch/hyp"
 OUT_ROOT = "/root/shared-nvme/yujietu/Multilingual-ASR-Benchmark/data/results/testbatch"
 
 
