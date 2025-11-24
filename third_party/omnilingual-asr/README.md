@@ -54,7 +54,7 @@ https://github.com/facebookresearch/omnilingual-asr/blob/main/src/omnilingual_as
 ```bash
 # make sure you are at Multilingual-ASR-Benchmark home dir
 
-python models/omnilingual-asr/omniasr.py [--audio /some/audio/path] [--start start_timestamp] [--end end_timestamp]  --model omniASR_CTC_3B --language DZA
+python third_party/omnilingual-asr/omniasr.py [--audio /some/audio/path] [--start start_timestamp] [--end end_timestamp]  --model omniASR_CTC_3B --language DZA
 ```
 
 - 输入：
@@ -87,12 +87,29 @@ test_audio/-01EmTpJDj0-0.wav
 ```bash
 # make sure you are at Multilingual-ASR-Benchmark home dir
 
-python models/omnilingual-asr/omniasr.py [--input /input/metainfo/path] --model omniASR_LLM_3B --language DZA
+python third_party/omnilingual-asr/omniasr.py [--input /input/metainfo/path] --model omniASR_LLM_3B --language DZA
 ```
 
 - 输入：
     - `input` (`str`) —— 输入文件的路径
     - `model` (`str`) —— ASR 模型 card (CTC解码快，LLM很慢，建议换着试试)
     - `language` (`str`) —— 语种的缩写代号（请不要把不同语种的音频放在一起解码）
+    - `batch-decode` (`bool`) —— default True 为批量解码，如若碰到 ValueError，请设为 False
+    - `batch-size` (`int`) —— 批量解码的 batch size 大小，batch-decode False 时，仅为1
+ 
+- 输出：`text` (`str`) —— 使用 `utils.py` 中的 `save_transcription()` 函数，结果以 json 格式保存在 `results/` 下
+
+
+### 快速测试试标注内容：
+```bash
+# make sure you are at Multilingual-ASR-Benchmark home dir
+
+python third_party/omnilingual-asr/omnilingual-asr/test_label_decode.py [--label-dir /label/file/dir] [--audio-dir /audio/file/dir] [--model omniASR_LLM_3B] [--batch-decode by default it's False. Set to True by adding this flag]
+```
+- 输入：
+    - `--label-dir` (`str`) —— 试标注文件的路径
+    - `--audio-dir` (`str`) —— 音频文件的路径
+    - `model` (`str`) —— ASR 模型 card (CTC解码快，LLM很慢，建议换着试试)
+    - `batch-decode` (`bool`) —— default True 为批量解码，如若碰到 ValueError，请设为 False
  
 - 输出：`text` (`str`) —— 使用 `utils.py` 中的 `save_transcription()` 函数，结果以 json 格式保存在 `results/` 下

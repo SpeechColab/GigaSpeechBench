@@ -4,13 +4,14 @@ from omnilingual_asr.models.wav2vec2_llama.lang_ids import supported_langs
 from pathlib import Path
 from tqdm import tqdm
 from collections import defaultdict
-from utils import save_transcription
 
 import torchaudio
 import os, sys
 import argparse
 import warnings
 warnings.filterwarnings("ignore", category=UserWarning)
+
+from scripts.utils import save_transcription
 
 
 def get_parser():
@@ -59,6 +60,17 @@ def get_parser():
         type=str, 
         default='DZA',
         help="language code"
+    )
+    parser.add_argument(
+        "--batch-size", 
+        type=int, 
+        default=2,
+        help="batch size for transcription"
+    )
+    parser.add_argument(
+        '--batch-decode', 
+        action='store_true', 
+        help='If False, the decoding process will be for loop to avoid error'
     )
 
     return parser
@@ -123,7 +135,7 @@ def get_omniasr_lang(language: str):
         """
         return 'tha_Thai'       # Thai
 
-    elif language == 'IND':
+    elif language == 'IDN':
         """
         印尼语相当复杂，几个相关的 lang id:
         """
@@ -237,7 +249,7 @@ def process_audio_files(input_file: str = None):
         - `List[ np.ndarray ]`: Audio data as uint8 numpy array
         - `List[ dict[str, Any] ]`: Pre-decoded audio with 'waveform' and 'sample_rate' keys
     """
-
+    SAMPLE_RATE = 16000
     metainfo = []
     audio_files = []
     meta = defaultdict(list)
@@ -252,6 +264,10 @@ def process_audio_files(input_file: str = None):
                 duration = info.num_frames / info.sample_rate
                 if duration > 40.0:
                     print(f'WARNING: {wav_path} is too long: {duration} seconds')
+                    continue
+                if duration < 0.5:
+                    print(f'WARNING: {wav_path} is too short: {duration} seconds')
+                    continue
 
                 # audio_files.append(wav_path)
                 meta[wav_path].append((0.0, duration))
@@ -259,6 +275,15 @@ def process_audio_files(input_file: str = None):
             elif len(line.strip().split()) == 3:
                 wav_path, start, end = line.strip().split()
                 assert os.path.isfile(wav_path), f"{wav_path} not a file"
+
+                duration = float(end) - float(start)
+                if duration > 40.0:
+                    print(f'WARNING: {wav_path} segment is too long: {duration} seconds')
+                    continue
+                if duration < 0.5:
+                    print(f'WARNING: {wav_path} segment is too short: {duration} seconds')
+                    continue
+
                 meta[wav_path].append((float(start), float(end)))
                 metainfo.append([wav_path, start, end])
             else:
@@ -266,15 +291,40 @@ def process_audio_files(input_file: str = None):
                 raise
 
     for wav_path, segments in tqdm(meta.items()):
-        wav, sr = torchaudio.load(wav_path, channels_first=False)
+        try:
+            waveform, sr = torchaudio.load(wav_path)
 
-        for idx, (start, end) in enumerate(segments):
-            if end - start > 40.0:
-                print(f'WARNING: {wav_path}_{idx} is too long: {end - start} seconds')
+            # Convert to mono if needed
+            if waveform.shape[0] > 1:
+                waveform = torch.mean(waveform, dim=0, keepdim=True)
 
-            arr = wav[int(start*sr):int(end*sr), :]
-            audio_files.append({"waveform": arr, "sample_rate": sr})
+            # Resample to 16k if needed
+            if sr != SAMPLE_RATE:
+                resampler = torchaudio.transforms.Resample(sr, SAMPLE_RATE)
+                waveform = resampler(waveform)
 
+            # Convert to numpy array
+            audio = waveform.squeeze().numpy()
+
+            for (start_time, end_time) in segments:
+                # Convert time to sample indices
+                start_sample = int(start_time * SAMPLE_RATE)
+                end_sample = int(end_time * SAMPLE_RATE)
+
+                # Boundary check
+                start_sample = max(0, start_sample)
+                end_sample = min(len(audio), end_sample)
+
+                if start_sample >= end_sample:
+                    raise ValueError(f"Invalid time range: {start_time} - {end_time}")
+
+                # Extract segment
+                segment = audio[start_sample:end_sample]
+                audio_files.append({"waveform": segment, "sample_rate": SAMPLE_RATE})
+
+        except Exception as e:
+            raise RuntimeError(f"Failed to extract audio segment from {wav_path}: {e}")
+            
     return metainfo, audio_files
 
 
@@ -283,6 +333,8 @@ def batch_transcribe_audios(
     output_file: str = None,
     model: str = 'omniASR_CTC_300M',
     language: str = 'IRQ',
+    batch_size: int = 2,
+    batch_decode: bool = True,
 ):
     """
     批量转录大量音频，请指定一个包含音频信息的文件
@@ -296,22 +348,36 @@ def batch_transcribe_audios(
 
         model: omnilingual-ASR model choice (str)
         language: language code (str)
+        batch_decode: set to False only if you met ValueError while transcribing
+        batch_size: decide how big every batch is when batch_decode is True
     """
     assert input_file is not None
-    # assert output_file is not None and output_file.endswith('.json'), "please specify json name"
 
     print('Loading input audio files...')
     metainfo, audio_files = process_audio_files(input_file)
-    lang = [get_omniasr_lang(language)] * len(audio_files)
 
     print('Loading omniasr model:')
     pipeline = ASRInferencePipeline(model_card=model)
+
+    if batch_decode:
+        print(f'Transcribing with batch size {batch_size} ...')
+        lang = [get_omniasr_lang(language)] * len(audio_files)
+        transcriptions = pipeline.transcribe(audio_files, lang=lang, batch_size=batch_size)
     
-    print('Transcribing ...')
-    transcriptions = pipeline.transcribe(audio_files, lang=lang, batch_size=2)
+    else:
+        print(f'Transcribing in for loop ...')
+        transcriptions = []
+        for i, audio_file in tqdm(enumerate(audio_files), total=len(audio_files)):
+            try:
+                transcription = pipeline.transcribe([audio_file], lang=[get_omniasr_lang(language)], batch_size=1)
+                transcriptions.append(transcription[0])
+            except Exception as e:
+                print(f"Error transcribing file {metainfo[i]}: {e}")
+                transcriptions.append(None)
 
     for (audio_path, start, end), text in zip(metainfo, transcriptions):
-        save_transcription(audio_path, text, language, model, start, end)
+        if text is not None:
+            save_transcription(audio_path, text, language, model, start, end)
 
     print('DONE')
 
@@ -330,6 +396,8 @@ def main():
             input_file=args.input, 
             model=args.model, 
             language=args.language,
+            batch_decode=args.batch_decode,
+            batch_size=args.batch_size,
         )
 
 
