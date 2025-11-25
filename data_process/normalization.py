@@ -11,8 +11,8 @@ sys.path.insert(0, ROOT)
 
 from text_norm import get_normalizer
 
-#LANGS = ["IRQ", "DZA", "ARE", "EGY", "MAR", "SAU", "IDN", "MYS", "PHL", "THA", "VNM", "JPN", "KOR"]
-LANGS = ["THA"]
+LANGS = ["IRQ", "DZA", "ARE", "EGY", "MAR", "SAU", "IDN", "MYS", "PHL", "THA", "VNM", "JPN", "KOR"]
+#LANGS = ["THA"]
 
 REF_IN = "data/text/testbatch/ref"
 HYP_IN = "data/text/testbatch/hyp"
@@ -38,9 +38,9 @@ def save_json(path, data):
 def normalize_text(country, text):
     """调用对应语言的 normalize 函数"""
     try:
-        normalize = get_normalizer(country)
-    except Exception:
-        return None  # 没有 normalizer 就跳过
+        module = importlib.import_module(f"text_norm.{lang_code}")
+    except Exception as e:
+        print(f"[SKIP] No normalizer for {lang_code}, because: {e}")
     return normalize(text)
 
 
