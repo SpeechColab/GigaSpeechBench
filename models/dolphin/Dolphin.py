@@ -2,38 +2,142 @@ import os
 import sys
 import argparse
 import json
-from io import BytesIO
-from elevenlabs.client import ElevenLabs
-from pydub import AudioSegment
+from collections import defaultdict
+from typing import Optional, Tuple
 
-# 添加父目录到路径，以便导入 utils 模块
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import dolphin
+from dolphin.transcribe import load_model
+from dolphin.constants import SAMPLE_RATE
+import torchaudio
+import numpy as np
+
 from utils import save_transcription
 
-# 支持的 model_id 列表
-SUPPORTED_MODEL_IDS = {
-    "scribe_v1",
-    "scribe_v1_experimental",
-    "scribe_v2"
+# 语言映射：将国家代码映射到 (lang_sym, region_sym) 二元组
+# lang_sym 和 region_sym 会加上 <> 符号，例如 "<ja>", "<JP>"
+LANGUAGE_MAPPING = {
+    "ARE": ("ar", "AE"),      # 阿拉伯语-阿联酋
+    "IRQ": ("ar", ""),     # 阿拉伯语-伊拉克
+    "DZA": ("ar", ""),      # 阿拉伯语-阿尔及利亚
+    "EGY": ("ar", "EG"),      # 阿拉伯语-埃及
+    "SAU": ("ar", "SA"),      # 阿拉伯语-沙特
+    "MAR": ("ar", "MA"),      # 阿拉伯语-摩洛哥
+    "IDN": ("id", "ID"),      # 印尼语
+    "JPN": ("ja", "JP"),      # 日语
+    "KOR": ("ko", "KR"),      # 韩语
+    "THA": ("th", "TH"),      # 泰语
+    "VNM": ("vi", "VN"),      # 越南语
+    "PHL": ("fil", "PH"),     # 菲律宾语
+    "MYS": ("ms", "MY"),      # 马来语
+    "CMN": ("zh", ""),      # 中文
 }
 
-LANGUAGE_MAPPING = {
-    "ARE": "ara",  # 阿拉伯语-阿联酋
-    "IRQ": "ara",  # 阿拉伯语-伊拉克
-    "DZA": "ara",  # 阿拉伯语-阿尔及利亚
-    "EGY": "ara",  # 阿拉伯语-埃及
-    "SAU": "ara",  # 阿拉伯语-沙特
-    "MAR": "ara",  # 阿拉伯语-摩洛哥
-    "IDN": "ind",  # 印尼语
-    "JPN": "jpn",  # 日语
-    "KOR": "kor",  # 韩语
-    "THA": "tha",  # 泰语
-    "VNM": "vie",  # 越南语
-    "PHL": "fil",  # 菲律宾语
-    "MYS": "msa",  # 马来语
-    "ENG": "eng",  # 英语
-    "CMN": "zho",  # 中文
-}
+
+def load_audio_segment(
+    audio_path: str,
+    start_time: Optional[float] = None,
+    end_time: Optional[float] = None
+) -> np.ndarray:
+    """
+    加载音频文件，可选择性地截取指定时间段的片段
+    使用 torchaudio 加载，自动处理采样率和重采样
+    
+    Args:
+        audio_path: 音频文件路径
+        start_time: 开始时间（秒），如果为 None 则从开头开始
+        end_time: 结束时间（秒），如果为 None 则到结尾结束
+    
+    Returns:
+        waveform: 音频波形数据（numpy array，float32），已重采样到 16000 Hz
+    """
+    # 使用 torchaudio 加载音频，自动获取采样率
+    wav, sr = torchaudio.load(audio_path, channels_first=False)
+    
+    # 转换为单声道（如果是立体声）
+    if wav.dim() > 1 and wav.size(1) > 1:
+        wav = wav.mean(dim=1, keepdim=True)
+    
+    # 如果提供了时间范围，先截取片段（在原始采样率下）
+    if start_time is not None or end_time is not None:
+        start_sample = int(start_time * sr) if start_time is not None else 0
+        end_sample = int(end_time * sr) if end_time is not None else wav.size(0)
+        start_sample = max(0, start_sample)
+        end_sample = min(wav.size(0), end_sample)
+        wav = wav[start_sample:end_sample]
+    
+    # 如果采样率不是 16000，需要重采样
+    if sr != SAMPLE_RATE:
+        # 使用 torchaudio 重采样
+        resampler = torchaudio.transforms.Resample(sr, SAMPLE_RATE)
+        # wav 的形状是 (n_samples, n_channels)，需要转置为 (n_channels, n_samples) 进行重采样
+        if wav.dim() == 1:
+            wav = wav.unsqueeze(0)  # (n_samples,) -> (1, n_samples)
+        elif wav.dim() == 2 and wav.size(1) == 1:
+            wav = wav.transpose(0, 1)  # (n_samples, 1) -> (1, n_samples)
+        wav = resampler(wav)
+        # 转回 (n_samples,) 或 (n_samples, 1)
+        if wav.size(0) == 1:
+            wav = wav.squeeze(0)  # (1, n_samples) -> (n_samples,)
+    
+    # 转换为 numpy array
+    waveform = wav.squeeze().numpy().astype(np.float32)
+    
+    return waveform
+
+
+def transcribe_audio_segment(
+    audio_path: str,
+    model,
+    start_time: Optional[float] = None,
+    end_time: Optional[float] = None,
+    lang_sym: Optional[str] = None,
+    region_sym: Optional[str] = None
+) -> str:
+    """
+    对音频文件的指定片段进行语音识别
+    
+    Args:
+        audio_path: 音频文件路径
+        model: 已加载的 dolphin 模型
+        start_time: 开始时间（秒）
+        end_time: 结束时间（秒）
+        lang_sym: 语言代码符号（例如 "ja"），会自动加上 <>
+        region_sym: 地区代码符号（例如 "JP"），会自动加上 <>
+        如果 lang_sym 为空，则不指定语种使用自动检测
+        如果 lang_sym 存在但 region_sym 为空，则只指定语言
+    
+    Returns:
+        text_nospecial: 识别结果文本（不含特殊符号）
+    """
+    # 加载并截取音频片段
+    waveform_segment = load_audio_segment(
+        audio_path, 
+        start_time=start_time, 
+        end_time=end_time
+    )
+    
+    # 处理空字符串的情况（将空字符串视为 None）
+    if lang_sym == "":
+        lang_sym = None
+    if region_sym == "":
+        region_sym = None
+    # 根据 lang_sym 和 region_sym 的值决定如何调用模型
+    if lang_sym is None:
+        # 如果 lang 为空，则不指定语种，使用自动检测
+        result = model(speech=waveform_segment)
+    elif region_sym is None:
+        # 如果 lang 存在但 region 为空，则只指定语言
+        result = model(speech=waveform_segment, lang_sym=lang_sym)
+    else:
+        # 如果两者都存在，则同时指定语言和地区
+        result = model(
+            waveform_segment,
+            lang_sym=lang_sym,
+            region_sym=region_sym
+        )
+    
+    # 返回不含特殊符号的文本
+    return result.text_nospecial
 
 
 def load_transcribed_segments(language: str, model: str) -> set:
@@ -64,7 +168,6 @@ def load_transcribed_segments(language: str, model: str) -> set:
                             path = entry.get("path", "")
                             start_time = entry.get("start_time", 0.0)
                             end_time = entry.get("end_time", 0.0)
-                            # 路径格式为 {lang_code}/{wav_filename}，直接使用
                             transcribed_segments.add((
                                 path,
                                 float(start_time),
@@ -96,7 +199,6 @@ def is_segment_transcribed(
     Returns:
         bool: 如果已转录返回True，否则返回False
     """
-    # 构造格式化的路径：{lang_code}/{wav_filename}
     wav_filename = os.path.basename(audio_path)
     formatted_path = f"{language_code}/{wav_filename}"
     segment_key = (formatted_path, float(start_time), float(end_time))
@@ -108,7 +210,7 @@ def transcribe_audio(
     start_time: float,
     end_time: float,
     language: str,
-    model_id: str = "scribe_v1"
+    model
 ) -> str:
     """
     转录音频文件的指定片段。
@@ -117,51 +219,32 @@ def transcribe_audio(
         audio_path (str): 音频文件的绝对路径
         start_time (float): 起始时间（秒）
         end_time (float): 结束时间（秒）
-        language (str): 国家代码（如 "ARE", "IRQ"），将自动映射到 ElevenLabs API 支持的语言代码
-        model_id (str): ElevenLabs 模型 ID，默认为 "scribe_v1"
+        language (str): 国家代码（如 "ARE", "IRQ"），将自动映射到 dolphin 支持的语言代码
+        model: 已加载的 dolphin 模型
 
     Returns:
-        str: 转录文本
+        str: 转录文本（不含特殊符号）
     """
-    api_key = os.getenv("ELEVENLABS_API_KEY", "")
-    if not api_key:
-        raise ValueError("ELEVENLABS_API_KEY 环境变量未设置")
-
-    # 验证 model_id
-    if model_id not in SUPPORTED_MODEL_IDS:
-        raise ValueError(f"不支持的 model_id: {model_id}。支持的 model_id: {', '.join(SUPPORTED_MODEL_IDS)}")
-
-    api_language_code = LANGUAGE_MAPPING.get(language.upper(), None)
-    if api_language_code is None:
+    # 获取语言和地区代码
+    lang_region = LANGUAGE_MAPPING.get(language.upper(), None)
+    if lang_region is None:
         print(f"警告：未找到语种 {language} 的映射，将使用自动检测")
-        api_language_code = None
+        lang_sym = None
+        region_sym = None
+    else:
+        lang_sym, region_sym = lang_region
 
-    # 初始化客户端
-    client = ElevenLabs(api_key=api_key)
-
-    # 加载音频文件
-    audio = AudioSegment.from_wav(audio_path)
-
-    # 截取音频片段（pydub 使用毫秒）
-    start_ms = int(start_time * 1000)
-    end_ms = int(end_time * 1000)
-    audio_segment = audio[start_ms:end_ms]
-
-    # 将音频片段导出为字节流
-    buffer = BytesIO()
-    audio_segment.export(buffer, format="wav")
-    buffer.seek(0)
-
-    # 调用 ElevenLabs API 进行转录
+    # 调用转录函数
     try:
-        transcription_result = client.speech_to_text.convert(
-            file=buffer,
-            model_id=model_id,
-            tag_audio_events=False,
-            language_code=api_language_code,
-            diarize=False,
+        text = transcribe_audio_segment(
+            audio_path=audio_path,
+            model=model,
+            start_time=start_time,
+            end_time=end_time,
+            lang_sym=lang_sym,
+            region_sym=region_sym
         )
-        return transcription_result.text
+        return text
     except Exception as e:
         print(f"转录失败: {e}")
         raise
@@ -179,17 +262,23 @@ def main():
         help="输入目录路径（包含 wav 和 text 子文件夹）"
     )
     parser.add_argument(
-        "--api_key",
+        "--output_dir",
         type=str,
-        default=None,
-        help="ElevenLabs API key（如果不提供，将从环境变量 ELEVENLABS_API_KEY 读取）"
+        default="results",
+        help="输出目录路径（保存转录结果）"
     )
     parser.add_argument(
-        "--model_id",
+        "--model_name",
         type=str,
-        default="scribe_v1",
-        choices=list(SUPPORTED_MODEL_IDS),
-        help="ElevenLabs 模型 ID（可选值：scribe_v1, scribe_v1_experimental, scribe_v2）"
+        default="small",
+        choices=["base", "small"],
+        help="模型名称（base 或 small）"
+    )
+    parser.add_argument(
+        "--model_dir",
+        type=str,
+        default="/mnt/lv3/linguodong/pretrain_models/dolphin",
+        help="模型目录路径"
     )
     parser.add_argument(
         "--languages",
@@ -201,22 +290,24 @@ def main():
 
     args = parser.parse_args()
     
-    # 验证 model_id
-    model_id = args.model_id
-    if model_id not in SUPPORTED_MODEL_IDS:
-        raise ValueError(f"不支持的 model_id: {model_id}。支持的 model_id: {', '.join(SUPPORTED_MODEL_IDS)}")
-    
     # 验证并规范化语种代码
     languages = [lang.upper() for lang in args.languages]
     
-    print(f"使用模型: {model_id}")
+    print(f"使用模型: {args.model_name}")
+    print(f"模型目录: {args.model_dir}")
     print(f"处理语种: {', '.join(languages)}")
 
-    # 设置 API key
-    if args.api_key:
-        os.environ["ELEVENLABS_API_KEY"] = args.api_key
-    elif not os.getenv("ELEVENLABS_API_KEY"):
-        raise ValueError("请提供 API key（通过 --api_key 参数或设置 ELEVENLABS_API_KEY 环境变量）")
+    # 加载模型
+    print("正在加载模型...")
+    try:
+        model = load_model(
+            model_name=args.model_name,
+            model_dir=args.model_dir
+        )
+        print("模型加载成功")
+    except Exception as e:
+        print(f"模型加载失败: {e}")
+        raise
 
     input_dir = os.path.abspath(args.input_dir)
     wav_dir = os.path.join(input_dir, "wav")
@@ -244,8 +335,9 @@ def main():
     print(f"将处理 {len(language_folders)} 个语种文件夹: {language_folders}")
 
     # 遍历指定的语种文件夹
-    for lang_idx, language_code in enumerate(language_folders, start=1):
-        print(f"\n处理语种 [{lang_idx}/{len(language_folders)}]: {language_code}")
+    total_languages = len(language_folders)
+    for lang_idx, language_code in enumerate(language_folders, 1):
+        print(f"\n处理语种: {language_code} ({lang_idx}/{total_languages})")
 
         lang_wav_dir = os.path.join(wav_dir, language_code)
         lang_text_dir = os.path.join(text_dir, language_code)
@@ -255,7 +347,7 @@ def main():
             continue
 
         # 加载该语种已转录的segments
-        model_name = f"elevenlabs_{model_id}"
+        model_name = f"dolphin_{args.model_name}"
         transcribed_segments = load_transcribed_segments(language_code, model_name)
         print(f"  已加载 {len(transcribed_segments)} 个已转录的segments")
 
@@ -268,7 +360,8 @@ def main():
         print(f"  找到 {len(json_files)} 个标注文件")
 
         # 处理每个标注文件
-        for file_idx, json_file in enumerate(json_files, start=1):
+        total_files = len(json_files)
+        for file_idx, json_file in enumerate(json_files, 1):
             json_path = os.path.join(lang_text_dir, json_file)
             audio_name = os.path.splitext(json_file)[0]
 
@@ -277,10 +370,10 @@ def main():
             wav_path = os.path.join(lang_wav_dir, wav_file)
 
             if not os.path.exists(wav_path):
-                print(f"  [{file_idx}/{len(json_files)}] 警告：音频文件不存在，跳过: {wav_path}")
+                print(f"  警告：音频文件不存在，跳过: {wav_path}")
                 continue
 
-            print(f"  [{file_idx}/{len(json_files)}] 处理: {audio_name}")
+            print(f"  处理文件: {file_idx}/{total_files} - {audio_name}")
 
             # 加载标注 JSON 文件
             try:
@@ -306,7 +399,7 @@ def main():
 
                 print(f"    片段 {idx}/{len(segments)}: {start_time:.2f}s - {end_time:.2f}s, status={status}")
 
-                # 构造格式化的路径：{lang_code}/{wav_filename}，使用 Linux 风格的路径分隔符
+                # 构造格式化的路径：{lang_code}/{wav_filename}
                 wav_filename = os.path.basename(wav_path)
                 formatted_path = f"{language_code}/{wav_filename}"
 
@@ -327,7 +420,7 @@ def main():
                             start_time=start_time,
                             end_time=end_time,
                             language=language_code,
-                            model_id=model_id
+                            model=model
                         )
                         print(f"      转录成功: {transcription_text[:50]}...")
                     except Exception as e:
@@ -335,12 +428,7 @@ def main():
                         transcription_text = ""
 
                 # 调用 save_transcription 保存结果
-                # 由于 utils.py 中的 os.path.abspath() 可能会将路径转换为 Windows 风格，
-                # 我们需要传入一个已经是绝对路径且使用 Linux 风格分隔符的路径
-                # 或者传入相对路径，然后在保存后手动修正
-                # 这里我们传入格式化的相对路径，然后在保存后通过修改结果文件来确保路径格式正确
                 try:
-                    # 先保存（可能会被转换为绝对路径）
                     save_transcription(
                         audio_path=formatted_path,
                         text=transcription_text,
@@ -351,7 +439,8 @@ def main():
                     )
                     
                     # 修正保存的路径格式，确保使用 Linux 风格的路径分隔符
-                    results_dir = os.path.join(os.getcwd(), "results")
+                    results_dir = os.path.join(os.getcwd(), args.output_dir)
+                    os.makedirs(results_dir, exist_ok=True)
                     filename = f"{language_code}_{model_name}.json"
                     output_path = os.path.join(results_dir, filename)
                     
