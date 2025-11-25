@@ -51,7 +51,7 @@ def write_error_stats(f, test_set_name, results, compute_CER=False):
             tmp.append((cut_id, ref_chars, hyp_chars))
         results = tmp
 
-    # --- 对齐 ---
+    # --- 对齐统计 ---
     for cut_id, ref, hyp in results:
         ali = kaldialign.align(ref, hyp, ERR)
         for ref_w, hyp_w in ali:
@@ -69,6 +69,7 @@ def write_error_stats(f, test_set_name, results, compute_CER=False):
     ins_errs = sum(ins.values())
     del_errs = sum(dels.values())
     tot_errs = sub_errs + ins_errs + del_errs
+
     wer = 100.0 * tot_errs / ref_len if ref_len > 0 else 0.0
 
     print(f"%WER = {wer:.2f}", file=f)
@@ -88,7 +89,6 @@ def evaluate_model(country: str, model: str, ref_items, hyp_items, compute_CER=F
     out_dir = Path(OUT_ROOT) / country / model
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    # hyp 索引
     hyp_index = {(item["audio_name"], float(item["start"])): item["text"] for item in hyp_items}
 
     results = []
@@ -112,15 +112,12 @@ def evaluate_model(country: str, model: str, ref_items, hyp_items, compute_CER=F
     errs_path = out_dir / f"errs-{country}-{model}.txt"
     summary_path = out_dir / f"{metric_name}-summary-{country}-{model}.txt"
 
-    # 写 recogs
     store_transcripts(recogs_path, results)
     logging.info(f"generate recogs: {recogs_path}")
 
-    # 写 errs + 得到 WER/CER
     with open(errs_path, "w", encoding="utf8") as f:
         wer = write_error_stats(f, f"{country}-{model}", results, compute_CER)
 
-    # 写 summary
     with open(summary_path, "w", encoding="utf8") as f:
         print(f"model\t{metric_name.upper()}", file=f)
         print(f"{model}\t{wer:.2f}", file=f)
@@ -143,14 +140,19 @@ def main():
             logging.warning(f"{country} No hyp, skipped.")
             continue
 
-        models = [f[:-5] for f in os.listdir(hyp_country_dir) if f.endswith(".json")]
+        models = [
+            f[:-5]  # 去掉最后 .json，不做任何 split
+            for f in os.listdir(hyp_country_dir)
+            if f.endswith(".json")
+        ]
+
         logging.info(f"[{country}] model list: {models}")
 
         compute_CER = country in CER_LANGS
 
-        for model_file in models:
-            model = model_file.split(".", 1)[0]
-            hyp_path = os.path.join(hyp_country_dir, f"{model}.json")
+        for model in models:
+            model_file = f"{model}.json"
+            hyp_path = os.path.join(hyp_country_dir, model_file)
 
             hyp_items = json.load(open(hyp_path, "r", encoding="utf-8"))
 
