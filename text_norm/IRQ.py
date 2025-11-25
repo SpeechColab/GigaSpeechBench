@@ -1,4 +1,5 @@
 import regex as re
+
 def normalize(text: str) -> str:
     """
     输入：原始文本
