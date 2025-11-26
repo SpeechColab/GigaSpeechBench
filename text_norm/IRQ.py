@@ -1,7 +1,7 @@
 import regex as re
 
 def normalize(text: str) -> str:
- """
+    """
     Arabic text normalization:
     1. Remove punctuation
     2. Remove diacritics
