@@ -11,7 +11,6 @@ REF_ROOT = "/root/shared-nvme/yujietu/data/ASR-Bench/Multilingual-ASR-Benchmark/
 OUT_ROOT = "/root/shared-nvme/yujietu/Multilingual-ASR-Benchmark/data/text/testbatch/ref"
 os.makedirs(OUT_ROOT, exist_ok=True)
 
-normalize_numbers = True
 
 PUNCT_REGEX = re.compile(
     rf"[{re.escape(string.punctuation)}]"
@@ -22,23 +21,14 @@ PUNCT_REGEX = re.compile(
     r"|[\u2E00-\u2E7F]"
 )
 
-num_map = {
-    "0":"zero","1":"one","2":"two","3":"three","4":"four","5":"five","6":"six","7":"seven","8":"eight","9":"nine",
-    "一":"one","二":"two","三":"three","四":"four","五":"five","六":"six","七":"seven","八":"eight","九":"nine","十":"ten"
-}
 
 def remove_punctuation(text: str) -> str:
     return PUNCT_REGEX.sub("", text)
 
-def normalize_num(text: str) -> str:
-    if not normalize_numbers:
-        return text
-    return "".join(num_map.get(ch, ch) for ch in text)
 
 def clean_text(t: str) -> str:
     t = t.strip()
     t = remove_punctuation(t)
-    t = normalize_num(t)
     return t
 
 def process_country(country_dir: str, country: str):
@@ -59,7 +49,7 @@ def process_country(country_dir: str, country: str):
         audio_name = data.get("audio_name", "")
 
         for seg in data.get("segments", []):
-            if seg.get("status") != "valid":
+            if seg.get("status") == "invalid":
                 continue
 
             item = {
