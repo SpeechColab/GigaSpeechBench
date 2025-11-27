@@ -189,8 +189,8 @@ python third_party/elevenlabs/elevenlabs_asr.py \
 | `VNM` | 越南语 (vi) | vie | 越南语 |
 | `PHL` | 菲律宾语 (fil) | fil | 菲律宾语 |
 | `MYS` | 马来语 (ms) | msa | 马来语 |
-| `ENG` | 英语 (en) | eng | 英语 |
-| `CMN` | 中文 (zh) | zho | 中文（普通话） |
+| `USA` | 英语 (en) | eng | 英语 |
+| `CHN` | 中文 (zh) | zho | 中文（普通话） |
 
 其他语种映射关系请参考[Elevenlabs官方文档](https://elevenlabs.io/docs/capabilities/speech-to-text)的Supported lanauges
 

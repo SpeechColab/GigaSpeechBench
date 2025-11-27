@@ -163,7 +163,7 @@ python third_party/dolphin/dolphin_asr.py \
 | `VNM` | 越南语 (vi) | VN | 越南语 |
 | `PHL` | 菲律宾语 (fil) | PH | 菲律宾语 |
 | `MYS` | 马来语 (ms) | MY | 马来语 |
-| `CMN` | 中文 (zh) | CN | 中文（普通话） |
+| `CHN` | 中文 (zh) | CN | 中文（普通话） |
 
 其他语种代码参考[DataoceanAI/Dolphin](https://github.com/DataoceanAI/Dolphin/blob/main/languages.md)说明
 ### 语种映射说明
