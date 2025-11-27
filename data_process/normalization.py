@@ -11,8 +11,8 @@ sys.path.insert(0, ROOT)
 
 from text_norm import get_normalizer
 
-#LANGS = ["IRQ", "DZA", "ARE", "EGY", "MAR", "SAU", "IDN", "MYS", "PHL", "THA", "VNM", "JPN", "KOR"]
-LANGS = ["THA"]
+LANGS = ["IRQ", "DZA", "ARE", "EGY", "MAR", "SAU", "IDN", "MYS", "PHL", "THA", "VNM", "JPN", "KOR"]
+#LANGS = ["IRQ"]
 
 REF_IN = "data/text/testbatch/ref"
 HYP_IN = "data/text/testbatch/hyp"
@@ -40,7 +40,7 @@ def normalize_text(country, text):
     try:
         normalize = get_normalizer(country)
     except Exception:
-        return None  # 没有 normalizer 就跳过
+        return None  
     return normalize(text)
 
 
@@ -71,7 +71,7 @@ def process_hyp(country):
     files = glob(pattern)
 
     for file_path in files:
-        base = os.path.basename(file_path)  # 如 IRQ_elevenlabs.json
+        base = os.path.basename(file_path) 
         model_name = base.replace(f"{country}_", "").replace(".json", "")
 
         out_dir = f"{HYP_OUT}/{country}"
