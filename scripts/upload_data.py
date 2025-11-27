@@ -12,7 +12,7 @@ api.upload_folder(
     folder_path=LOCAL_FOLDER,
     repo_id="AlexTYJ/Multilingual-ASR-Benchmark",
     repo_type="dataset",
-    path_in_repo="wenetspeech/audio/wenetspeech_tar", #这里自己改下push到repo的路径
+    path_in_repo="text/hyp/testbatch", #这里自己改下push到repo的路径
 )
 
 print("Upload Done!")

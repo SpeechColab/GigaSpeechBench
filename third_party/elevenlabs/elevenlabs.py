@@ -7,7 +7,7 @@ from elevenlabs.client import ElevenLabs
 from pydub import AudioSegment
 
 # 添加父目录到路径，以便导入 utils 模块
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, "E:/Desktop/master/master_3/benchmark/Multilingual-ASR-Benchmark/scripts")
 from utils import save_transcription
 
 # 支持的 model_id 列表
