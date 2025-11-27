@@ -252,14 +252,27 @@ def transcribe_audio(
 
 def main():
     """
-    主函数：处理 testbatch_processed 目录下的音频和文本文件。
+    主函数：根据标准格式的JSON文件转录音频文件。
     """
     parser = argparse.ArgumentParser(description="批量转录音频文件并保存结果")
     parser.add_argument(
-        "--input_dir",
+        "--lang_codes",
         type=str,
-        default="testbatch_processed",
-        help="输入目录路径（包含 wav 和 text 子文件夹）"
+        nargs="+",
+        required=True,
+        help="要处理的语种代码列表（例如：--lang_codes JPN ARE IDN）"
+    )
+    parser.add_argument(
+        "--text_dir",
+        type=str,
+        default="data/text/testbatch/ref",
+        help="文本文件目录（默认：data/text/testbatch/ref）"
+    )
+    parser.add_argument(
+        "--audio_dir",
+        type=str,
+        default="data/audio/testbatch",
+        help="音频文件目录（默认：data/audio/testbatch）"
     )
     parser.add_argument(
         "--output_dir",
@@ -277,28 +290,34 @@ def main():
     parser.add_argument(
         "--model_dir",
         type=str,
-        default="/mnt/lv3/linguodong/pretrain_models/dolphin",
+        default=None,
         help="模型目录路径"
-    )
-    parser.add_argument(
-        "--languages",
-        type=str,
-        nargs="+",
-        required=True,
-        help="要处理的语种代码列表（例如：--languages JPN ARE IDN）"
     )
 
     args = parser.parse_args()
     
     # 验证并规范化语种代码
-    languages = [lang.upper() for lang in args.languages]
+    lang_codes = [lang.upper() for lang in args.lang_codes]
+    
+    # 设置默认路径
+    if args.text_dir is None:
+        text_dir = os.path.join(os.getcwd(), "data", "text", "ref")
+    else:
+        text_dir = os.path.abspath(args.text_dir)
+    
+    if args.audio_dir is None:
+        audio_dir = os.path.join(os.getcwd(), "data", "audio", "testbatch")
+    else:
+        audio_dir = os.path.abspath(args.audio_dir)
     
     print(f"使用模型: {args.model_name}")
     print(f"模型目录: {args.model_dir}")
-    print(f"处理语种: {', '.join(languages)}")
+    print(f"文本目录: {text_dir}")
+    print(f"音频目录: {audio_dir}")
+    print(f"处理语种: {', '.join(lang_codes)}")
 
     # 加载模型
-    print("正在加载模型...")
+    print("\n正在加载模型...")
     try:
         model = load_model(
             model_name=args.model_name,
@@ -309,130 +328,113 @@ def main():
         print(f"模型加载失败: {e}")
         raise
 
-    input_dir = os.path.abspath(args.input_dir)
-    wav_dir = os.path.join(input_dir, "wav")
-    text_dir = os.path.join(input_dir, "text")
-
-    if not os.path.exists(wav_dir):
-        raise ValueError(f"音频目录不存在: {wav_dir}")
+    # 验证目录是否存在
     if not os.path.exists(text_dir):
         raise ValueError(f"文本目录不存在: {text_dir}")
+    if not os.path.exists(audio_dir):
+        raise ValueError(f"音频目录不存在: {audio_dir}")
 
-    # 验证指定的语种文件夹是否存在
-    available_folders = [
-        f for f in os.listdir(wav_dir)
-        if os.path.isdir(os.path.join(wav_dir, f))
-    ]
-    
-    # 检查指定的语种是否都存在
-    missing_languages = [lang for lang in languages if lang not in available_folders]
-    if missing_languages:
-        raise ValueError(f"指定的语种文件夹不存在: {', '.join(missing_languages)}。可用的语种: {', '.join(sorted(available_folders))}")
+    # 遍历指定的语种
+    total_languages = len(lang_codes)
+    for lang_idx, lang_code in enumerate(lang_codes, 1):
+        print(f"\n处理语种 [{lang_idx}/{total_languages}]: {lang_code}")
 
-    # 只处理指定的语种文件夹
-    language_folders = [lang for lang in languages if lang in available_folders]
-    
-    print(f"将处理 {len(language_folders)} 个语种文件夹: {language_folders}")
-
-    # 遍历指定的语种文件夹
-    total_languages = len(language_folders)
-    for lang_idx, language_code in enumerate(language_folders, 1):
-        print(f"\n处理语种: {language_code} ({lang_idx}/{total_languages})")
-
-        lang_wav_dir = os.path.join(wav_dir, language_code)
-        lang_text_dir = os.path.join(text_dir, language_code)
-
-        if not os.path.exists(lang_text_dir):
-            print(f"警告：文本目录不存在，跳过: {lang_text_dir}")
+        # 构建文本文件路径：data/text/ref/{lang_code}.json
+        text_file = os.path.join(text_dir, f"{lang_code}.json")
+        
+        if not os.path.exists(text_file):
+            print(f"  警告：文本文件不存在，跳过: {text_file}")
             continue
 
         # 加载该语种已转录的segments
         model_name = f"dolphin_{args.model_name}"
-        transcribed_segments = load_transcribed_segments(language_code, model_name)
+        transcribed_segments = load_transcribed_segments(lang_code, model_name)
         print(f"  已加载 {len(transcribed_segments)} 个已转录的segments")
 
-        # 获取该语种下的所有 JSON 文件
-        json_files = [
-            f for f in os.listdir(lang_text_dir)
-            if f.endswith(".json")
-        ]
+        # 加载文本JSON文件
+        try:
+            with open(text_file, 'r', encoding='utf-8') as f:
+                segments_data = json.load(f)
+        except Exception as e:
+            print(f"  错误：无法加载文本文件 {text_file}: {e}")
+            continue
 
-        print(f"  找到 {len(json_files)} 个标注文件")
+        if not isinstance(segments_data, list):
+            print(f"  错误：文本文件格式错误，应为列表格式: {text_file}")
+            continue
 
-        # 处理每个标注文件
-        total_files = len(json_files)
-        for file_idx, json_file in enumerate(json_files, 1):
-            json_path = os.path.join(lang_text_dir, json_file)
-            audio_name = os.path.splitext(json_file)[0]
+        print(f"  找到 {len(segments_data)} 个片段")
 
-            # 查找对应的音频文件
-            wav_file = f"{audio_name}.wav"
-            wav_path = os.path.join(lang_wav_dir, wav_file)
+        # 按 audio_name 分组处理
+        segments_by_audio = defaultdict(list)
+        for segment in segments_data:
+            audio_name = segment.get("audio_name", "")
+            if audio_name:
+                segments_by_audio[audio_name].append(segment)
 
-            if not os.path.exists(wav_path):
-                print(f"  警告：音频文件不存在，跳过: {wav_path}")
+        print(f"  涉及 {len(segments_by_audio)} 个音频文件")
+
+        # 处理每个音频文件
+        total_audios = len(segments_by_audio)
+        for audio_idx, (audio_name, segments) in enumerate(segments_by_audio.items(), 1):
+            print(f"  [{audio_idx}/{total_audios}] 处理音频: {audio_name}")
+
+            # 构建音频文件路径：data/audio/testbatch/{lang_code}/{audio_name}.wav
+            # 尝试多种可能的扩展名
+            audio_extensions = ['.wav', '.mp3', '.flac', '.m4a']
+            audio_path = None
+            
+            lang_audio_dir = os.path.join(audio_dir, lang_code)
+            for ext in audio_extensions:
+                potential_path = os.path.join(lang_audio_dir, f"{audio_name}{ext}")
+                if os.path.exists(potential_path):
+                    audio_path = potential_path
+                    break
+            
+            if audio_path is None:
+                print(f"    警告：音频文件不存在，跳过。尝试路径: {lang_audio_dir}/{audio_name}[.wav|.mp3|.flac|.m4a]")
                 continue
 
-            print(f"  处理文件: {file_idx}/{total_files} - {audio_name}")
+            print(f"    找到音频文件: {audio_path}")
+            print(f"    该音频有 {len(segments)} 个片段")
 
-            # 加载标注 JSON 文件
-            try:
-                with open(json_path, 'r', encoding='utf-8') as f:
-                    annotation_data = json.load(f)
-            except Exception as e:
-                print(f"  错误：无法加载标注文件 {json_path}: {e}")
-                continue
-
-            # 获取 segments 列表
-            segments = annotation_data.get("segments", [])
-            if not segments:
-                print(f"  警告：{audio_name} 没有 segments，跳过")
-                continue
-
-            print(f"    找到 {len(segments)} 个片段")
-
-            # 处理每个 segment
-            for idx, segment in enumerate(segments, start=1):
+            # 处理该音频的每个片段
+            for seg_idx, segment in enumerate(segments, 1):
                 start_time = segment.get("start", 0.0)
                 end_time = segment.get("end", 0.0)
-                status = segment.get("status", "valid")
+                segment_id = segment.get("id", seg_idx)
 
-                print(f"    片段 {idx}/{len(segments)}: {start_time:.2f}s - {end_time:.2f}s, status={status}")
+                print(f"    片段 {seg_idx}/{len(segments)} (id={segment_id}): {start_time:.2f}s - {end_time:.2f}s")
 
-                # 构造格式化的路径：{lang_code}/{wav_filename}
-                wav_filename = os.path.basename(wav_path)
-                formatted_path = f"{language_code}/{wav_filename}"
+                # 构造格式化的路径：{lang_code}/{audio_filename}
+                audio_filename = os.path.basename(audio_path)
+                formatted_path = f"{lang_code}/{audio_filename}"
 
                 # 检查该segment是否已经转录过
-                if is_segment_transcribed(wav_path, start_time, end_time, language_code, transcribed_segments):
+                if is_segment_transcribed(audio_path, start_time, end_time, lang_code, transcribed_segments):
                     print(f"      该segment已转录，跳过")
                     continue
 
-                # 如果 status 为 invalid，转录文本为空
-                if status == "invalid":
+                # 调用 transcribe_audio 进行转录
+                try:
+                    transcription_text = transcribe_audio(
+                        audio_path=audio_path,
+                        start_time=start_time,
+                        end_time=end_time,
+                        language=lang_code,
+                        model=model
+                    )
+                    print(f"      转录成功: {transcription_text[:50]}...")
+                except Exception as e:
+                    print(f"      转录失败: {e}")
                     transcription_text = ""
-                    print(f"      状态为 invalid，跳过转录")
-                else:
-                    # 调用 transcribe_audio 进行转录
-                    try:
-                        transcription_text = transcribe_audio(
-                            audio_path=wav_path,
-                            start_time=start_time,
-                            end_time=end_time,
-                            language=language_code,
-                            model=model
-                        )
-                        print(f"      转录成功: {transcription_text[:50]}...")
-                    except Exception as e:
-                        print(f"      转录失败: {e}")
-                        transcription_text = ""
 
                 # 调用 save_transcription 保存结果
                 try:
                     save_transcription(
                         audio_path=formatted_path,
                         text=transcription_text,
-                        language=language_code,
+                        language=lang_code,
                         model=model_name,
                         start_time=start_time,
                         end_time=end_time
@@ -441,7 +443,7 @@ def main():
                     # 修正保存的路径格式，确保使用 Linux 风格的路径分隔符
                     results_dir = os.path.join(os.getcwd(), args.output_dir)
                     os.makedirs(results_dir, exist_ok=True)
-                    filename = f"{language_code}_{model_name}.json"
+                    filename = f"{lang_code}_{model_name}.json"
                     output_path = os.path.join(results_dir, filename)
                     
                     if os.path.exists(output_path):
@@ -450,7 +452,7 @@ def main():
                         # 修正最后一个条目的路径格式
                         if data and len(data) > 0:
                             last_entry = data[-1]
-                            # 将路径标准化为 Linux 风格：{lang_code}/{wav_filename}
+                            # 将路径标准化为 Linux 风格：{lang_code}/{audio_filename}
                             last_entry["path"] = formatted_path
                             # 写回文件
                             with open(output_path, "w", encoding="utf-8") as f:
