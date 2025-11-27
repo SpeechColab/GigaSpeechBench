@@ -24,8 +24,8 @@ OUT_ROOT = "/root/shared-nvme/yujietu/Multilingual-ASR-Benchmark/data/results/te
 # -----------------------------
 # 显式定义哪些语言用 WER，哪些用 CER
 # -----------------------------
-WER_LANGS = ["IRQ", "DZA", "ARE", "EGY", "MAR", "SAU", "IDN", "MYS", "PHL", "VNM"]
-CER_LANGS = ["JPN", "KOR", "THA"]
+WER_LANGS = ["IRQ", "DZA", "ARE", "EGY", "MAR", "SAU", "IDN", "MYS", "PHL", "VNM","USA"]
+CER_LANGS = ["JPN", "KOR", "THA","CHN"]
 
 
 def store_transcripts(filename: Path, texts):

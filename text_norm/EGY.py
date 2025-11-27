@@ -48,7 +48,7 @@ def normalize(text: str) -> str:
     # 应用hamza标准化
     for variant, standard in HAMZA_VARIANTS.items():
         text = text.replace(variant, standard)
-    
+
     # 第二步：数字转换
     
     # 西方数字到阿拉伯数字的映射
