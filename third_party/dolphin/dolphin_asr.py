@@ -14,7 +14,6 @@ import numpy as np
 from utils import save_transcription
 
 # 语言映射：将国家代码映射到 (lang_sym, region_sym) 二元组
-# lang_sym 和 region_sym 会加上 <> 符号，例如 "<ja>", "<JP>"
 LANGUAGE_MAPPING = {
     "ARE": ("ar", "AE"),      # 阿拉伯语-阿联酋
     "IRQ": ("ar", ""),     # 阿拉伯语-伊拉克
@@ -29,7 +28,7 @@ LANGUAGE_MAPPING = {
     "VNM": ("vi", "VN"),      # 越南语
     "PHL": ("fil", "PH"),     # 菲律宾语
     "MYS": ("ms", "MY"),      # 马来语
-    "CMN": ("zh", ""),      # 中文
+    "CMN": ("zh", "CN"),      # 中文
 }
 
 
@@ -85,59 +84,6 @@ def load_audio_segment(
     return waveform
 
 
-def transcribe_audio_segment(
-    audio_path: str,
-    model,
-    start_time: Optional[float] = None,
-    end_time: Optional[float] = None,
-    lang_sym: Optional[str] = None,
-    region_sym: Optional[str] = None
-) -> str:
-    """
-    对音频文件的指定片段进行语音识别
-    
-    Args:
-        audio_path: 音频文件路径
-        model: 已加载的 dolphin 模型
-        start_time: 开始时间（秒）
-        end_time: 结束时间（秒）
-        lang_sym: 语言代码符号（例如 "ja"），会自动加上 <>
-        region_sym: 地区代码符号（例如 "JP"），会自动加上 <>
-        如果 lang_sym 为空，则不指定语种使用自动检测
-        如果 lang_sym 存在但 region_sym 为空，则只指定语言
-    
-    Returns:
-        text_nospecial: 识别结果文本（不含特殊符号）
-    """
-    # 加载并截取音频片段
-    waveform_segment = load_audio_segment(
-        audio_path, 
-        start_time=start_time, 
-        end_time=end_time
-    )
-    
-    # 处理空字符串的情况（将空字符串视为 None）
-    if lang_sym == "":
-        lang_sym = None
-    if region_sym == "":
-        region_sym = None
-    # 根据 lang_sym 和 region_sym 的值决定如何调用模型
-    if lang_sym is None:
-        # 如果 lang 为空，则不指定语种，使用自动检测
-        result = model(speech=waveform_segment)
-    elif region_sym is None:
-        # 如果 lang 存在但 region 为空，则只指定语言
-        result = model(speech=waveform_segment, lang_sym=lang_sym)
-    else:
-        # 如果两者都存在，则同时指定语言和地区
-        result = model(
-            waveform_segment,
-            lang_sym=lang_sym,
-            region_sym=region_sym
-        )
-    
-    # 返回不含特殊符号的文本
-    return result.text_nospecial
 
 
 def load_transcribed_segments(language: str, model: str) -> set:
@@ -214,6 +160,8 @@ def transcribe_audio(
 ) -> str:
     """
     转录音频文件的指定片段。
+    
+    该函数支持转录单一音频片段，会自动处理语言映射、音频加载和模型调用。
 
     Args:
         audio_path (str): 音频文件的绝对路径
@@ -234,17 +182,37 @@ def transcribe_audio(
     else:
         lang_sym, region_sym = lang_region
 
-    # 调用转录函数
+    # 处理空字符串的情况（将空字符串视为 None）
+    if lang_sym == "":
+        lang_sym = None
+    if region_sym == "":
+        region_sym = None
+
+    # 加载并截取音频片段
+    waveform_segment = load_audio_segment(
+        audio_path, 
+        start_time=start_time, 
+        end_time=end_time
+    )
+    
+    # 根据 lang_sym 和 region_sym 的值决定如何调用模型
     try:
-        text = transcribe_audio_segment(
-            audio_path=audio_path,
-            model=model,
-            start_time=start_time,
-            end_time=end_time,
-            lang_sym=lang_sym,
-            region_sym=region_sym
-        )
-        return text
+        if lang_sym is None:
+            # 如果 lang 为空，则不指定语种，使用自动检测
+            result = model(speech=waveform_segment)
+        elif region_sym is None:
+            # 如果 lang 存在但 region 为空，则只指定语言
+            result = model(speech=waveform_segment, lang_sym=lang_sym)
+        else:
+            # 如果两者都存在，则同时指定语言和地区
+            result = model(
+                waveform_segment,
+                lang_sym=lang_sym,
+                region_sym=region_sym
+            )
+        
+        # 返回不含特殊符号的文本
+        return result.text_nospecial
     except Exception as e:
         print(f"转录失败: {e}")
         raise
@@ -256,11 +224,11 @@ def main():
     """
     parser = argparse.ArgumentParser(description="批量转录音频文件并保存结果")
     parser.add_argument(
-        "--lang_codes",
+        "--languages",
         type=str,
         nargs="+",
         required=True,
-        help="要处理的语种代码列表（例如：--lang_codes JPN ARE IDN）"
+        help="要处理的语种代码列表（例如：--languages JPN ARE IDN）"
     )
     parser.add_argument(
         "--text_dir",
@@ -290,14 +258,14 @@ def main():
     parser.add_argument(
         "--model_dir",
         type=str,
-        default=None,
+        required=True,
         help="模型目录路径"
     )
 
     args = parser.parse_args()
     
     # 验证并规范化语种代码
-    lang_codes = [lang.upper() for lang in args.lang_codes]
+    languages = [lang.upper() for lang in args.languages]
     
     # 设置默认路径
     if args.text_dir is None:
@@ -314,7 +282,7 @@ def main():
     print(f"模型目录: {args.model_dir}")
     print(f"文本目录: {text_dir}")
     print(f"音频目录: {audio_dir}")
-    print(f"处理语种: {', '.join(lang_codes)}")
+    print(f"处理语种: {', '.join(languages)}")
 
     # 加载模型
     print("\n正在加载模型...")
@@ -335,12 +303,12 @@ def main():
         raise ValueError(f"音频目录不存在: {audio_dir}")
 
     # 遍历指定的语种
-    total_languages = len(lang_codes)
-    for lang_idx, lang_code in enumerate(lang_codes, 1):
-        print(f"\n处理语种 [{lang_idx}/{total_languages}]: {lang_code}")
+    total_languages = len(languages)
+    for lang_idx, language in enumerate(languages, 1):
+        print(f"\n处理语种 [{lang_idx}/{total_languages}]: {language}")
 
-        # 构建文本文件路径：data/text/ref/{lang_code}.json
-        text_file = os.path.join(text_dir, f"{lang_code}.json")
+        # 构建文本文件路径：data/text/ref/{language}.json
+        text_file = os.path.join(text_dir, f"{language}.json")
         
         if not os.path.exists(text_file):
             print(f"  警告：文本文件不存在，跳过: {text_file}")
@@ -348,7 +316,7 @@ def main():
 
         # 加载该语种已转录的segments
         model_name = f"dolphin_{args.model_name}"
-        transcribed_segments = load_transcribed_segments(lang_code, model_name)
+        transcribed_segments = load_transcribed_segments(language, model_name)
         print(f"  已加载 {len(transcribed_segments)} 个已转录的segments")
 
         # 加载文本JSON文件
@@ -379,12 +347,12 @@ def main():
         for audio_idx, (audio_name, segments) in enumerate(segments_by_audio.items(), 1):
             print(f"  [{audio_idx}/{total_audios}] 处理音频: {audio_name}")
 
-            # 构建音频文件路径：data/audio/testbatch/{lang_code}/{audio_name}.wav
+            # 构建音频文件路径：data/audio/testbatch/{language}/{audio_name}.wav
             # 尝试多种可能的扩展名
             audio_extensions = ['.wav', '.mp3', '.flac', '.m4a']
             audio_path = None
             
-            lang_audio_dir = os.path.join(audio_dir, lang_code)
+            lang_audio_dir = os.path.join(audio_dir, language)
             for ext in audio_extensions:
                 potential_path = os.path.join(lang_audio_dir, f"{audio_name}{ext}")
                 if os.path.exists(potential_path):
@@ -406,12 +374,12 @@ def main():
 
                 print(f"    片段 {seg_idx}/{len(segments)} (id={segment_id}): {start_time:.2f}s - {end_time:.2f}s")
 
-                # 构造格式化的路径：{lang_code}/{audio_filename}
+                # 构造格式化的路径：{language}/{audio_filename}
                 audio_filename = os.path.basename(audio_path)
-                formatted_path = f"{lang_code}/{audio_filename}"
+                formatted_path = f"{language}/{audio_filename}"
 
                 # 检查该segment是否已经转录过
-                if is_segment_transcribed(audio_path, start_time, end_time, lang_code, transcribed_segments):
+                if is_segment_transcribed(audio_path, start_time, end_time, language, transcribed_segments):
                     print(f"      该segment已转录，跳过")
                     continue
 
@@ -421,7 +389,7 @@ def main():
                         audio_path=audio_path,
                         start_time=start_time,
                         end_time=end_time,
-                        language=lang_code,
+                        language=language,
                         model=model
                     )
                     print(f"      转录成功: {transcription_text[:50]}...")
@@ -434,7 +402,7 @@ def main():
                     save_transcription(
                         audio_path=formatted_path,
                         text=transcription_text,
-                        language=lang_code,
+                        language=language,
                         model=model_name,
                         start_time=start_time,
                         end_time=end_time
@@ -443,7 +411,7 @@ def main():
                     # 修正保存的路径格式，确保使用 Linux 风格的路径分隔符
                     results_dir = os.path.join(os.getcwd(), args.output_dir)
                     os.makedirs(results_dir, exist_ok=True)
-                    filename = f"{lang_code}_{model_name}.json"
+                    filename = f"{language}_{model_name}.json"
                     output_path = os.path.join(results_dir, filename)
                     
                     if os.path.exists(output_path):
@@ -452,7 +420,7 @@ def main():
                         # 修正最后一个条目的路径格式
                         if data and len(data) > 0:
                             last_entry = data[-1]
-                            # 将路径标准化为 Linux 风格：{lang_code}/{audio_filename}
+                            # 将路径标准化为 Linux 风格：{language}/{audio_filename}
                             last_entry["path"] = formatted_path
                             # 写回文件
                             with open(output_path, "w", encoding="utf-8") as f:
