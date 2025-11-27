@@ -7,8 +7,6 @@ from io import BytesIO
 from elevenlabs.client import ElevenLabs
 from pydub import AudioSegment
 
-# 添加父目录到路径，以便导入 utils 模块
-sys.path.insert(0, "E:/Desktop/master/master_3/benchmark/Multilingual-ASR-Benchmark/scripts")
 from utils import save_transcription
 
 # 支持的 model_id 列表
@@ -65,7 +63,7 @@ def load_transcribed_segments(language: str, model: str) -> set:
                             path = entry.get("path", "")
                             start_time = entry.get("start_time", 0.0)
                             end_time = entry.get("end_time", 0.0)
-                            # 路径格式为 {lang_code}/{wav_filename}，直接使用
+                            # 路径格式为 {language_code}/{wav_filename}，直接使用
                             transcribed_segments.add((
                                 path,
                                 float(start_time),
@@ -97,7 +95,7 @@ def is_segment_transcribed(
     Returns:
         bool: 如果已转录返回True，否则返回False
     """
-    # 构造格式化的路径：{lang_code}/{wav_filename}
+    # 构造格式化的路径：{language_code}/{wav_filename}
     wav_filename = os.path.basename(audio_path)
     formatted_path = f"{language_code}/{wav_filename}"
     segment_key = (formatted_path, float(start_time), float(end_time))
@@ -174,11 +172,11 @@ def main():
     """
     parser = argparse.ArgumentParser(description="批量转录音频文件并保存结果")
     parser.add_argument(
-        "--lang_codes",
+        "--languages",
         type=str,
         nargs="+",
         required=True,
-        help="要处理的语种代码列表（例如：--lang_codes JPN ARE IDN）"
+        help="要处理的语种代码列表（例如：--languages JPN ARE IDN）"
     )
     parser.add_argument(
         "--text_dir",
@@ -220,7 +218,7 @@ def main():
         raise ValueError(f"不支持的 model_id: {model_id}。支持的 model_id: {', '.join(SUPPORTED_MODEL_IDS)}")
     
     # 验证并规范化语种代码
-    lang_codes = [lang.upper() for lang in args.lang_codes]
+    languages = [lang.upper() for lang in args.languages]
     
     # 设置路径
     text_dir = os.path.abspath(args.text_dir)
@@ -229,7 +227,7 @@ def main():
     print(f"使用模型: {model_id}")
     print(f"文本目录: {text_dir}")
     print(f"音频目录: {audio_dir}")
-    print(f"处理语种: {', '.join(lang_codes)}")
+    print(f"处理语种: {', '.join(languages)}")
 
     # 设置 API key
     if args.api_key:
@@ -244,12 +242,12 @@ def main():
         raise ValueError(f"音频目录不存在: {audio_dir}")
 
     # 遍历指定的语种
-    total_languages = len(lang_codes)
-    for lang_idx, lang_code in enumerate(lang_codes, 1):
-        print(f"\n处理语种 [{lang_idx}/{total_languages}]: {lang_code}")
+    total_languages = len(languages)
+    for lang_idx, language in enumerate(languages, 1):
+        print(f"\n处理语种 [{lang_idx}/{total_languages}]: {language}")
 
-        # 构建文本文件路径：data/text/testbatch/ref/{lang_code}.json
-        text_file = os.path.join(text_dir, f"{lang_code}.json")
+        # 构建文本文件路径：data/text/testbatch/ref/{language}.json
+        text_file = os.path.join(text_dir, f"{language}.json")
         
         if not os.path.exists(text_file):
             print(f"  警告：文本文件不存在，跳过: {text_file}")
@@ -257,7 +255,7 @@ def main():
 
         # 加载该语种已转录的segments
         model_name = f"elevenlabs_{model_id}"
-        transcribed_segments = load_transcribed_segments(lang_code, model_name)
+        transcribed_segments = load_transcribed_segments(language, model_name)
         print(f"  已加载 {len(transcribed_segments)} 个已转录的segments")
 
         # 加载文本JSON文件
@@ -288,12 +286,12 @@ def main():
         for audio_idx, (audio_name, segments) in enumerate(segments_by_audio.items(), 1):
             print(f"  [{audio_idx}/{total_audios}] 处理音频: {audio_name}")
 
-            # 构建音频文件路径：data/audio/testbatch/{lang_code}/{audio_name}.wav
+            # 构建音频文件路径：data/audio/testbatch/{language}/{audio_name}.wav
             # 尝试多种可能的扩展名
             audio_extensions = ['.wav', '.mp3', '.flac', '.m4a']
             audio_path = None
             
-            lang_audio_dir = os.path.join(audio_dir, lang_code)
+            lang_audio_dir = os.path.join(audio_dir, language)
             for ext in audio_extensions:
                 potential_path = os.path.join(lang_audio_dir, f"{audio_name}{ext}")
                 if os.path.exists(potential_path):
@@ -315,12 +313,12 @@ def main():
 
                 print(f"    片段 {seg_idx}/{len(segments)} (id={segment_id}): {start_time:.2f}s - {end_time:.2f}s")
 
-                # 构造格式化的路径：{lang_code}/{audio_filename}
+                # 构造格式化的路径：{language}/{audio_filename}
                 audio_filename = os.path.basename(audio_path)
-                formatted_path = f"{lang_code}/{audio_filename}"
+                formatted_path = f"{language}/{audio_filename}"
 
                 # 检查该segment是否已经转录过
-                if is_segment_transcribed(audio_path, start_time, end_time, lang_code, transcribed_segments):
+                if is_segment_transcribed(audio_path, start_time, end_time, language, transcribed_segments):
                     print(f"      该segment已转录，跳过")
                     continue
 
@@ -330,7 +328,7 @@ def main():
                         audio_path=audio_path,
                         start_time=start_time,
                         end_time=end_time,
-                        language=lang_code,
+                        language=language,
                         model_id=model_id
                     )
                     print(f"      转录成功: {transcription_text[:50]}...")
@@ -343,7 +341,7 @@ def main():
                     save_transcription(
                         audio_path=formatted_path,
                         text=transcription_text,
-                        language=lang_code,
+                        language=language,
                         model=model_name,
                         start_time=start_time,
                         end_time=end_time
@@ -352,7 +350,7 @@ def main():
                     # 修正保存的路径格式，确保使用 Linux 风格的路径分隔符
                     results_dir = os.path.join(os.getcwd(), args.output_dir)
                     os.makedirs(results_dir, exist_ok=True)
-                    filename = f"{lang_code}_{model_name}.json"
+                    filename = f"{language}_{model_name}.json"
                     output_path = os.path.join(results_dir, filename)
                     
                     if os.path.exists(output_path):
@@ -361,7 +359,7 @@ def main():
                         # 修正最后一个条目的路径格式
                         if data and len(data) > 0:
                             last_entry = data[-1]
-                            # 将路径标准化为 Linux 风格：{lang_code}/{audio_filename}
+                            # 将路径标准化为 Linux 风格：{language}/{audio_filename}
                             last_entry["path"] = formatted_path
                             # 写回文件
                             with open(output_path, "w", encoding="utf-8") as f:
