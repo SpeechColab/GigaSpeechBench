@@ -1,4 +1,4 @@
 from text_norm import get_normalizer
 
-normalize = get_normalizer("IRQ")
-print(normalize("hello iraq arabic test 123"))
+normalize = get_normalizer("CHN")
+print(normalize("什么什么阿道夫久啊洞口防护"))
