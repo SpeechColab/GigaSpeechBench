@@ -30,8 +30,8 @@ LANGUAGE_MAPPING = {
     "VNM": "vie",  # 越南语
     "PHL": "fil",  # 菲律宾语
     "MYS": "msa",  # 马来语
-    "ENG": "eng",  # 英语
-    "CMN": "zho",  # 中文
+    "USA": "eng",  # 英语
+    "CHN": "zho",  # 中文(普通话)
 }
 
 

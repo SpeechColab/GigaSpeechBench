@@ -28,7 +28,7 @@ LANGUAGE_MAPPING = {
     "VNM": ("vi", "VN"),      # 越南语
     "PHL": ("fil", "PH"),     # 菲律宾语
     "MYS": ("ms", "MY"),      # 马来语
-    "CMN": ("zh", "CN"),      # 中文
+    "CHN": ("zh", "CN"),      # 中文(普通话)
 }
 
 
