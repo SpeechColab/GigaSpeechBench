@@ -11,7 +11,7 @@ sys.path.insert(0, ROOT)
 
 from text_norm import get_normalizer
 
-LANGS = ["IRQ", "DZA", "ARE", "EGY", "MAR", "SAU", "IDN", "MYS", "PHL", "THA", "VNM", "JPN", "KOR"]
+LANGS = ["IRQ", "DZA", "ARE", "EGY", "MAR", "SAU", "IDN", "MYS", "PHL", "THA", "VNM", "JPN", "KOR","CHN","USA"]
 #LANGS = ["IRQ"]
 
 REF_IN = "data/text/testbatch/ref"
