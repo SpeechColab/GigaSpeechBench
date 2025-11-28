@@ -34,6 +34,8 @@ def normalize(text: str) -> str:
     text = restore_protected_content(text, protected_spans)
     text = clean_text(text)
     
+    text = text.upper()
+    
     return text
 
 def protect_special_content(text: str, protected_spans: List) -> str:
