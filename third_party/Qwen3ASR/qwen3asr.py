@@ -4,7 +4,8 @@ import os
 import dashscope
 from pydub import AudioSegment
 
-ROOT_DIR = "testbatch_processed"
+REF_ROOT_DIR = "text/ref/testbatch"
+AUDIO_ROOT_DIR = "audio/testbatch"
 TMP_WAV = "/tmp/tmp.wav"
 API_KEY = os.getenv("DASHSCOPE_API_KEY")
 
@@ -12,7 +13,24 @@ dashscope.base_http_api_url = "https://dashscope.aliyuncs.com/api/v1"
 # dashscope.base_http_api_url = "https://dashscope-intl.aliyuncs.com/api/v1"
 
 
-def call_asr(tmp_wav_path: str):
+language_mapping = {
+    "ARE": "ar",  # 阿联酋 -> 阿拉伯语
+    "DZA": "ar",  # 阿尔及利亚 -> 阿拉伯语
+    "EGY": "ar",  # 埃及 -> 阿拉伯语
+    "IRQ": "ar",  # 伊拉克 -> 阿拉伯语
+    "MAR": "ar",  # 摩洛哥 -> 阿拉伯语
+    "SAU": "ar",  # 沙特阿拉伯 -> 阿拉伯语
+    "IDN": "id",  # 印度尼西亚 -> 印尼语
+    "JPN": "ja",  # 日本 -> 日语
+    "KOR": "ko",  # 韩国 -> 韩语
+    "THA": "th",  # 泰国 -> 泰语
+    "VNM": "vi",  # 越南 -> 越南语
+    "ZH": "zh",  # 中国 -> 中文（普通话、四川话、闽南语、吴语）
+    "EN": "en",  # 英文
+}
+
+
+def call_asr(tmp_wav_path: str, language: str):
     messages = [{"role": "user", "content": [{"audio": TMP_WAV}]}]
 
     response = dashscope.MultiModalConversation.call(
@@ -21,15 +39,19 @@ def call_asr(tmp_wav_path: str):
         messages=messages,
         result_format="message",
         asr_options={
-            # "language": "zh",  # 需要的话自己打开
-            "enable_itn": True
+            "enable_itn": True,
+            **(
+                {"language": language_mapping[language]}
+                if language in language_mapping
+                else {}
+            ),
         },
     )
     return response
 
 
 def process_one_json(json_path: str, lang: str):
-    base = os.path.splitext(json_path)[0]
+    base = os.path.splitext(json_path)[0].replace(REF_ROOT_DIR, AUDIO_ROOT_DIR)
     wav_path = base + ".wav"
 
     if not os.path.exists(wav_path):
@@ -66,7 +88,7 @@ def process_one_json(json_path: str, lang: str):
         )
 
         try:
-            resp = call_asr(TMP_WAV)
+            resp = call_asr(TMP_WAV, lang)
             save_transcription(
                 audio_path=wav_path,
                 text=resp["output"]["choices"][0]["message"]["content"][0]["text"],
@@ -137,8 +159,8 @@ def save_transcription(
 
 
 def main():
-    for lang in os.listdir(ROOT_DIR):
-        lang_dir = os.path.join(ROOT_DIR, lang)
+    for lang in os.listdir(REF_ROOT_DIR):
+        lang_dir = os.path.join(REF_ROOT_DIR, lang)
         if not os.path.isdir(lang_dir):
             continue
 
