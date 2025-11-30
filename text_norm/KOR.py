@@ -3,7 +3,7 @@ import unicodedata
 
 
 def normalize(text: str) -> str:
-    # Unicode NFC normalization
+    # Unicode NFKC normalization
     text = unicodedata.normalize("NFKC", text)
 
     # Remove annotation inside [], (), {}
