@@ -4,7 +4,7 @@ import unicodedata
 
 def normalize(text: str) -> str:
     # Unicode NFC normalization
-    text = unicodedata.normalize("NFC", text)
+    text = unicodedata.normalize("NFKC", text)
 
     # Remove annotation inside [], (), {}
     text = re.sub(r"\[[^\]]*\]|\([^\)]*\)|\{[^\}]*\}", "", text)
