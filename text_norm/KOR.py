@@ -3,9 +3,11 @@ import unicodedata
 
 
 def normalize(text: str) -> str:
+    # Unicode NFC normalization
     text = unicodedata.normalize("NFC", text)
 
-    text = re.sub(r"\[.*?\]", " ", text)
+    # Remove annotation inside [], (), {}
+    text = re.sub(r"\[[^\]]*\]|\([^\)]*\)|\{[^\}]*\}", "", text)
 
     korean_english_only_pattern = re.compile(
         r"[^"
