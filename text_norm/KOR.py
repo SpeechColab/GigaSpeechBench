@@ -20,7 +20,7 @@ def normalize(text: str) -> str:
         r"[^"
         r"\uAC00-\uD7A3"  # Hangul Syllables (现代音节)
         r"\u1100-\u11FF"  # Hangul Jamo (组合字母)
-        r"\u3130-\u318F"  # Hangul Compatibility Jamo (兼容字母, 如 ㅋㅋ)
+        r"\u3130-\u318F"  # Hangul Compatibility Jamo (兼容字母)
         r"\uA960-\uA97F"  # Hangul Jamo Extended-A
         r"\uD7B0-\uD7FF"  # Hangul Jamo Extended-B
         r"a-zA-Z"  # English Alphabets
