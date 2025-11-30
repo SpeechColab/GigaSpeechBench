@@ -9,6 +9,13 @@ def normalize(text: str) -> str:
     # Remove annotation inside [], (), {}
     text = re.sub(r"\[[^\]]*\]|\([^\)]*\)|\{[^\}]*\}", "", text)
 
+    # Arabic digits mapping
+    digit_map = {
+        '0': '영', '1': '일', '2': '이', '3': '삼', '4': '사',
+        '5': '오', '6': '육', '7': '칠', '8': '팔', '9': '구'
+    }
+    text = text.translate(str.maketrans(digit_map))
+
     korean_english_only_pattern = re.compile(
         r"[^"
         r"\uAC00-\uD7A3"  # Hangul Syllables (现代音节)
