@@ -1,5 +1,7 @@
-data/
-data_old/
-*._pycache/
-*.pyc
-my_compute_wer.py
+data*/
+__pycache__
+*.pt
+*.bin
+
+# Ignore Mac system files
+.DS_Store
