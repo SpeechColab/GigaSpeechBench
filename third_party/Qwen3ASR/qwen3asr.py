@@ -4,8 +4,8 @@ import os
 import dashscope
 from pydub import AudioSegment
 
-REF_ROOT_DIR = "text/ref/testbatch"
-AUDIO_ROOT_DIR = "audio/testbatch"
+REF_ROOT_DIR = "text/ref/20251205"
+AUDIO_ROOT_DIR = "audio/batch_1"
 TMP_WAV = "/tmp/tmp.wav"
 API_KEY = os.getenv("DASHSCOPE_API_KEY")
 
@@ -50,7 +50,7 @@ def call_asr(tmp_wav_path: str, language: str):
     return response
 
 
-def process_one_json(json_path: str, lang: str):
+def process_one_json(json_path: str, lang: str, skip_uids: set):
     base = os.path.splitext(json_path)[0].replace(REF_ROOT_DIR, AUDIO_ROOT_DIR)
     wav_path = base + ".wav"
 
@@ -66,10 +66,12 @@ def process_one_json(json_path: str, lang: str):
 
     segments = data.get("segments", [])
 
-    for seg in segments:
+    for i, seg in enumerate(segments):
         if seg.get("status") != "valid":
             continue
         if not seg.get("text"):
+            continue
+        if os.path.abspath(wav_path) + str(i) in skip_uids:
             continue
 
         start_sec = float(seg["start"])
@@ -96,6 +98,7 @@ def process_one_json(json_path: str, lang: str):
                 model="qwen3-asr-flash",
                 start_time=start_sec,
                 end_time=end_sec,
+                index=i,
             )
         except Exception as e:
             print(f"    [ERROR] 调用 ASR 失败: {e}")
@@ -108,25 +111,33 @@ def save_transcription(
     model: str,
     start_time: float,
     end_time: float,
+    index: int,
 ) -> None:
     """
-    Save transcription to /results/{language}_{model}.json file.
+    Save transcription to ./results/{language}_{model}.json
+
+    Each entry is appended as a dict with a unique `id`.
 
     Args:
-        audio_path (str): Absolute path to the audio file.
+        audio_path (str): Absolute or relative path to the audio file.
         text (str): Transcribed text.
-        language (str): Language code, e.g., "IRQ".
-        model (str): Model name, e.g., "elevenlabs".
+        language (str): Language code, e.g. "IRQ".
+        model (str): Model name, e.g. "elevenlabs".
         start_time (float): Start time in seconds.
         end_time (float): End time in seconds.
+        index (int): Sample index, will be saved as `id`.
     """
+
+    # ---------- output path ----------
     results_dir = os.path.join(os.getcwd(), "results")
     os.makedirs(results_dir, exist_ok=True)
 
     filename = f"{language}_{model}.json"
     output_path = os.path.join(results_dir, filename)
 
-    entry: Dict[str, str | float] = {
+    # ---------- new entry ----------
+    entry: Dict[str, Union[str, float, int]] = {
+        "id": int(index),
         "path": os.path.abspath(audio_path),
         "text": text.strip(),
         "language": language.strip(),
@@ -135,6 +146,7 @@ def save_transcription(
         "end_time": float(end_time),
     }
 
+    # ---------- load existing ----------
     data = []
     if os.path.exists(output_path):
         try:
@@ -143,19 +155,20 @@ def save_transcription(
                 if content:
                     data = json.loads(content)
                     if not isinstance(data, list):
-                        raise ValueError("Invalid JSON structure: root must be a list.")
+                        raise ValueError("JSON root is not a list")
         except Exception as e:
-            print(
-                f"[WARN] Failed to read existing JSON ({output_path}), recreating. Reason: {e}"
-            )
+            print(f"[WARN] Failed to read {output_path}, recreating. Reason: {e}")
+            data = []
 
+    # ---------- append ----------
     data.append(entry)
 
+    # ---------- write back ----------
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 
     print(f"[INFO] Transcription saved -> {output_path}")
-    print(f"       + Added entry for: {entry['path']}")
+    print(f"       + id={index}, path={entry['path']}")
 
 
 def main():
@@ -164,12 +177,23 @@ def main():
         if not os.path.isdir(lang_dir):
             continue
 
+        skip_uids = set()
         for fname in os.listdir(lang_dir):
-            if not fname.endswith("_raw.json"):
+            results_dir = os.path.join(os.getcwd(), "results")
+            filename = f"{lang}_qwen3-asr-flash.json"
+            output_path = os.path.join(results_dir, filename)
+            if os.path.exists(output_path):
+                print(f"{output_path} already exists, about to load...")
+                with open(output_path) as f:
+                    items = json.load(f)
+                    for item in items:
+                        skip_uids.add(item["path"] + str(item["id"]))
+
+            if not fname.endswith("#raw.json"):
                 continue
 
             json_path = os.path.join(lang_dir, fname)
-            process_one_json(json_path, lang)
+            process_one_json(json_path, lang, skip_uids)
 
 
 if __name__ == "__main__":
