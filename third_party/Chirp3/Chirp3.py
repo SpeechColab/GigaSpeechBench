@@ -1,7 +1,8 @@
+import argparse
 import io
+import json
 import logging
 import os
-import argparse
 from collections import namedtuple
 from pathlib import Path
 from typing import Optional
@@ -12,6 +13,8 @@ from google.cloud.speech_v2 import SpeechClient
 from google.cloud.speech_v2.types import cloud_speech
 from pydub import AudioSegment
 from tqdm import tqdm
+
+from scripts.utils import save_transcription
 
 # 初始化日志记录器
 logger = logging.getLogger(__name__)
@@ -66,7 +69,7 @@ def get_speech_client() -> SpeechClient:
         api_endpoint = f"{DEFAULT_LOCATION}-speech.googleapis.com"
         client_options = ClientOptions(api_endpoint=api_endpoint)
         _speech_client = SpeechClient(client_options=client_options)
-        logger.info(f"SpeechClient 初始化完成，服务端点: {api_endpoint}")
+        # logger.info(f"SpeechClient 初始化完成，服务端点: {api_endpoint}") # 删除初始化日志
     return _speech_client
 
 
@@ -179,15 +182,12 @@ def transcribe_audio_segment(audio_path: str, start: Optional[float] = None, end
 
 
 if __name__ == "__main__":
-    from scripts.utils import save_transcription
 
     parser = argparse.ArgumentParser(description="Google Speech-to-Text V2 (Chirp) 推理工具")
 
     # 必选参数
-    parser.add_argument("--input_dir", required=True, type=str, help="音频文件目录路径 (支持 wav, mp3, flac 等格式)")
-    parser.add_argument("--lang", required=True, type=str, help="目标语言的三字母代码 (例如: JPN, CHN, USA)")
-
-    # 可选参数
+    parser.add_argument("--json_dir", required=True, type=Path, help="音频文件目录路径 (支持 wav, mp3, flac 等格式)")
+    parser.add_argument("--audio_dir", required=True, type=Path, help="音频文件目录路径 (支持 wav, mp3, flac 等格式)")
     parser.add_argument("--project_id", type=str, default=PROJECT_ID, help="Google Cloud 项目 ID")
     parser.add_argument("--location", type=str, default=DEFAULT_LOCATION, help="Google Cloud 区域 (如 eu, us)")
 
@@ -197,33 +197,36 @@ if __name__ == "__main__":
     PROJECT_ID = args.project_id
     DEFAULT_LOCATION = args.location
 
-    input_path = Path(args.input_dir)
-    if not input_path.exists():
+    if not args.json_dir.exists():
         logger.error(f"输入目录不存在: {args.input_dir}")
         exit(1)
-
     # 递归查找目录下所有文件
-    audio_files = [f for f in input_path.rglob("*") if f.is_file()]
+    languages = [f.name for f in args.json_dir.iterdir()]
+    assert languages == [f.name for f in args.audio_dir.iterdir()], "json 和 audio 不匹配"
+    for lang in languages:
+        lang_json_dir = args.json_dir / lang
+        for json_path in lang_json_dir.glob("*"):
+            with open(json_path) as f:
+                obj = json.load(f)
+        audio_path = (args.audio_dir / lang / obj["audio_name"]).with_suffix(".wav")
+        assert audio_path.exists(), "不存在"
+        success_count = 0
 
-    logger.info(f"在 {args.input_dir} 中发现 {len(audio_files)} 个文件")
-    logger.info(f"任务配置 -> 语言: {args.lang} | 项目 ID: {PROJECT_ID} | 区域: {DEFAULT_LOCATION}")
+        for idx, segment in tqdm(enumerate(obj["segments"]), desc="正在处理",total=len(obj["segments"])):
+            try:
+                if segment["status"] == "valid":
+                    seg_pred = transcribe_audio_segment(str(audio_path), language=lang, start=segment["start"], end=segment["end"])
 
-    success_count = 0
-
-    for file_path in tqdm(audio_files, desc="正在处理"):
-        try:
-            # 执行转写
-            seg = transcribe_audio_segment(str(file_path), language=args.lang)
-
-            if seg.text is not None:
-                # 调用工具函数保存结果
-                save_transcription(audio_path=seg.audio_path, text=seg.text, language=seg.model, model=seg.language, start_time=seg.start_time, end_time=seg.end_time)
+                    if seg_pred.text is not None:
+                        save_transcription(
+                            audio_path=audio_path, text=seg_pred.text, language=seg_pred.language, model=seg_pred.model, start_time=seg_pred.start_time, end_time=seg_pred.end_time, index=idx
+                        )
+                else:
+                    save_transcription(audio_path=audio_path, text="", language=lang, model=MODEL_NAME, start_time=segment["start"], end_time=segment["end"], index=idx)
                 success_count += 1
 
-        except Exception as e:
-            # 捕获单个文件的处理异常，避免中断整个批次任务
-            # 这里也补充完整的配置信息，防止上述函数外出现异常
-            error_context = f"[文件: {file_path} | 语言: {args.lang} | 项目: {PROJECT_ID} | 区域: {DEFAULT_LOCATION}]"
-            logger.error(f"文件处理失败: {e} | {error_context}")
+            except Exception as e:
+                error_context = f"[文件: {json_path}:{idx} | 语言: {lang} | 项目: {PROJECT_ID} | 区域: {DEFAULT_LOCATION}]"
+                logger.error(f"文件处理失败: {e} | {error_context}")
 
-    logger.info(f"任务完成。成功转写 {success_count}/{len(audio_files)} 个文件。")
+        logger.info(f"任务完成。成功转写 {success_count}/{len(obj['segments'])} 个片段。")
