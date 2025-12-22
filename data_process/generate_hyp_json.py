@@ -7,11 +7,22 @@ import re
 import string
 from tqdm import tqdm
 
-HYP_ROOT = "/root/shared-nvme/yujietu/data/ASR-Bench/Multilingual-ASR-Benchmark/text/hyp/testbatch"
-REF_ROOT = "/root/shared-nvme/yujietu/Multilingual-ASR-Benchmark/data/text/testbatch/ref"
-OUT_ROOT = "/root/shared-nvme/yujietu/Multilingual-ASR-Benchmark/data/text/testbatch/hyp"
+BATCHES = [
+    "testbatch",
+    "20251212",
+    "20251205",
+]
 
-os.makedirs(OUT_ROOT, exist_ok=True)
+# 根路径
+ROOT = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/text"
+
+# REF: /text/<batch>/ref
+# HYP: /text/hyp/<batch>
+# OUT: /text/<batch>/hyp  （按原结构）
+
+# 注意：testbatch 的 hyp 比较特殊，有自己的前缀
+HYP_ROOT_PREFIX = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/data/Multilingual-ASR-Benchmark/text/hyp"
+
 
 PUNCT_REGEX = re.compile(
     rf"[{re.escape(string.punctuation)}]"
@@ -28,9 +39,10 @@ def remove_punctuation(text: str) -> str:
 def clean_text(t: str) -> str:
     t = t.strip()
     t = remove_punctuation(t)
-    return t  # ← 这里已经没有数字处理逻辑
+    return t
 
-def load_ref(country: str):
+
+def load_ref(country: str, REF_ROOT: str):
     p = os.path.join(REF_ROOT, f"{country}.json")
     if not os.path.exists(p):
         return None, {}
@@ -38,6 +50,7 @@ def load_ref(country: str):
         items = json.load(f)
     ref_index = {(d["audio_name"], float(d["start"])): True for d in items}
     return p, ref_index
+
 
 def load_existing_hyp(out_path: str):
     if not os.path.exists(out_path):
@@ -50,18 +63,20 @@ def load_existing_hyp(out_path: str):
     existed = {(d["audio_name"], float(d["start"])) for d in items}
     return items, existed
     
-def process_file(json_path: str):
-    filename = os.path.basename(json_path)
-    country = filename[:3]
 
-    ref_path, ref_index = load_ref(country)
+def process_file(json_path: str, REF_ROOT: str, OUT_ROOT: str):
+
+    filename = os.path.basename(json_path)
+    country = filename[:3]   # 前3字符是国家代码
+
+    ref_path, ref_index = load_ref(country, REF_ROOT)
     if ref_path is None:
-        return False  # not modified
+        return False
 
     out_country_dir = os.path.join(OUT_ROOT, country)
     os.makedirs(out_country_dir, exist_ok=True)
-    out_path = os.path.join(out_country_dir, filename)
 
+    out_path = os.path.join(out_country_dir, filename)
     old_items, existed_keys = load_existing_hyp(out_path)
 
     try:
@@ -76,10 +91,8 @@ def process_file(json_path: str):
 
     for item in hyp_items:
 
-        # 兼容 path 和 audio_path
         raw_path = item.get("path") or item.get("audio_path") or ""
         path = raw_path.replace("\\", "/")
-
         base = os.path.basename(path)
 
         if base.lower().endswith(".wav"):
@@ -119,27 +132,46 @@ def process_file(json_path: str):
 
     print(f"{country} {filename} added {matched}, empty {empty_text}, total {len(all_items)}")
 
-    return matched > 0  # whether file modified
+    return matched > 0
+
 
 def main():
-    files = [
-        os.path.join(HYP_ROOT, f)
-        for f in os.listdir(HYP_ROOT)
-        if f.endswith(".json")
-    ]
 
-    modified = []
+    for batch in BATCHES:
+        print(f"\n===== 批次开始：{batch} =====")
 
-    for jf in tqdm(files, ncols=100):
-        if process_file(jf):
-            modified.append(os.path.basename(jf))
+        REF_ROOT = f"{ROOT}/{batch}/ref"
+        OUT_ROOT = f"{ROOT}/{batch}/hyp"          # 输出路径
 
-    print("\n=== Modified files (appended new items) ===")
-    if modified:
-        for name in modified:
-            print(name)
-    else:
-        print("No file was modified.")
+        os.makedirs(OUT_ROOT, exist_ok=True)
+
+        HYP_ROOT = f"{HYP_ROOT_PREFIX}/{batch}"   # hyp输入路径
+
+        if not os.path.exists(HYP_ROOT):
+            print(f"[{batch}] hyp不存在，跳过")
+            continue
+
+        files = [
+            os.path.join(HYP_ROOT, f)
+            for f in os.listdir(HYP_ROOT)
+            if f.endswith(".json")
+        ]
+
+        modified = []
+
+        for jf in tqdm(files, ncols=100):
+            if process_file(jf, REF_ROOT, OUT_ROOT):
+                modified.append(os.path.basename(jf))
+
+        print("\n=== Modified files in batch ===")
+        if modified:
+            for name in modified:
+                print(name)
+        else:
+            print("No file modified.")
+
+        print(f"===== 批次结束：{batch} =====")
+
 
 if __name__ == "__main__":
     main()
