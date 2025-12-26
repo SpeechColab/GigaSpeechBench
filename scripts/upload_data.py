@@ -6,13 +6,13 @@ api = HfApi(token=HF_TOKEN)
 
 # 注意这里最好是保持结构一致，即文件放在text/hyp/testbatch下，上传test文件夹
 
-LOCAL_FOLDER = "E:/Desktop/master/master_3/benchmark/result_revision" 
+LOCAL_FOLDER = "E:/Desktop/master/master_3/benchmark/Multilingual-ASR-Benchmark/results/batch_2" 
 
 api.upload_folder(
     folder_path=LOCAL_FOLDER,
     repo_id="AlexTYJ/Multilingual-ASR-Benchmark",
     repo_type="dataset",
-    path_in_repo="text/hyp/testbatch", #这里自己改下push到repo的路径
+    path_in_repo="text/hyp/20251212", #这里自己改下push到repo的路径
 )
 
 print("Upload Done!")
