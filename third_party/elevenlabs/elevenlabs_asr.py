@@ -344,7 +344,8 @@ def main():
                         language=language,
                         model=model_name,
                         start_time=start_time,
-                        end_time=end_time
+                        end_time=end_time,
+                        index=segment_id
                     )
                     
                     # 修正保存的路径格式，确保使用 Linux 风格的路径分隔符

@@ -4,5 +4,7 @@ __pycache__
 *.bin
 build_gradio/query
 
+results/
 # Ignore Mac system files
+results/
 .DS_Store
