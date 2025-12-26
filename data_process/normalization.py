@@ -1,144 +1,169 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""
+===============================================
+📌 JSON 文本归一化脚本 — 自动国家识别，稳态大规模处理
+===============================================
+
+输入路径结构要求：
+
+INPUT_ROOT/
+ ├─ <BATCH_NAME>/
+ │    ├─ hyp/
+ │    │    └─ <LANG_CODE>/
+ │    │           ├─ xx.json
+ │    │           └─ ...
+ │    └─ ref/
+ │         ├─ <LANG_CODE>.json
+ │         └─ ...
+
+输出目录结构镜像 INPUT_ROOT
+===============================================
+"""
+
 import os
 import sys
 import json
 from glob import glob
+from multiprocessing import Pool, cpu_count
+import traceback
+from tqdm import tqdm
+import time
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, ROOT)
-
 from text_norm import get_normalizer
-#LANGS = ["IRQ", "DZA", "ARE", "EGY", "MAR", "SAU", "IDN", "MYS", "PHL", "THA", "VNM", "JPN", "KOR","CHN","USA"]
-LANGS = ["PHL"]
 
-REF_IN = "data/text/testbatch/ref"
-HYP_IN = "data/text/testbatch/hyp"
+# 全局
+PROCESS_IN = None
+PROCESS_OUT = None
+PROCESS_REF = True
 
-REF_OUT = "data/text_normalized/testbatch/ref"
-HYP_OUT = "data/text_normalized/testbatch/hyp"
-
-os.makedirs(REF_OUT, exist_ok=True)
-os.makedirs(HYP_OUT, exist_ok=True)
+FAIL_LOG = "normalize_fail.log"
 
 
-def load_json(path):
-    print(f"[DEBUG] Loading JSON: {path}")
-    with open(path, "r", encoding="utf-8") as f:
-        data = json.load(f)
-    print(f"[DEBUG] Loaded {len(data)} items from {path}")
-    return data
-
-
-def save_json(path, data):
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    print(f"[DEBUG] Saving normalized JSON → {path} (items={len(data)})")
-    with open(path, "w", encoding="utf-8") as f:
+def safe_write(path, data):
+    """确保不会写坏 JSON"""
+    tmp = path + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
-    print(f"[DEBUG] Save OK: {path}")
+    os.replace(tmp, path)
 
 
-def normalize_text(country, text):
-    """调用对应语言的 normalize()"""
+############################################################
+# 单文件处理
+############################################################
+def process_one(path_in: str):
     try:
-        normalize = get_normalizer(country)
-    except Exception as e:
-        print(f"[ERROR] Could not load normalizer for {country}: {e}")
-        return None
+        rel = os.path.relpath(path_in, PROCESS_IN)
+        path_out = os.path.join(PROCESS_OUT, rel)
 
-    new_text = normalize(text)
-    return new_text
+        # 如果已存在 -> 跳过（断点续执行）
+        if os.path.exists(path_out):
+            return True
+
+        parts = rel.split(os.sep)
+        if len(parts) < 3:
+            return False
+
+        second = parts[1]
+
+        # ref: batch/ref/CHN.json
+        if second == "ref":
+            if not PROCESS_REF:
+                return False
+            country = os.path.splitext(os.path.basename(rel))[0]
+        # hyp: batch/hyp/CHN/*.json
+        elif second == "hyp":
+            if len(parts) < 4:
+                return False
+            country = parts[2]
+        else:
+            return False
+
+        os.makedirs(os.path.dirname(path_out), exist_ok=True)
+
+        with open(path_in, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        normalizer = get_normalizer(country)
+
+        if isinstance(data, dict):
+            if "text" in data:
+                data["text"] = normalizer(data["text"])
+        else:
+            for item in data:
+                if isinstance(item, dict) and "text" in item:
+                    item["text"] = normalizer(item["text"])
+
+        safe_write(path_out, data)
+        return True
+
+    except Exception:
+        with open(FAIL_LOG, "a", encoding="utf-8") as fw:
+            fw.write(path_in + "\n")
+        print(f"❌ Error: {path_in}")
+        traceback.print_exc()
+        return False
 
 
-def process_ref(country):
-    infile = f"{REF_IN}/{country}.json"
-    print(f"[DEBUG] REF infile = {infile}")
+############################################################
+# 主入口
+############################################################
+def normalize_folder(
+        input_root="data/text",
+        output_root="data/text_normalized",
+        process_ref=True,
+        workers=None
+):
+    global PROCESS_IN, PROCESS_OUT, PROCESS_REF
+    PROCESS_IN = os.path.abspath(input_root)
+    PROCESS_OUT = os.path.abspath(output_root)
+    PROCESS_REF = process_ref
 
-    if not os.path.exists(infile):
-        print(f"[WARN] REF file not found: {infile}")
+    os.makedirs(PROCESS_OUT, exist_ok=True)
+
+    print("\n📂 输入:", PROCESS_IN)
+    print("📁 输出:", PROCESS_OUT)
+    print(f"📝 是否处理 ref: {process_ref}")
+
+    # 查找所有 JSON
+    hyp_files = glob(os.path.join(PROCESS_IN, "*", "hyp", "*", "*.json"))
+    ref_files = glob(os.path.join(PROCESS_IN, "*", "ref", "*.json")) if process_ref else []
+
+    files = sorted(hyp_files + ref_files)
+
+    print(f"🔍 hyp 数: {len(hyp_files)}")
+    if process_ref:
+        print(f"🔍 ref 数: {len(ref_files)}")
+    print(f"👉 待处理总计: {len(files)}")
+
+    if not files:
+        print("❌ 无 JSON，请检查目录结构")
         return
 
-    outfile = f"{REF_OUT}/{country}.json"
-    print(f"[DEBUG] REF outfile = {outfile}")
+    # 自适应 CPU + IO
+    cpu = cpu_count()
+    if workers is None:
+        workers = min(8, max(2, cpu // 8))  # I/O友好配置
+    print(f"⚙️ 启动并行进程数: {workers}/{cpu}")
 
-    if os.path.exists(outfile):
-        print(f"[REF SKIP] {outfile} already exists")
-        return
+    t0 = time.time()
 
-    data = load_json(infile)
-    normalized = []
+    with Pool(processes=workers) as pool:
+        list(tqdm(
+            pool.imap_unordered(process_one, files),
+            total=len(files),
+            desc="🚀 Normalizing",
+            ncols=100
+        ))
 
-    for idx, item in enumerate(data):
-
-        new_text = normalize_text(country, item["text"])
-        if new_text is None:
-            continue   
-        item["text"] = new_text
-        normalized.append(item)
-
-    save_json(outfile, normalized)
-    print(f"[REF OK] Saved: {outfile}")
-
-
-def process_hyp(country):
-    pattern = f"{HYP_IN}/{country}/{country}_*.json"
-    print(f"[DEBUG] HYP search pattern: {pattern}")
-
-    files = glob(pattern)
-    print(f"[DEBUG] Found {len(files)} hyp files for {country}")
-
-    for file_path in files:
-        base = os.path.basename(file_path)
-        print(f"\n[DEBUG] Processing HYP file = {file_path}")
-
-        # 解析模型名
-        model_name = base.replace(f"{country}_", "").replace(".json", "")
-        print(f"[DEBUG] Model name inferred = {model_name}")
-
-        out_dir = f"{HYP_OUT}/{country}"
-        os.makedirs(out_dir, exist_ok=True)
-
-        outfile = f"{out_dir}/{base}"
-        print(f"[DEBUG] HYP outfile = {outfile}")
-
-        if os.path.exists(outfile):
-            print(f"[HYP SKIP] {outfile} already exists")
-            continue
-
-        data = load_json(file_path)
-        normalized = []
-
-        for idx, item in enumerate(data):
-
-            new_text = normalize_text(country, item["text"])
-            if new_text is None:
-                continue
-
-            item["text"] = new_text
-            normalized.append(item)
-
-        save_json(outfile, normalized)
-        print(f"[HYP OK] Saved: {outfile}")
+    print(f"\n✨ 完成！耗时 {time.time() - t0:.2f}s")
+    print("📌 输出文件:", PROCESS_OUT)
+    print("📌 错误日志:", FAIL_LOG)
 
 
-def main():
-    for country in LANGS:
-        print(f"\n==============================")
-        print(f"=== Processing {country} ===")
-        print(f"==============================")
-
-        # 检查 normalizer
-        try:
-            _ = get_normalizer(country)
-            print(f"[DEBUG] Normalizer loaded for {country}")
-        except Exception:
-            print(f"[SKIP] No normalizer found for {country}")
-            continue
-
-        process_ref(country)
-        process_hyp(country)
-
-
+############################################################
 if __name__ == "__main__":
-    main()
+    normalize_folder()
