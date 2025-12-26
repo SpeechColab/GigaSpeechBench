@@ -2,6 +2,7 @@ data*/
 __pycache__
 *.pt
 *.bin
+build_gradio/query
 
 # Ignore Mac system files
 .DS_Store
