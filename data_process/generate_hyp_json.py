@@ -15,6 +15,7 @@ BATCHES = [
     "testbatch",
     "20251212",
     "20251205",
+    "20251226",
 ]
 
 # 根路径（原样）
@@ -75,21 +76,18 @@ def load_existing_hyp(out_path: str):
 
 
 # =====================================================
-# 🔥 audio_name 计算（逐字逐句复刻你原来的）
+# 🔥 audio_name 计算（原样）
 # =====================================================
 
 def extract_audio_name(item):
-    # 尝试获取音频名称，优先使用 audio_name 字段
     audio_name = item.get("audio_name")
     if audio_name:
         return audio_name
     
-    # 如果没有 audio_name，则使用 path 或 audio_path 字段
     raw_path = item.get("path") or item.get("audio_path") or ""
     raw_path = raw_path.replace("\\", "/")
     base = os.path.basename(raw_path)
 
-    # 如果文件名是 .wav 格式，去掉后缀
     if base.lower().endswith(".wav"):
         return base[:-4]
     else:
@@ -97,7 +95,7 @@ def extract_audio_name(item):
 
 
 # =====================================================
-# 单文件处理（原逻辑，未改）
+# 单文件处理（只加 start / start_time 兼容）
 # =====================================================
 
 def process_file(json_path: str, REF_ROOT: str, OUT_ROOT: str):
@@ -131,8 +129,17 @@ def process_file(json_path: str, REF_ROOT: str, OUT_ROOT: str):
         if audio_name is None:
             continue
 
-        start = float(item.get("start_time", 0.0))
-        end = float(item.get("end_time", 0.0))
+        # ===== ✅ 仅此处新增：时间字段兼容 =====
+        if "start_time" in item and "end_time" in item:
+            start = float(item["start_time"])
+            end = float(item["end_time"])
+        elif "start" in item and "end" in item:
+            start = float(item["start"])
+            end = float(item["end"])
+        else:
+            continue
+        # =====================================
+
         text = clean_text(item.get("text", ""))
         model = item.get("model", "")
 
@@ -207,7 +214,7 @@ def main():
 
 
 # =====================================================
-# 🆕 Online / Gradio 专用（只处理 gradio_batch）
+# 🆕 Online / Gradio 专用（同样只加时间兼容）
 # =====================================================
 
 def run_gradio(
@@ -216,24 +223,8 @@ def run_gradio(
     ref_roots: list,
     out_root: str
 ):
-    """
-    hyp_json_path:
-        上传的 hyp json（原始，带 path / start_time）
 
-    ref_roots:
-        [
-          data/text/testbatch/ref,
-          data/text/20251212/ref,
-          data/text/20251205/ref
-        ]
-
-    out_root:
-        temp_root/text/gradio_batch/hyp
-    """
-
-    # 合并三个 batch 的 ref_index（和你脑子里的一样）
     ref_index = {}
-
     for REF_ROOT in ref_roots:
         _, idx = load_ref(country, REF_ROOT)
         ref_index.update(idx)
@@ -255,8 +246,17 @@ def run_gradio(
         if audio_name is None:
             continue
 
-        start = float(item.get("start_time", 0.0))
-        end = float(item.get("end_time", 0.0))
+        # ===== ✅ 时间字段兼容 =====
+        if "start_time" in item and "end_time" in item:
+            start = float(item["start_time"])
+            end = float(item["end_time"])
+        elif "start" in item and "end" in item:
+            start = float(item["start"])
+            end = float(item["end"])
+        else:
+            continue
+        # ==========================
+
         text = clean_text(item.get("text", ""))
         model = item.get("model", "")
 

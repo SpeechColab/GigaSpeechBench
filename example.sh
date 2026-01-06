@@ -4,17 +4,17 @@ set -e
 echo "========================"
 echo " Step 1: Generate REF JSON"
 echo "========================"
-python data_process/generate_ref_json.py
+#python data_process/generate_ref_json.py
 
 echo "========================"
 echo " Step 2: Generate HYP JSON"
 echo "========================"
-python data_process/generate_hyp_json.py
+#python data_process/generate_hyp_json.py
 
 echo "========================"
 echo " Step 3: Normalization"
 echo "========================"
-python data_process/normalization.py
+#python data_process/normalization.py
 
 echo "========================"
 echo " Step 4: Compute WER"
