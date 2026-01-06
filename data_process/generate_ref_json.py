@@ -12,7 +12,8 @@ from tqdm import tqdm
 BATCHES = [
     "testbatch",
     "20251212",
-    "20251205"
+    "20251205",
+    "20251226"
 ]
 
 BASE_PATH = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/text"

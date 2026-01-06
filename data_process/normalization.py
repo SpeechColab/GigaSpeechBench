@@ -144,7 +144,8 @@ def normalize_folder(
         return
 
     # 自适应 CPU + IO
-    cpu = cpu_count()
+    #cpu = cpu_count()
+    cpu = 8
     if workers is None:
         workers = min(8, max(2, cpu // 8))  # I/O友好配置
     print(f"⚙️ 启动并行进程数: {workers}/{cpu}")
