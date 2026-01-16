@@ -35,22 +35,29 @@ LANGUAGE_MAPPING = {
 }
 
 
-def load_transcribed_segments(language: str, model: str) -> set:
+def load_transcribed_segments(language: str, model: str):
     """
-    加载已转录的segments，返回一个集合，用于快速检查。
+    加载已转录的segments。
+
+    返回:
+        - transcribed_segments (set): 用于快速检查是否存在某个 (path, start_time, end_time)
+        - segment_texts (dict): 以 (path, start_time, end_time) 为 key，文本内容为 value
 
     Args:
         language (str): 语种代码
         model (str): 模型名称
 
     Returns:
-        set: 包含已转录segment的元组集合，每个元组格式为 (path, start_time, end_time)
+        (set, dict): 
+            set: 包含已转录segment的元组集合，每个元组格式为 (path, start_time, end_time)
+            dict: key 同上，value 为该片段的文本内容（字符串）
     """
     results_dir = os.path.join(os.getcwd(), "results")
     filename = f"{language}_{model}.json"
     output_path = os.path.join(results_dir, filename)
 
     transcribed_segments = set()
+    segment_texts = {}
 
     if os.path.exists(output_path):
         try:
@@ -63,16 +70,60 @@ def load_transcribed_segments(language: str, model: str) -> set:
                             path = entry.get("path", "")
                             start_time = entry.get("start_time", 0.0)
                             end_time = entry.get("end_time", 0.0)
+                            text = entry.get("text", "")
                             # 路径格式为 {language_code}/{wav_filename}，直接使用
-                            transcribed_segments.add((
+                            key = (
                                 path,
                                 float(start_time),
-                                float(end_time)
-                            ))
+                                float(end_time),
+                            )
+                            transcribed_segments.add(key)
+                            segment_texts[key] = (text or "").strip()
         except Exception as e:
             print(f"[WARN] 无法加载已转录结果文件 {output_path}: {e}")
 
-    return transcribed_segments
+    return transcribed_segments, segment_texts
+
+
+def is_quota_exceeded_error(error: Exception) -> bool:
+    """
+    检查异常是否为余额不足错误。
+
+    Args:
+        error (Exception): 异常对象
+
+    Returns:
+        bool: 如果是余额不足错误返回True，否则返回False
+    """
+    error_str = str(error).lower()
+    error_repr = repr(error).lower()
+    
+    # 检查错误信息中是否包含 quota_exceeded 相关关键词
+    quota_keywords = ["quota_exceeded", "quota exceeded", "credits remaining", "exceeds your quota"]
+    for keyword in quota_keywords:
+        if keyword in error_str or keyword in error_repr:
+            return True
+    
+    # 检查异常对象的属性（某些 API 库可能将错误信息存储在属性中）
+    if hasattr(error, 'body'):
+        try:
+            if isinstance(error.body, dict):
+                body_str = json.dumps(error.body).lower()
+                if "quota_exceeded" in body_str:
+                    return True
+        except:
+            pass
+    
+    if hasattr(error, 'detail'):
+        try:
+            if isinstance(error.detail, dict):
+                detail_str = json.dumps(error.detail).lower()
+                if "quota_exceeded" in detail_str:
+                    return True
+        except:
+            pass
+    
+    return False
 
 
 def is_segment_transcribed(
@@ -80,7 +131,9 @@ def is_segment_transcribed(
     start_time: float,
     end_time: float,
     language_code: str,
-    transcribed_segments: set
+    transcribed_segments: set,
+    force: bool = False,
+    segment_texts: dict = None,
 ) -> bool:
     """
     检查segment是否已经转录过。
@@ -91,6 +144,8 @@ def is_segment_transcribed(
         end_time (float): 结束时间
         language_code (str): 语种代码
         transcribed_segments (set): 已转录segments的集合
+        force (bool): 是否强制重新转录
+        segment_texts (dict): 已转录segments的文本内容
 
     Returns:
         bool: 如果已转录返回True，否则返回False
@@ -99,7 +154,20 @@ def is_segment_transcribed(
     wav_filename = os.path.basename(audio_path)
     formatted_path = f"{language_code}/{wav_filename}"
     segment_key = (formatted_path, float(start_time), float(end_time))
-    return segment_key in transcribed_segments
+
+    if segment_key not in transcribed_segments:
+        return False
+
+    # 如果未开启 force，或者没有文本信息缓存，则只要存在记录就认为已转录
+    if not force or segment_texts is None:
+        return True
+
+    # force 模式下，如果该片段文本为空，则视为“未完成”，需要重新转录
+    text = segment_texts.get(segment_key, "")
+    if isinstance(text, str) and text.strip() == "":
+        return False
+
+    return True
 
 
 def transcribe_audio(
@@ -166,6 +234,68 @@ def transcribe_audio(
         raise
 
 
+def deduplicate_and_sort_results(language: str, model: str, output_dir: str) -> None:
+    """
+    对指定语言和模型的结果文件进行去重与排序：
+      1. 以 (path, id) 为唯一键，保留“最后出现”的一条记录；
+      2. 按 path 升序、id 升序排序后回写。
+    """
+    results_dir = os.path.join(os.getcwd(), output_dir)
+    filename = f"{language}_{model}.json"
+    output_path = os.path.join(results_dir, filename)
+
+    if not os.path.exists(output_path):
+        return
+
+    try:
+        with open(output_path, "r", encoding="utf-8") as f:
+            content = f.read().strip()
+            if not content:
+                return
+            data = json.loads(content)
+            if not isinstance(data, list):
+                print(f"[WARN] 结果文件格式异常（非列表），跳过去重: {output_path}")
+                return
+    except Exception as e:
+        print(f"[WARN] 无法读取结果文件以进行去重: {output_path}, 原因: {e}")
+        return
+
+    original_len = len(data)
+
+    # 以 (path, id) 为 key，后出现的覆盖前面的，从而保留“最后一个”
+    unique_map = {}
+    for entry in data:
+        path = entry.get("path", "")
+        entry_id = entry.get("id", None)
+        try:
+            entry_id_int = int(entry_id) if entry_id is not None else None
+        except Exception:
+            entry_id_int = entry_id
+        key = (path, entry_id_int)
+        unique_map[key] = entry
+
+    deduped = list(unique_map.values())
+
+    # 按 path、id 排序
+    def _sort_key(e):
+        path = e.get("path", "")
+        eid = e.get("id", 0)
+        try:
+            eid_int = int(eid)
+        except Exception:
+            eid_int = eid
+        return (path, eid_int)
+
+    deduped.sort(key=_sort_key)
+
+    try:
+        with open(output_path, "w", encoding="utf-8") as f:
+            json.dump(deduped, f, ensure_ascii=False, indent=4)
+        print(f"[INFO] 结果去重与排序完成: {output_path} (原有 {original_len} 条, 去重后 {len(deduped)} 条)")
+    except Exception as e:
+        print(f"[WARN] 写回去重结果失败: {output_path}, 原因: {e}")
+
+
 def main():
     """
     主函数：根据标准格式的JSON文件转录音频文件。
@@ -208,6 +338,11 @@ def main():
         default="scribe_v1",
         choices=list(SUPPORTED_MODEL_IDS),
         help="ElevenLabs 模型 ID（可选值：scribe_v1, scribe_v1_experimental, scribe_v2）"
+    )
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="如果为 true，则对于已存在但文本为空的片段重新进行识别"
     )
 
     args = parser.parse_args()
@@ -255,7 +390,7 @@ def main():
 
         # 加载该语种已转录的segments
         model_name = f"elevenlabs_{model_id}"
-        transcribed_segments = load_transcribed_segments(language, model_name)
+        transcribed_segments, segment_texts = load_transcribed_segments(language, model_name)
         print(f"  已加载 {len(transcribed_segments)} 个已转录的segments")
 
         # 加载文本JSON文件
@@ -318,7 +453,15 @@ def main():
                 formatted_path = f"{language}/{audio_filename}"
 
                 # 检查该segment是否已经转录过
-                if is_segment_transcribed(audio_path, start_time, end_time, language, transcribed_segments):
+                if is_segment_transcribed(
+                    audio_path,
+                    start_time,
+                    end_time,
+                    language,
+                    transcribed_segments,
+                    force=args.force,
+                    segment_texts=segment_texts,
+                ):
                     print(f"      该segment已转录，跳过")
                     continue
 
@@ -331,10 +474,24 @@ def main():
                         language=language,
                         model_id=model_id
                     )
-                    print(f"      转录成功: {transcription_text[:50]}...")
+
+                    # 即使返回为空文本也进行保存
+                    preview = ""
+                    if isinstance(transcription_text, str):
+                        preview = transcription_text.strip()[:50]
+                    print(f"      转录成功: {preview}...")
                 except Exception as e:
-                    print(f"      转录失败: {e}")
-                    transcription_text = ""
+                    # 检查是否为余额不足错误
+                    if is_quota_exceeded_error(e):
+                        print(f"      转录失败（余额不足）: {e}")
+                        print(f"      跳过该片段（不保存）")
+                        continue
+                    else:
+                        # 其他错误情况，保存结果为空字符串
+                        print(f"      转录失败（其他错误）: {e}")
+                        print(f"      保存结果为空字符串")
+                        transcription_text = ""
+
 
                 # 调用 save_transcription 保存结果
                 try:
@@ -370,6 +527,9 @@ def main():
                     transcribed_segments.add((formatted_path, float(start_time), float(end_time)))
                 except Exception as e:
                     print(f"      保存结果失败: {e}")
+
+        # 该语种所有音频与片段处理完毕后，对结果文件进行去重与排序
+        deduplicate_and_sort_results(language, model_name, args.output_dir)
 
     print("\n所有文件处理完毕！")
 
