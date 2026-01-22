@@ -6,19 +6,10 @@
 📌 JSON 文本归一化脚本 — 自动国家识别，稳态大规模处理
 ===============================================
 
-输入路径结构要求：
-
-INPUT_ROOT/
- ├─ <BATCH_NAME>/
- │    ├─ hyp/
- │    │    └─ <LANG_CODE>/
- │    │           ├─ xx.json
- │    │           └─ ...
- │    └─ ref/
- │         ├─ <LANG_CODE>.json
- │         └─ ...
-
-输出目录结构镜像 INPUT_ROOT
+修复语义（确认版）：
+- 单句 text 归一化失败 → 保持原样
+- JSON 文件始终生成
+- 仅在文件级错误时记录到 normalize_fail.log
 ===============================================
 """
 
@@ -26,14 +17,14 @@ import os
 import sys
 import json
 from glob import glob
-from multiprocessing import Pool, cpu_count
+from multiprocessing import Pool
 import traceback
 from tqdm import tqdm
 import time
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, ROOT)
-from text_norm import get_normalizer
+from text_norm import get_normalizer  # noqa
 
 # 全局
 PROCESS_IN = None
@@ -42,13 +33,31 @@ PROCESS_REF = True
 
 FAIL_LOG = "normalize_fail.log"
 
+MODEL_KEYS = {
+    "model", "model_name", "modelname", "asr_model", "asrmodel",
+    "system", "system_name", "engine", "engine_name",
+    "recognizer", "recognizer_name", "name", "backend"
+}
+
 
 def safe_write(path, data):
-    """确保不会写坏 JSON"""
     tmp = path + ".tmp"
     with open(tmp, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
     os.replace(tmp, path)
+
+
+def upper_model_name_in_json(obj):
+    if isinstance(obj, dict):
+        for k, v in list(obj.items()):
+            lk = str(k).lower()
+            if lk in MODEL_KEYS and isinstance(v, str):
+                obj[k] = v.upper()
+            else:
+                upper_model_name_in_json(v)
+    elif isinstance(obj, list):
+        for it in obj:
+            upper_model_name_in_json(it)
 
 
 ############################################################
@@ -57,30 +66,35 @@ def safe_write(path, data):
 def process_one(path_in: str):
     try:
         rel = os.path.relpath(path_in, PROCESS_IN)
-        path_out = os.path.join(PROCESS_OUT, rel)
-
-        # 如果已存在 -> 跳过（断点续执行）
-        if os.path.exists(path_out):
-            return True
-
         parts = rel.split(os.sep)
         if len(parts) < 3:
             return False
 
         second = parts[1]
+        path_out = os.path.join(PROCESS_OUT, rel)
 
-        # ref: batch/ref/CHN.json
         if second == "ref":
             if not PROCESS_REF:
                 return False
             country = os.path.splitext(os.path.basename(rel))[0]
-        # hyp: batch/hyp/CHN/*.json
+            out_rel = rel
+
         elif second == "hyp":
             if len(parts) < 4:
                 return False
             country = parts[2]
+            base = os.path.basename(rel)
+            stem, ext = os.path.splitext(base)
+            base_up = stem.upper() + ext
+            out_rel = os.path.join(*parts[:-1], base_up)
+
         else:
             return False
+
+        path_out = os.path.join(PROCESS_OUT, out_rel)
+
+        if os.path.exists(path_out):
+            return True
 
         os.makedirs(os.path.dirname(path_out), exist_ok=True)
 
@@ -89,13 +103,26 @@ def process_one(path_in: str):
 
         normalizer = get_normalizer(country)
 
+        # ===============================
+        # ⭐ FIX：sentence 级容错
+        # ===============================
         if isinstance(data, dict):
-            if "text" in data:
-                data["text"] = normalizer(data["text"])
-        else:
+            if "text" in data and isinstance(data["text"], str):
+                try:
+                    data["text"] = normalizer(data["text"])
+                except Exception:
+                    pass  # 保持原样
+
+        elif isinstance(data, list):
             for item in data:
-                if isinstance(item, dict) and "text" in item:
-                    item["text"] = normalizer(item["text"])
+                if isinstance(item, dict) and "text" in item and isinstance(item["text"], str):
+                    try:
+                        item["text"] = normalizer(item["text"])
+                    except Exception:
+                        pass  # 保持原样
+
+        # 模型名字段转大写（不影响 text）
+        upper_model_name_in_json(data)
 
         safe_write(path_out, data)
         return True
@@ -103,7 +130,7 @@ def process_one(path_in: str):
     except Exception:
         with open(FAIL_LOG, "a", encoding="utf-8") as fw:
             fw.write(path_in + "\n")
-        print(f"❌ Error: {path_in}")
+        print(f"❌ File-level Error: {path_in}")
         traceback.print_exc()
         return False
 
@@ -128,7 +155,6 @@ def normalize_folder(
     print("📁 输出:", PROCESS_OUT)
     print(f"📝 是否处理 ref: {process_ref}")
 
-    # 查找所有 JSON
     hyp_files = glob(os.path.join(PROCESS_IN, "*", "hyp", "*", "*.json"))
     ref_files = glob(os.path.join(PROCESS_IN, "*", "ref", "*.json")) if process_ref else []
 
@@ -143,11 +169,8 @@ def normalize_folder(
         print("❌ 无 JSON，请检查目录结构")
         return
 
-    # 自适应 CPU + IO
-    #cpu = cpu_count()
     cpu = 8
-    if workers is None:
-        workers = min(8, max(2, cpu // 8))  # I/O友好配置
+    workers = 4
     print(f"⚙️ 启动并行进程数: {workers}/{cpu}")
 
     t0 = time.time()
@@ -165,6 +188,5 @@ def normalize_folder(
     print("📌 错误日志:", FAIL_LOG)
 
 
-############################################################
 if __name__ == "__main__":
     normalize_folder()
