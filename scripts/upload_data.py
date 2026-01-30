@@ -1,18 +1,61 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+"""
+将本地 Dialect-testbatch 目录【原样结构】上传到 HuggingFace Dataset Repo
+
+本地：
+/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/
+└── data/Multilingual-ASR-Benchmark/audio/Dialect-testbatch
+    ├── JIN/
+    │   ├── index.txt
+    │   ├── JIN#unknown#xxx.wav
+    ├── XIANG/
+    └── ...
+
+HF Repo（完全一致）：
+AlexTYJ/Multilingual-ASR-Benchmark
+└── audio/Dialect-testbatch
+    ├── JIN/
+    ├── XIANG/
+    └── ...
+"""
+
 from huggingface_hub import HfApi
+from pathlib import Path
+
+# =========================
+# HF 配置
+# =========================
 
 HF_TOKEN = "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"
+REPO_ID = "AlexTYJ/Multilingual-ASR-Benchmark"
+REPO_TYPE = "dataset"
 
 api = HfApi(token=HF_TOKEN)
 
-# 注意这里最好是保持结构一致，即文件放在text/hyp/testbatch下，上传test文件夹
+# =========================
+# 本地路径（你给的）
+# =========================
 
-LOCAL_FOLDER = "E:/Desktop/master/master_3/benchmark/Multilingual-ASR-Benchmark/results/batch_2" 
-
-api.upload_folder(
-    folder_path=LOCAL_FOLDER,
-    repo_id="AlexTYJ/Multilingual-ASR-Benchmark",
-    repo_type="dataset",
-    path_in_repo="text/hyp/20251212", #这里自己改下push到repo的路径
+LOCAL_FOLDER = Path(
+    "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/"
+    "data/Multilingual-ASR-Benchmark/audio/Dialect-testbatch"
 )
 
-print("Upload Done!")
+assert LOCAL_FOLDER.exists(), f"本地路径不存在: {LOCAL_FOLDER}"
+
+# =========================
+# 上传（结构完全一致）
+# =========================
+
+api.upload_folder(
+    folder_path=str(LOCAL_FOLDER),
+    repo_id=REPO_ID,
+    repo_type=REPO_TYPE,
+    path_in_repo="audio/Dialect-testbatch",  # ✅ 与本地一致
+    allow_patterns=["*.wav", "*.txt", "*.json"],
+    commit_message="Upload Dialect-testbatch audio (structure-preserved)",
+)
+
+print("✅ Upload Done! 目录结构与本地完全一致")

@@ -4,7 +4,7 @@ set -e
 echo "========================"
 echo " Step 1: Generate REF JSON"
 echo "========================"
-python data_process/generate_ref_json.py
+#python data_process/generate_ref_json.py
 
 echo "========================"
 echo " Step 2: Generate HYP JSON"
@@ -20,6 +20,11 @@ echo "========================"
 echo " Step 4: Compute WER"
 echo "========================"
 python scripts/compute_wer.py
+
+echo "========================"
+echo "step 5 : generate excel"
+echo "========================"
+python scripts/excel.py
 
 echo "========================"
 echo "✔ All steps completed successfully!"
