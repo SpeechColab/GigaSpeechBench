@@ -1,165 +1,360 @@
-import os
-import time
-import json
-import subprocess
-import tempfile
-import azure.cognitiveservices.speech as speechsdk
-from pydub import AudioSegment
-import utils
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
-# ===== 全局配置 =====
-SPEECH_KEY = "EWGsOgJxZ6FKG73BTYmYJJ5ohFz8FR0kykIGEkRywJxavPS39XwGJQQJ99BKAC3pKaRXJ3w3AAAAACOG4AFu"
-SPEECH_REGION = "eastasia"
-CHUNK_SECONDS = 30           # 每段最大时长（秒）
-SILENCE_THRESH = -40         # 静音检测阈值 (dBFS)
-MIN_SILENCE_LEN = 500        # 静音最短持续时间 (ms)
+import os
+import json
+import ntpath
+import tempfile
+import time
+import argparse
+from tqdm import tqdm
+from pydub import AudioSegment
+import azure.cognitiveservices.speech as speechsdk
+
+# ===================== 1. 语种映射配置 =====================
+# 语种映射表通常作为常量保留，若需要也可以将其改为外部 JSON 配置文件读取
+LANG_MAP = {
+    # --- 原有映射 ---
+    "ARE": "ar-AE",
+    "DZA": "ar-DZ",
+    "EGY": "ar-EG",
+    "IRQ": "ar-IQ",
+    "MAR": "ar-MA",
+    "SAU": "ar-SA",
+    "MYS": "ms-MY",
+    "THA": "th-TH",
+    "IDN": "id-ID",
+    "PHL": "fil-PH",
+    "VNM": "vi-VN",
+    "KOR": "ko-KR",
+    "JPN": "ja-JP",
+    "AR": "ar-SA",
+
+    "PHL-EN": "en-PH",  # 菲律宾英语
+    "SGP-EN": "en-SG",  # 新加坡英语
+    "SCT-EN": "en-GB",  # 苏格兰英语
+
+    "CHN-EN": "en-HK",  # 中式英语 
+    "IDN-EN": "en-US",  # 印尼英语
+    "JPN-EN": "en-US",  # 日式英语
+    "JIN": "zh-CN",     # 晋语
+    "XIANG": "zh-CN",   # 湘语
+}
+
+
+# ===================== 2. 参数解析 =====================
+def parse_args():
+    parser = argparse.ArgumentParser(description="Azure ASR Evaluation Script")
+
+    # 基础路径配置
+    parser.add_argument("--base_dir", type=str, default="/workdir/Multilingual-ASR-Benchmark/CH-EN-Dialects",
+                        help="基础数据集目录路径")
+    
+    parser.add_argument("--speech_roots", type=str, nargs="+", default=None,
+                        help="音频目录列表。若不指定，默认使用 base_dir/audio/testbatch")
+    
+    parser.add_argument("--ref_roots", type=str, nargs="+", default=None,
+                        help="参考文本目录列表。若不指定，默认使用 base_dir/text/ref")
+    
+    parser.add_argument("--submission_root", type=str, default=None,
+                        help="输出结果的保存目录。若不指定，默认使用 base_dir/submission_azure")
+    
+    parser.add_argument("--pre_root", type=str, default=None,
+                        help="先前结果(缓存)的目录。若不指定，默认使用 base_dir/submission_azure2")
+
+    # Azure 与模型配置
+    parser.add_argument("--model_name", type=str, default="azure",
+                        help="用于写入 JSON 结果的模型名称")
+    
+    parser.add_argument("--speech_key", type=str, default=os.environ.get("SPEECH_KEY"),
+                        help="Azure Speech API Key (默认从环境变量 SPEECH_KEY 中读取)")
+    
+    parser.add_argument("--speech_region", type=str, default="eastasia",
+                        help="Azure Speech API Region")
+
+    return parser.parse_args()
+
+
+# ===================== 3. 工具函数 =====================
+
+def build_audio_index(roots):
+    """
+    audio_index[(lang, audio_name_without_ext)] = full_path
+    """
+    idx = {}
+    for root in roots:
+        if not os.path.isdir(root):
+            continue
+        for lang in os.listdir(root):
+            lang_dir = os.path.join(root, lang)
+            if not os.path.isdir(lang_dir):
+                continue
+            for f in os.listdir(lang_dir):
+                if f.lower().endswith(".wav") or f.lower().endswith(".mp3"):
+                    # 存入时不带后缀，方便和 json 文件名直接匹配
+                    name_no_ext = os.path.splitext(f)[0]
+                    idx[(lang, name_no_ext)] = os.path.join(lang_dir, f)
+    
+    print(f"[DEBUG] 索引采样: {list(idx.keys())[:5]}")
+    return idx
 
 
 def extract_audio_segment(file_path, start_time, end_time, output_path):
     """
-    从音频文件中提取指定时间段的片段
+    从音频中截取指定时间段，支持 wav/mp3/flac 等
+    输出为 wav（给 Azure 用最稳）
     """
     try:
-        audio = AudioSegment.from_wav(file_path)
-        # 转换为毫秒
-        start_ms = start_time * 1000
-        end_ms = end_time * 1000
+        ext = os.path.splitext(file_path)[1].lower().lstrip(".") 
+        if ext == "":
+            ext = None 
+
+        audio = AudioSegment.from_file(file_path, format=ext)
+
+        # 防止越界
+        start_ms = max(0, int(start_time * 1000))
+        end_ms = max(start_ms, int(end_time * 1000))
+        if end_ms > len(audio):
+            end_ms = len(audio)
+
         segment = audio[start_ms:end_ms]
         segment.export(output_path, format="wav")
         return True
     except Exception as e:
-        print(f"[ERROR] 提取音频片段失败: {e}")
+        print(f"[ERROR] 提取音频失败 {file_path}: {e}")
         return False
 
-def recognize_chunk(file_path, lang="en-US"):
-    """
-    调用 Azure Speech SDK 识别单个音频片段
-    """
-    speech_config = speechsdk.SpeechConfig(subscription=SPEECH_KEY, region=SPEECH_REGION)
+
+def recognize_chunk(file_path, lang, speech_key, speech_region):
+    """调用 Azure API 识别切片音频"""
+    if not speech_key:
+        raise ValueError("Azure SPEECH_KEY 未配置，请通过环境变量或 --speech_key 参数提供。")
+
+    speech_config = speechsdk.SpeechConfig(
+        subscription=speech_key, region=speech_region
+    )
     speech_config.speech_recognition_language = lang
     audio_config = speechsdk.AudioConfig(filename=file_path)
-    recognizer = speechsdk.SpeechRecognizer(speech_config=speech_config, audio_config=audio_config)
 
-    result = recognizer.recognize_once_async().get()
-    print(f"{file_path}: {result}")
-    if result.reason == speechsdk.ResultReason.RecognizedSpeech:
-        return result.text.strip()
-    elif result.reason == speechsdk.ResultReason.NoMatch:
-        print(f"[WARN] No speech recognized in {os.path.basename(file_path)}")
-        return ""
-    elif result.reason == speechsdk.ResultReason.Canceled:
-        print(f"[ERROR] Recognition canceled: {result.cancellation_details.reason}")
-        print(f"Details: {result.cancellation_details.error_details}")
-        return ""
-    return ""
+    recognizer = speechsdk.SpeechRecognizer(
+        speech_config=speech_config, audio_config=audio_config
+    )
 
-def segment_already_processed(audio_path, start, end):
-    """检查该段音频是否已识别过"""
-    for entry in existing_entries:
-        if os.path.abspath(entry.get("path", "")) == os.path.abspath(audio_path):
-            if abs(entry.get("start_time", -1) - start) < 1e-3 and \
-            abs(entry.get("end_time", -1) - end) < 1e-3:
-                return True
-    return False
+    results = []
+    done = False
 
-if __name__ == '__main__':
-    model_name = "Azure"
-    speech_root = r"E:\\MLASR\\testbatch_processed\\testbatch_processed"
-    prelabel_root = r"E:\MLASR\试标注汇总"
-    output_root = r"E:\MLASR\Multilingual-ASR-Benchmark\results"
-    
-    lang_map = {
-        "ARE": "ar-AE", "DZA": "ar-DZ", "EGY": "ar-EG", "IRQ": "ar-IQ", "MAR": "ar-MA",
-        "SAU": "ar-SA", "MYS": "ms-MY", "THA": "th-TH", "IDN": "id-ID", "PHL": "fil-PH",
-        "VNM": "vi-VN", "KOR": "ko-KR", "JPN": "ja-JP",
-    }
+    def recognized(evt):
+        if evt.result.reason == speechsdk.ResultReason.RecognizedSpeech:
+            txt = evt.result.text.strip()
+            if txt:
+                results.append(txt)
 
-    os.makedirs(output_root, exist_ok=True)
+    def stop_cb(evt):
+        nonlocal done
+        done = True
 
-    for lang_folder in sorted(os.listdir(speech_root)):
-        lang_path = os.path.join(speech_root, lang_folder)
-        if not os.path.isdir(lang_path):
+    recognizer.recognized.connect(recognized)
+    recognizer.session_stopped.connect(stop_cb)
+    recognizer.canceled.connect(stop_cb)
+
+    recognizer.start_continuous_recognition()
+    while not done:
+        time.sleep(0.1)
+    recognizer.stop_continuous_recognition()
+
+    return " ".join(results)
+
+
+def load_pre_root_results(pre_root):
+    """
+    cache[(lang, audio_name, start_time_str)] = text
+    """
+    cache = {}
+    if not os.path.isdir(pre_root):
+        return cache
+
+    for root, _, files in os.walk(pre_root):
+        for f in files:
+            if not f.endswith(".json"):
+                continue
+            try:
+                with open(os.path.join(root, f), "r", encoding="utf-8") as jf:
+                    data = json.load(jf)
+                if not isinstance(data, list):
+                    continue
+                for item in data:
+                    lang = item.get("language")
+                    audio_name = item.get("audio_name")
+                    start = item.get("start_time")
+                    text = item.get("text", "")
+                    if lang and audio_name and start is not None and text.strip():
+                        key = (lang, audio_name, f"{float(start):.4f}")
+                        cache[key] = text.strip()
+            except Exception as e:
+                print(f"[PRE_ROOT LOAD FAIL] {f} | {e}")
+
+    print(f"[INFO] PRE_ROOT 缓存已加载条目数: {len(cache)}")
+    return cache
+
+
+def build_tasks(ref_roots, audio_index):
+    """
+    从所有 ref_root 构建待识别任务
+    """
+    tasks = []
+    for ref_root in ref_roots:
+        if not os.path.isdir(ref_root):
             continue
 
-        lang_code = lang_map.get(lang_folder)
-        if not lang_code:
-            print(f"[SKIP] 未配置语种代码：{lang_folder}")
-            continue
+        for lang in os.listdir(ref_root):
+            lang_dir = os.path.join(ref_root, lang)
+            if not os.path.isdir(lang_dir):
+                continue
 
-        output_json = os.path.join(output_root, f"{lang_folder}_Azure.json")
-        print(f"\n=== 🌍 处理语种: {lang_folder} ({lang_code}) ===")
-
-        # 收集所有音频或视频文件
-        file_list = []
-        for root, _, files in os.walk(lang_path):
-            for f in files:
-                if f.lower().endswith(".wav"):
-                    if f.lower().find("chunk_") != -1:
-                        continue
-                    file_list.append(os.path.join(root, f))
-        print(f"[INFO] 共发现 {len(file_list)} 个文件。")
-
-        for idx, file_path in enumerate(file_list, 1):
-            
-            file_name = os.path.basename(file_path)
-            print(f"\n[INFO] ({idx}/{len(file_list)}) 正在处理 {file_name}")
-
-            # 读取已有结果（如果存在）
-            existing_entries = []
-            output_json = os.path.join(output_root, f"{lang_folder}_{model_name}.json")
-
-            if os.path.exists(output_json):
-                try:
-                    with open(output_json, "r", encoding="utf-8") as f:
-                        existing_entries = json.load(f)
-                except Exception:
-                    existing_entries = []
-            
-            
-
-            # 视频转音频（保存在同目录）
-            json_path = os.path.join(prelabel_root, os.path.relpath(file_path, speech_root).replace(".wav", ".json"))
-            with open(json_path, "r", encoding="utf-8") as rf:
-                prelabel_json = json.load(rf)
-            # 处理每个片段
-            for segment_idx, prelabel_item in enumerate(prelabel_json.get("segments", [])):
-                start, end = prelabel_item["start"], prelabel_item["end"]
-                prelabel = prelabel_item["text"]
-                print(f"[INFO] 处理片段 {segment_idx + 1}: {start:.2f}s - {end:.2f}s")
-                
-                if segment_already_processed(file_path, start, end):
-                    print(f"[SKIP] 片段已识别，跳过 {start:.2f}-{end:.2f}s")
+            for ref_file in os.listdir(lang_dir):
+                if not ref_file.endswith(".json"):
                     continue
 
-                # 创建临时文件用于存储音频片段
-                with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as temp_file:
-                    temp_path = temp_file.name
+                audio_name = ref_file.replace(".json", "")
+                audio_path = audio_index.get((lang, audio_name))
+
+                if audio_path is None:
+                    print(f"[MISS AUDIO] 在 audio 中找不到 {lang}/{audio_name}.wav")
+                    continue
+
+                with open(os.path.join(lang_dir, ref_file), "r", encoding="utf-8") as f:
+                    ref_data = json.load(f)
+                
+                segments = ref_data.get("segments", [])
+                
+                tasks.append(
+                    {
+                        "language": lang,
+                        "audio_name": audio_name,
+                        "audio_path": audio_path,
+                        "segments": segments,
+                    }
+                )
+
+    return tasks
+
+
+# ===================== 4. 主逻辑 =====================
+
+if __name__ == "__main__":
+    args = parse_args()
+
+    # 动态构建路径变量
+    SPEECH_ROOTS = args.speech_roots if args.speech_roots else [os.path.join(args.base_dir, "audio", "testbatch")]
+    REF_ROOTS = args.ref_roots if args.ref_roots else [os.path.join(args.base_dir, "text", "ref")]
+    SUBMISSION_ROOT = args.submission_root if args.submission_root else os.path.join(args.base_dir, "submission_azure")
+    PRE_ROOT = args.pre_root if args.pre_root else os.path.join(args.base_dir, "submission_azure2")
+    
+    os.makedirs(SUBMISSION_ROOT, exist_ok=True)
+
+    print("=================== Configuration ===================")
+    print(f"Base Directory   : {args.base_dir}")
+    print(f"Speech Roots     : {SPEECH_ROOTS}")
+    print(f"Ref Roots        : {REF_ROOTS}")
+    print(f"Submission Root  : {SUBMISSION_ROOT}")
+    print(f"Pre Root (Cache) : {PRE_ROOT}")
+    print(f"Model Name       : {args.model_name}")
+    print(f"Azure Region     : {args.speech_region}")
+    print("=====================================================\n")
+
+    print("[INFO] 构建音频索引...")
+    audio_index = build_audio_index(SPEECH_ROOTS)
+    print(f"[INFO] 音频索引总数: {len(audio_index)}")
+
+    print("[INFO] 加载 PRE_ROOT 缓存...")
+    pre_cache = load_pre_root_results(PRE_ROOT)
+
+    print("[INFO] 构建待识别任务...")
+    tasks = build_tasks(REF_ROOTS, audio_index)
+    print(f"[INFO] 待处理文件数: {len(tasks)}")
+
+    total_valid = 0
+    total_found = 0
+
+    per_lang_results = {}
+
+    for task in tasks:
+        lang = task["language"]
+        audio_name = task["audio_name"]
+        audio_path = task["audio_path"]
+
+        if lang not in per_lang_results:
+            per_lang_results[lang] = []
+
+        lang_code = LANG_MAP.get(lang)
+        if not lang_code:
+            print(f"[WARNING] 未在 LANG_MAP 中找到 {lang} 的映射，跳过此文件。")
+            continue
+
+        # 遍历该音频文件下的所有切片
+        for seg in tqdm(task["segments"], desc=f"{lang}/{audio_name}"):
+            if seg.get("status") == "invalid":
+                continue
+
+            start = float(seg.get("start", 0.0))
+            end = float(seg.get("end", 0.0))
+            key = (lang, audio_name, f"{start:.4f}")
+
+            item = {
+                "audio_name": audio_name,
+                "text": "",
+                "language": lang,
+                "model": args.model_name,
+                "start_time": start,
+                "end_time": end,
+            }
+            ref_text = seg.get("text", "")
+
+            total_valid += 1
+
+            # 如果命中缓存，直接取值
+            if key in pre_cache:
+                item["text"] = pre_cache[key]
+                total_found += 1
+                per_lang_results[lang].append(item)
+            else:
+                # 截取音频并调用 API
+                with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tf:
+                    tmp_wav = tf.name
 
                 try:
-                    # 提取音频片段
-                    if extract_audio_segment(file_path, start, end, temp_path):
-                        # 识别音频片段
-                        recognized_text = recognize_chunk(temp_path, lang_code)
-                        
-                        # 将片段识别结果添加到完整文本中
-                        utils.save_transcription(
-                            audio_path=file_path,
-                            text=recognized_text,
-                            language=lang_folder,
-                            model=model_name,
-                            start_time=start,
-                            end_time=end
-                        )
-                        print(f"[SUCCESS] 片段 {segment_idx + 1} 识别完成: {recognized_text} 参考：{prelabel}")
-                    else:
-                        print(f"[ERROR] 提取音频片段失败: {start:.2f}s - {end:.2f}s")
-                        
-                except Exception as e:
-                    print(f"[ERROR] 处理片段失败: {e}")
-                finally:
-                    # 清理临时文件
-                    if os.path.exists(temp_path):
-                        os.unlink(temp_path)
+                    ok = extract_audio_segment(audio_path, start, end, tmp_wav)
+                    if not ok:
+                        continue
 
-            # 保存整个文件的识别结果
-            print(f"[SUCCESS] 完成: {file_name}")
+                    # 传入外部配置的 speech_key 和 region
+                    hyp = recognize_chunk(tmp_wav, lang_code, args.speech_key, args.speech_region)
+                    print(f"\n{audio_path}:{start}-{end} | EST: {hyp} | REF: {ref_text}")
+                    item["text"] = hyp
+                    total_found += 1
+                    per_lang_results[lang].append(item)
+                except Exception as e:
+                    print(f"[ERROR] Azure API 调用或音频截取错误 {audio_path}:{start}-{end} | {e}")
+                    continue
+                finally:
+                    if os.path.exists(tmp_wav):
+                        os.unlink(tmp_wav)
+
+    # ===================== 5. 输出结果 =====================
+    for lang, results in per_lang_results.items():
+        if not results:
+            continue
+        out_file = os.path.join(SUBMISSION_ROOT, f"{lang}.json")
+        with open(out_file, "w", encoding="utf-8") as f:
+            json.dump(results, f, indent=2, ensure_ascii=False)
+        print(f"[OK] 写出 {out_file} | {len(results)} 条")
+
+    print("\n============== Overall Statistics ==============")
+    print(f"Valid total : {total_valid}")
+    print(f"Found total : {total_found}")
+    print(f"Missing     : {total_valid - total_found}")
+    if total_valid > 0:
+        print(f"Coverage    : {(total_found / total_valid * 100):.2f}%")
+    print("==============================================")
+
+    print(f"\n[完成] 结果保存在：{SUBMISSION_ROOT}")
