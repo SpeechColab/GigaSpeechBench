@@ -7,18 +7,28 @@ from nemo.collections.asr.models import EncDecHybridRNNTCTCModel
 from utils import save_transcription
 from pathlib import Path
 from tqdm import tqdm
-from collections import defaultdict
+from typing import Dict, Any, Optional
 
-class CountryASRProcessor:
+class ArabicASRProcessor:
     def __init__(self, model_path: str):
-        """初始化ASR处理器"""
-        self.model = EncDecHybridRNNTCTCModel.restore_from(model_path)
-        self.model.eval()
+        """阿拉伯语ASR处理器（自动跳过无效片段）"""
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.model = self.model.to(self.device)
-        print(f"✅ Model loaded on {self.device}")
+        print("⏳ 加载阿拉伯语模型...")
         
-    def _clean_text(self, text):
+        if not os.path.exists(model_path):
+            raise FileNotFoundError(f"模型文件未找到: {model_path}")
+        
+        self.model = EncDecHybridRNNTCTCModel.restore_from(model_path).to(self.device)
+        self.model.eval()
+        print(f"✅ 模型已加载 ({self.device})")
+        
+    def _is_silent_segment(self, segment: Dict[str, Any]) -> bool:
+        """判断是否为无效片段"""
+        return (
+            segment.get("status", "") == "invalid" 
+        )
+
+    def _clean_text(self, text) -> str:
         """清理转录文本为纯字符串"""
         if isinstance(text, (list, tuple)):
             if len(text) > 0:
@@ -28,88 +38,106 @@ class CountryASRProcessor:
             return ""
         return str(text)
 
-    def _extract_segment(self, audio_path: str, start: float, end: float) -> str:
+    def _process_segment(self, audio_path: str, start: float, end: float) -> str:
         """创建临时音频片段"""
-        temp_dir = "temp_segments"
+        temp_dir = "temp_ara_segments"
         os.makedirs(temp_dir, exist_ok=True)
         temp_path = os.path.join(temp_dir, f"{Path(audio_path).stem}_{start:.2f}-{end:.2f}.wav")
         y, sr = librosa.load(audio_path, sr=None, offset=start, duration=end-start)
         sf.write(temp_path, y, sr)
         return temp_path
 
-    def transcribe_segment(self, audio_path: str, segment: dict) -> dict:
-        """转录单个片段"""
-        result = {
-            "path": audio_path,
-            "start_time": segment["start"],
-            "end_time": segment["end"],
-            "language": "",  # 将由主流程填充
-            "model": "stt_ar_fastconformer_hybrid_large_pcd_v1.0.nemo",
-            "text": ""
-        }
-        
-        if segment.get("status") == "valid":
-            try:
-                temp_path = self._extract_segment(audio_path, segment["start"], segment["end"])
-                transcription = self.model.transcribe([temp_path], batch_size=1)
-                result["text"] = self._clean_text(transcription)
-                os.remove(temp_path)
-            except Exception as e:
-                print(f"⚠️ Error transcribing {segment['start']:.2f}-{segment['end']:.2f}s: {str(e)}")
-                result["error"] = str(e)
-        
-        return result
+    def _transcribe_segment(self, audio_path: str) -> Optional[str]:
+        """转录单个音频片段"""
+        try:
+            transcription = self.model.transcribe([audio_path], batch_size=1)
+            return self._clean_text(transcription)
+        except Exception as e:
+            print(f"⚠️ 转录异常: {str(e)}")
+            return None
 
     def process_file(self, audio_path: str, label_path: str):
         """处理单个音频文件"""
-        with open(label_path, 'r', encoding='utf-8') as f:
-            label_data = json.load(f)
+        try:
+            with open(label_path, 'r', encoding='utf-8') as f:
+                segments = json.load(f).get("segments", [])
+        except Exception as e:
+            print(f"⚠️ 标签读取失败: {label_path} - {str(e)}")
+            return
         
-        country_code = os.path.basename(os.path.dirname(audio_path)).upper()
-        segments = label_data.get("segments", [])
+        country_code = Path(audio_path).parent.name.upper()
+        silent_count = 0
+        processed_count = 0
         
-        print(f"\n🔊 Processing {Path(audio_path).name} [{country_code}]")
+        print(f"\n🔊 处理 {Path(audio_path).name} [{country_code}]")
         
-        for segment in tqdm(segments, desc="Transcribing segments"):
-            result = self.transcribe_segment(audio_path, segment)
-            result["language"] = country_code
-            
-            # 使用提供的utils函数保存结果
-            save_transcription(
-                audio_path=result["path"],
-                text=result["text"],
-                language=result["language"],
-                model="stt_ar_fastconformer_hybrid_large_pcd_v1.0.nemo",
-                start_time=result["start_time"],
-                end_time=result["end_time"]
-            )
+        for seg in tqdm(segments, desc="分段处理"):
+            # 跳过静音/无效片段
+            if self._is_silent_segment(seg):
+                silent_count += 1
+                continue
+                
+            try:
+                tmp_audio = self._process_segment(audio_path, seg["start"], seg["end"])
+                text = self._transcribe_segment(tmp_audio)
+                
+                save_transcription(
+                    audio_path=audio_path,
+                    text=text if text is not None else "",
+                    language=country_code,
+                    model="stt_ar_fastconformer_hybrid_large",
+                    start_time=seg["start"],
+                    end_time=seg["end"],
+                )
+                processed_count += 1
+                if os.path.exists(tmp_audio):
+                    os.remove(tmp_audio)
+            except Exception as e:
+                print(f"⚠️ 分段异常 [{seg['start']}-{seg['end']}s]: {str(e)}")
+                save_transcription(
+                    audio_path=audio_path,
+                    text="",
+                    language=country_code,
+                    model="stt_ar_fastconformer_hybrid_large",
+                    start_time=seg["start"],
+                    end_time=seg["end"],
+                )
+                processed_count += 1
+        
+        print(f"  已跳过 {silent_count} 个静音片段，处理了 {processed_count} 个有效片段")
 
 def process_dataset(audio_dir: str, label_dir: str, model_path: str):
     """处理整个数据集"""
-    processor = CountryASRProcessor(model_path)
+    try:
+        asr = ArabicASRProcessor(model_path)
+    except Exception as e:
+        print(f"❌ 初始化失败: {str(e)}")
+        return
     
+    processed_files = 0
     for root, _, files in os.walk(audio_dir):
         for file in files:
-            if file.lower().endswith('.wav'):
-                audio_path = os.path.join(root, file)
+            if not file.lower().endswith('.wav'):
+                continue
                 
-                # 构建标签路径
-                rel_path = os.path.relpath(audio_path, audio_dir)
-                country_dir = os.path.basename(os.path.dirname(rel_path))
-                label_file = os.path.splitext(file)[0] + '.json'
-                label_path = os.path.join(label_dir, country_dir, label_file)
-                
-                if os.path.exists(label_path):
-                    processor.process_file(audio_path, label_path)
-                else:
-                    print(f"⚠️ Label missing: {label_path}")
+            audio_file = os.path.join(root, file)
+            rel_path = os.path.relpath(audio_file, audio_dir)
+            label_file = os.path.join(label_dir, rel_path.replace('.wav', '.json'))
+            
+            if os.path.exists(label_file):
+                asr.process_file(audio_file, label_file)
+                processed_files += 1
+            else:
+                print(f"⚠️ 标签文件未找到: {label_file}")
+    
+    print(f"\n🎉 完成! 共处理 {processed_files} 个文件")
 
 if __name__ == "__main__":
     CONFIG = {
-        "model_path": "/root/shared-nvme/haoranwang/nemo_asr/stt_ar_fastconformer_hybrid_large_pcd_v1.0.nemo",
-        "audio_dir": "/root/shared-nvme/data/ASRBench/testbatch_processed/DZA",
-        "label_dir": "/root/shared-nvme/haoranwang/nemo_asr/labeled/DZA"
+        "model_path": "/root/shared-nvme/haoranwang/nemo_asr/model/stt_ar_fastconformer_hybrid_large_pcd_v1ureau.0.nemo",
+        "audio_dir": "/root/shared-nvme/haoranwang/nemo_asr/audio_processed/DZA",
+        "label_dir": "/root/shared-nvme/haoranwang/nemo_asr/asr/20251219/DZA"
     }
     
     process_dataset(**CONFIG)
-    print("\n✅ All files processed!")
+
