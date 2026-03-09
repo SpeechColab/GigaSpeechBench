@@ -20,7 +20,7 @@ BATCHES = [
 BASE_PATH = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/text"
 
 # 旧REF目录来自ASR-Bench路径
-OLD_REF_BASE = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/data/Multilingual-ASR-Benchmark/text/ref"
+OLD_REF_BASE = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/data/Multilingual-ASR-Benchmark/Low-Resource-Languages/text/ref"
 
 
 PUNCT_REGEX = re.compile(
