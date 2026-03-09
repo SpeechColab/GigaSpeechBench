@@ -16,29 +16,33 @@ from tqdm import tqdm
 
 from scripts.utils import save_transcription
 
-# 初始化日志记录器
 logger = logging.getLogger(__name__)
 if not logger.handlers:
     handler = logging.StreamHandler()
     handler.setFormatter(logging.Formatter("[%(levelname)s] %(message)s"))
     logger.addHandler(handler)
-    logger.setLevel(logging.INFO)
+    logger.setLevel(logging.DEBUG)
 
-# --- 全局默认配置 ---
-# 注意：以下为默认值，建议通过命令行参数进行覆盖
 PROJECT_ID = "steady-fin-478206-g9"
 DEFAULT_LOCATION = "eu"
-MODEL_NAME = "chirp_3"
+MODEL_NAME = "chirp_3"  # Actual API model name
+OUTPUT_MODEL_NAME = "chirp3"  # Display name in outputs
 MS_PER_SECOND = 1000.0
-
-# Google Speech-to-Text V2 同步请求限制：音频时长不得超过 60 秒
-# 参考文档：https://docs.cloud.google.com/speech-to-text/quotas
 MAX_SYNC_DURATION_SEC = 60
 
 TranscriptionSegment = namedtuple("TranscriptionSegment", ["audio_path", "start_time", "end_time", "text", "model", "language"])
 
-# 语言代码映射表：将 ISO 639-3 (三字母代码) 映射为 Google API 所需的 BCP-47 格式
 ALPHA3_TO_BCP47_MAP = {
+    # 英语口音
+    "CHN-EN": "en-US",  # 中国口音英语用美式英语模型
+    "IDN-EN": "en-US",  # 印尼口音英语
+    "JPN-EN": "en-US",  # 日本口音英语
+    "PHL-EN": "en-US",  # 菲律宾口音英语
+    "SCT-EN": "en-GB",  # 苏格兰口音英语用英式英语模型
+    "SGP-EN": "en-US",  # 新加坡口音英语
+    "JIN": "cmn-Hans-CN",  # 晋语(山西话)用普通话模型
+    "XIANG": "cmn-Hans-CN",# 湘语(湖南话)用普通话模型
+
     "ARE": "ar-AE",
     "DZA": "ar-DZ",
     "EGY": "ar-EG",
@@ -60,37 +64,17 @@ _speech_client = None
 
 
 def get_speech_client() -> SpeechClient:
-    """
-    获取或延迟初始化全局 SpeechClient 实例。
-    """
     global _speech_client
     if _speech_client is None:
-        # Chirp 模型需要指定区域端点 (Regional Endpoint)
         api_endpoint = f"{DEFAULT_LOCATION}-speech.googleapis.com"
         client_options = ClientOptions(api_endpoint=api_endpoint)
         _speech_client = SpeechClient(client_options=client_options)
-        # logger.info(f"SpeechClient 初始化完成，服务端点: {api_endpoint}") # 删除初始化日志
+        logger.info(f"SpeechClient 初始化完成，服务端点: {api_endpoint}")
     return _speech_client
 
 
 def transcribe_audio_segment(audio_path: str, start: Optional[float] = None, end: Optional[float] = None, language: Optional[str] = None) -> TranscriptionSegment:
-    """
-    调用 Google Speech-to-Text V2 API 对音频片段进行转写。
-
-    处理流程：读取音频文件 -> 截取片段 -> 转换为 WAV 字节流 -> 发送 API 请求。
-
-    Args:
-        audio_path: 音频文件路径。
-        start: 片段起始时间（秒）。
-        end: 片段结束时间（秒）。
-        language: ISO 639-3 语言代码 (如 "JPN")。
-
-    Returns:
-        TranscriptionSegment: 包含转写文本及元数据的对象。
-    """
-
-    # 构造通用的日志上下文，包含所有处理时的参数，方便排查
-    log_context = f"[文件: {audio_path} | 语言: {language} | Start: {start} | End: {end} | 模型: {MODEL_NAME} | 项目: {PROJECT_ID} | 区域: {DEFAULT_LOCATION}]"
+    log_context = f"[文件: {audio_path} | 语言: {language} | Start: {start} | End: {end} | 模型: {OUTPUT_MODEL_NAME} | 项目: {PROJECT_ID} | 区域: {DEFAULT_LOCATION}]"
 
     if not language:
         raise ValueError(f"必须提供语言参数 (language)。{log_context}")
@@ -102,20 +86,20 @@ def transcribe_audio_segment(audio_path: str, start: Optional[float] = None, end
 
     try:
         abs_audio_path = os.path.abspath(audio_path)
-        # 使用 pydub 读取音频，支持自动探测多种格式 (wav, mp3, flac 等)
         audio = AudioSegment.from_file(audio_path)
+        audio_duration_ms = len(audio)
+        audio_duration_sec = audio_duration_ms / MS_PER_SECOND
 
-        # 转换时间戳为毫秒
         start_ms = int(start * MS_PER_SECOND) if start is not None and start > 0 else 0
-        end_ms = int(end * MS_PER_SECOND) if end is not None and end > 0 else len(audio)
+        end_ms = int(end * MS_PER_SECOND) if end is not None and end > 0 else audio_duration_ms
 
-        # 时间戳边界检查
-        if start_ms >= len(audio):
-            logger.warning(f"起始时间超出音频总时长，跳过处理。{log_context} | 音频总长: {len(audio)/MS_PER_SECOND:.2f}s")
-        if end_ms > len(audio):
-            end_ms = len(audio)
-        if start_ms > end_ms:
-            logger.warning(f"时间戳逻辑错误: 起始时间晚于结束时间。{log_context} | StartMs: {start_ms} | EndMs: {end_ms}")
+        if start is not None and start >= audio_duration_sec:
+            raise ValueError(f"起始时间 ({start:.2f}s) 超出音频总时长 ({audio_duration_sec:.2f}s)")
+        actual_end = end if end is not None else audio_duration_sec
+        if start is not None and start > actual_end:
+            raise ValueError(f"时间戳无效: 起始时间 ({start:.2f}s) 晚于结束时间 ({actual_end:.2f}s)")
+        if end_ms > audio_duration_ms:
+            end_ms = audio_duration_ms
 
         actual_start_sec = start_ms / MS_PER_SECOND
         actual_end_sec = end_ms / MS_PER_SECOND
@@ -123,33 +107,23 @@ def transcribe_audio_segment(audio_path: str, start: Optional[float] = None, end
         segment = audio[start_ms:end_ms]
         segment_duration_sec = len(segment) / MS_PER_SECOND
 
-        # API 限制检查：同步请求不支持超过 60 秒的音频
         if segment_duration_sec > MAX_SYNC_DURATION_SEC:
-            logger.warning(f"音频片段时长超过 API 限制 (60s)，跳过处理。{log_context} | 片段时长: {segment_duration_sec:.1f}s")
-            return TranscriptionSegment(audio_path=abs_audio_path, start_time=actual_start_sec, end_time=actual_end_sec, text=None, model=MODEL_NAME, language=language)
+            raise ValueError(f"音频片段时长 ({segment_duration_sec:.1f}s) 超过同步请求最大限制 ({MAX_SYNC_DURATION_SEC}s)")
 
-        # 导出为 WAV 格式字节流，确保 API 兼容性
         with io.BytesIO() as audio_buffer:
             segment.export(audio_buffer, format="wav")
             audio_content = audio_buffer.getvalue()
 
-    except ValueError:
-        raise
     except Exception as e:
         raise Exception(f"音频预处理失败: {str(e)} | {log_context}") from e
 
     try:
         api_language_code = ALPHA3_TO_BCP47_MAP[language]
-        # 构造识别器路径，使用默认识别器标识符 '_'
         recognizer_path = f"projects/{PROJECT_ID}/locations/{DEFAULT_LOCATION}/recognizers/_"
 
         client = get_speech_client()
 
-        # 启用自动标点功能
-        recognition_features = cloud_speech.RecognitionFeatures(
-            enable_automatic_punctuation=True,
-        )
-
+        recognition_features = cloud_speech.RecognitionFeatures(enable_automatic_punctuation=True)
         config = cloud_speech.RecognitionConfig(
             auto_decoding_config=cloud_speech.AutoDetectDecodingConfig(),
             model=MODEL_NAME,
@@ -163,70 +137,104 @@ def transcribe_audio_segment(audio_path: str, start: Optional[float] = None, end
             content=audio_content,
         )
 
-        # 发送请求，配置重试策略以应对网络波动
         response = client.recognize(
             request=request,
             retry=retry.Retry(
-                predicate=lambda exc: True, initial=1.0, maximum=30.0, multiplier=2.0, deadline=300.0, on_error=lambda exc: logger.warning(f"API 请求失败，正在重试: {str(exc)} | {log_context}")
+                predicate=lambda exc: True, initial=1.0, maximum=30.0, multiplier=2.0, deadline=300.0, on_error=lambda exc: logger.warning(f"API 请求失败，正在重试: {exc} | {log_context}")
             ),
         )
 
-        # 拼接结果中的所有候选项
         full_transcript = " ".join(res.alternatives[0].transcript for res in response.results if res.alternatives).strip()
 
-        return TranscriptionSegment(audio_path=abs_audio_path, start_time=actual_start_sec, end_time=actual_end_sec, text=full_transcript, model=MODEL_NAME, language=language)
+        return TranscriptionSegment(audio_path=abs_audio_path, start_time=actual_start_sec, end_time=actual_end_sec, text=full_transcript, model=OUTPUT_MODEL_NAME, language=language)
 
     except Exception as e:
-        logger.error(f"API 请求异常: {str(e)} | {log_context}")
-        raise Exception(f"API 请求异常 (语言: {api_language_code}): {str(e)}") from e
+        raise Exception(f"API 请求最终失败 (语言: {api_language_code}): {str(e)} | {log_context}") from e
 
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser(description="Google Speech-to-Text V2 (Chirp) 推理工具")
-
-    # 必选参数
-    parser.add_argument("--json_dir", required=True, type=Path, help="音频文件目录路径 (支持 wav, mp3, flac 等格式)")
-    parser.add_argument("--audio_dir", required=True, type=Path, help="音频文件目录路径 (支持 wav, mp3, flac 等格式)")
-    parser.add_argument("--project_id", type=str, default=PROJECT_ID, help="Google Cloud 项目 ID")
-    parser.add_argument("--location", type=str, default=DEFAULT_LOCATION, help="Google Cloud 区域 (如 eu, us)")
+    parser.add_argument("--json_dir", required=True, type=Path)
+    parser.add_argument("--audio_dir", required=True, type=Path)
+    parser.add_argument("--project_id", type=str, default=PROJECT_ID)
+    parser.add_argument("--location", type=str, default=DEFAULT_LOCATION)
+    parser.add_argument("--log-level", choices=["DEBUG", "INFO", "WARNING", "ERROR"], default="INFO", help="日志级别（默认: INFO）")
 
     args = parser.parse_args()
 
-    # 更新全局配置
+    numeric_level = getattr(logging, args.log_level.upper(), logging.INFO)
+    logger.setLevel(numeric_level)
+
     PROJECT_ID = args.project_id
     DEFAULT_LOCATION = args.location
 
     if not args.json_dir.exists():
-        logger.error(f"输入目录不存在: {args.input_dir}")
+        logger.error(f"输入目录不存在: {args.json_dir}")
         exit(1)
-    # 递归查找目录下所有文件
+
     languages = [f.name for f in args.json_dir.iterdir()]
-    assert languages == [f.name for f in args.audio_dir.iterdir()], "json 和 audio 不匹配"
-    for lang in languages:
+    audio_langs = [f.name for f in args.audio_dir.iterdir()]
+    if set(languages) != set(audio_langs):
+        logger.warning(f"json 和 audio 语言目录不一致: json={languages}, audio={audio_langs}")
+
+    total_processed_seconds = 0.0
+
+    for lang in tqdm(languages, desc="language", disable=numeric_level > logging.INFO):
         lang_json_dir = args.json_dir / lang
-        for json_path in lang_json_dir.glob("*"):
+        for json_path in tqdm(list(lang_json_dir.glob("*.json")), desc="json", disable=numeric_level > logging.INFO):
             with open(json_path) as f:
                 obj = json.load(f)
-        audio_path = (args.audio_dir / lang / obj["audio_name"]).with_suffix(".wav")
-        assert audio_path.exists(), "不存在"
-        success_count = 0
+            audio_path = (args.audio_dir / lang / obj["audio_name"]).with_suffix(".wav")
+            total_segments = len(obj.get("segments", []))
+            success_count = 0
 
-        for idx, segment in tqdm(enumerate(obj["segments"]), desc="正在处理",total=len(obj["segments"])):
             try:
-                if segment["status"] == "valid":
-                    seg_pred = transcribe_audio_segment(str(audio_path), language=lang, start=segment["start"], end=segment["end"])
+                if not audio_path.exists():
+                    raise FileNotFoundError(f"音频文件不存在：{str(audio_path)}")
 
-                    if seg_pred.text is not None:
+                for idx, segment in enumerate(obj["segments"]):
+                    try:
+                        if segment["status"] == "valid":
+                            seg_pred = transcribe_audio_segment(str(audio_path), language=lang, start=segment["start"], end=segment["end"])
+                            save_transcription(
+                                audio_path=audio_path,
+                                text=seg_pred.text,
+                                language=seg_pred.language,
+                                model=OUTPUT_MODEL_NAME,
+                                start_time=seg_pred.start_time,
+                                end_time=seg_pred.end_time,
+                            )
+                            total_processed_seconds += seg_pred.end_time - seg_pred.start_time
+                        else:
+                            continue
+                        success_count += 1
+
+                    except Exception as e:
+                        error_context = f"[文件: {json_path}:{idx} | 语言: {lang}]"
+                        logger.error(f"片段转写最终失败: {e} | {error_context}")
                         save_transcription(
-                            audio_path=audio_path, text=seg_pred.text, language=seg_pred.language, model=seg_pred.model, start_time=seg_pred.start_time, end_time=seg_pred.end_time, index=idx
+                            audio_path=audio_path,
+                            text="",
+                            language=lang,
+                            model=OUTPUT_MODEL_NAME,
+                            start_time=segment["start"],
+                            end_time=segment["end"],
                         )
-                else:
-                    save_transcription(audio_path=audio_path, text="", language=lang, model=MODEL_NAME, start_time=segment["start"], end_time=segment["end"], index=idx)
-                success_count += 1
 
+            except FileNotFoundError as e:
+                logger.error(f"音频文件缺失: {e} | [JSON: {json_path}, 语言: {lang}]")
+                continue
             except Exception as e:
-                error_context = f"[文件: {json_path}:{idx} | 语言: {lang} | 项目: {PROJECT_ID} | 区域: {DEFAULT_LOCATION}]"
-                logger.error(f"文件处理失败: {e} | {error_context}")
+                logger.error(f"文件处理异常: {e} | [JSON: {json_path}, 语言: {lang}]")
+                continue
 
-        logger.info(f"任务完成。成功转写 {success_count}/{len(obj['segments'])} 个片段。")
+            logger.info(f"JSON文件 {json_path.name} 处理完成：{success_count}/{total_segments} 个片段成功。")
+            if success_count != total_segments:
+                logger.error(f"JSON文件 {json_path.name} 成功数不匹配：{success_count}/{total_segments}。")
+
+    if total_processed_seconds > 0:
+        total_hours = total_processed_seconds / 3600
+        logger.info(f"===== 总处理统计 =====")
+        logger.info(f"总处理时长: {total_hours:.2f} 小时 ({total_processed_seconds:.1f} 秒)")
+        logger.info(f"配额使用率: {total_hours/480*100:.1f}% (每日限额: 480 小时)")
+
