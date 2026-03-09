@@ -3,6 +3,8 @@ __pycache__
 *.pt
 *.bin
 build_gradio/query
+normalize_fail.log
+normalize_ref_fail.log
 
 results/
 # Ignore Mac system files
