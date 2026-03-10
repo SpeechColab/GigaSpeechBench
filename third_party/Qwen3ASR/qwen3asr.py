@@ -1,8 +1,9 @@
 import json
 import os
+import subprocess
+from typing import Dict, Union
 
 import dashscope
-from pydub import AudioSegment
 
 REF_ROOT_DIR = "text/ref/20251205"
 AUDIO_ROOT_DIR = "audio/batch_1"
@@ -30,8 +31,30 @@ language_mapping = {
 }
 
 
+def cut_audio(src, start, end, dst):
+    subprocess.run(
+        [
+            "ffmpeg",
+            "-y",
+            "-i",
+            src,
+            "-ss",
+            str(start),
+            "-to",
+            str(end),
+            "-ac",
+            "1",
+            "-ar",
+            "16000",
+            dst,
+        ],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+
+
 def call_asr(tmp_wav_path: str, language: str):
-    messages = [{"role": "user", "content": [{"audio": TMP_WAV}]}]
+    messages = [{"role": "user", "content": [{"audio": tmp_wav_path}]}]
 
     response = dashscope.MultiModalConversation.call(
         api_key=API_KEY,
@@ -59,35 +82,26 @@ def process_one_json(json_path: str, lang: str, skip_uids: set):
         return
 
     print(f"\n[INFO] 处理: {json_path}")
-    audio = AudioSegment.from_wav(wav_path)
 
     with open(json_path, "r", encoding="utf-8") as f:
         data = json.load(f)
 
     segments = data.get("segments", [])
 
-    for i, seg in enumerate(segments):
+    for seg in segments:
         if seg.get("status") != "valid":
             continue
         if not seg.get("text"):
             continue
-        if os.path.abspath(wav_path) + str(i) in skip_uids:
-            continue
-
         start_sec = float(seg["start"])
         end_sec = float(seg["end"])
-        seg_idx = seg.get("index")
 
-        start_ms = int(start_sec * 1000)
-        end_ms = int(end_sec * 1000)
+        if os.path.basename(wav_path) + str(start_sec) + str(end_sec) in skip_uids:
+            continue
 
-        clip = audio[start_ms:end_ms]
+        cut_audio(wav_path, start_sec, end_sec, TMP_WAV)
 
-        clip.export(TMP_WAV, format="wav")
-
-        print(
-            f"  [SEG] index={seg_idx}, {start_sec:.3f}~{end_sec:.3f} 秒，写入 {TMP_WAV}，调用 ASR..."
-        )
+        print(f"  [SEG] {start_sec:.3f}~{end_sec:.3f} 秒，写入 {TMP_WAV}，调用 ASR...")
 
         try:
             resp = call_asr(TMP_WAV, lang)
@@ -98,10 +112,17 @@ def process_one_json(json_path: str, lang: str, skip_uids: set):
                 model="qwen3-asr-flash",
                 start_time=start_sec,
                 end_time=end_sec,
-                index=i,
             )
         except Exception as e:
             print(f"    [ERROR] 调用 ASR 失败: {e}")
+            save_transcription(
+                audio_path=wav_path,
+                text="",
+                language=lang,
+                model="qwen3-asr-flash",
+                start_time=start_sec,
+                end_time=end_sec,
+            )
 
 
 def save_transcription(
@@ -111,21 +132,11 @@ def save_transcription(
     model: str,
     start_time: float,
     end_time: float,
-    index: int,
 ) -> None:
     """
     Save transcription to ./results/{language}_{model}.json
 
     Each entry is appended as a dict with a unique `id`.
-
-    Args:
-        audio_path (str): Absolute or relative path to the audio file.
-        text (str): Transcribed text.
-        language (str): Language code, e.g. "IRQ".
-        model (str): Model name, e.g. "elevenlabs".
-        start_time (float): Start time in seconds.
-        end_time (float): End time in seconds.
-        index (int): Sample index, will be saved as `id`.
     """
 
     # ---------- output path ----------
@@ -137,8 +148,7 @@ def save_transcription(
 
     # ---------- new entry ----------
     entry: Dict[str, Union[str, float, int]] = {
-        "id": int(index),
-        "path": os.path.abspath(audio_path),
+        "audio_name": os.path.basename(audio_path),
         "text": text.strip(),
         "language": language.strip(),
         "model": model.strip(),
@@ -167,8 +177,7 @@ def save_transcription(
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 
-    print(f"[INFO] Transcription saved -> {output_path}")
-    print(f"       + id={index}, path={entry['path']}")
+    print(f"[INFO] Transcription saved -> {output_path}, path={entry['audio_name']}")
 
 
 def main():
@@ -178,17 +187,22 @@ def main():
             continue
 
         skip_uids = set()
-        for fname in os.listdir(lang_dir):
-            results_dir = os.path.join(os.getcwd(), "results")
-            filename = f"{lang}_qwen3-asr-flash.json"
-            output_path = os.path.join(results_dir, filename)
-            if os.path.exists(output_path):
-                print(f"{output_path} already exists, about to load...")
-                with open(output_path) as f:
-                    items = json.load(f)
-                    for item in items:
-                        skip_uids.add(item["path"] + str(item["id"]))
+        results_dir = os.path.join(os.getcwd(), "results")
+        filename = f"{lang}_qwen3-asr-flash.json"
 
+        output_path = os.path.join(results_dir, filename)
+        if os.path.exists(output_path):
+            print(f"{output_path} already exists, about to load...")
+            with open(output_path) as f:
+                items = json.load(f)
+                for item in items:
+                    skip_uids.add(
+                        item["audio_name"]
+                        + str(item["start_time"])
+                        + str(item["end_time"])
+                    )
+
+        for fname in os.listdir(lang_dir):
             if not fname.endswith("#raw.json"):
                 continue
 
