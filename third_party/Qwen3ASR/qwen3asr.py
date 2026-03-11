@@ -1,3 +1,4 @@
+import glob
 import json
 import os
 import subprocess
@@ -5,8 +6,8 @@ from typing import Dict, Union
 
 import dashscope
 
-REF_ROOT_DIR = "text/ref/20251205"
-AUDIO_ROOT_DIR = "audio/batch_1"
+REF_ROOT_DIR = "Multilingual-ASR-Benchmark/Low-Resource-Languages/text/ref/"
+AUDIO_ROOT_DIR = "Multilingual-ASR-Benchmark/Low-Resource-Languages/audio/"
 TMP_WAV = "/tmp/tmp.wav"
 API_KEY = os.getenv("DASHSCOPE_API_KEY")
 
@@ -74,12 +75,17 @@ def call_asr(tmp_wav_path: str, language: str):
 
 
 def process_one_json(json_path: str, lang: str, skip_uids: set):
-    base = os.path.splitext(json_path)[0].replace(REF_ROOT_DIR, AUDIO_ROOT_DIR)
-    wav_path = base + ".wav"
+    base = os.path.basename(json_path).rsplit(".", 1)[0]
+    wav_path = next(
+        iter(
+            glob.glob(os.path.join(AUDIO_ROOT_DIR, "**", base + ".wav"), recursive=True)
+        ),
+        None,
+    )
 
     if not os.path.exists(wav_path):
-        print(f"[WARN] 找不到对应的 wav: {wav_path}，跳过。")
-        return
+        print(f"[WARN] 找不到对应的 wav: {wav_path}")
+        raise
 
     print(f"\n[INFO] 处理: {json_path}")
 
