@@ -10,17 +10,13 @@ from tqdm import tqdm
 
 # 需要处理的 batch 列表
 BATCHES = [
-    "testbatch",
-    "20251212",
-    "20251205",
-    "20251226",
-    "20251219"
+    "low_resource_languages",
 ]
 
-BASE_PATH = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/text"
+BASE_PATH = "E:/Desktop/master/master_3/benchmark/Multilingual-ASR-Benchmark/data/text"
 
 # 旧REF目录来自ASR-Bench路径
-OLD_REF_BASE = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/data/Multilingual-ASR-Benchmark/Low-Resource-Languages/text/ref"
+OLD_REF_BASE = "F:/datasets/benchmark/datasets--AlexTYJ--Multilingual-ASR-Benchmark/Low-Resource-Languages/text/ref"
 
 
 PUNCT_REGEX = re.compile(

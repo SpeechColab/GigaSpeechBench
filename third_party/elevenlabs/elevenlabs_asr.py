@@ -165,10 +165,11 @@ def fix_and_clean_results(language: str, model: str, text_file: str, output_dir:
         end_time = entry.get("end_time") if "end_time" in entry else entry.get("end", 0.0)
         # path 格式可能为 {language}/{audio_filename}，需得到 audio_name 与 ref 比较
         if path_or_name and "/" in path_or_name:
-            audio_filename = os.path.basename(path_or_name)
-            audio_name = os.path.splitext(audio_filename)[0]
+            audio_name = os.path.basename(path_or_name)
+            
         else:
             audio_name = path_or_name
+        audio_name = os.path.splitext(audio_name)[0]
 
         # 是否与 ref 中某键匹配（允许时间误差 0.001 秒）
         matched = False
@@ -183,7 +184,6 @@ def fix_and_clean_results(language: str, model: str, text_file: str, output_dir:
             fixed_entries.append(entry)
         else:
             deleted_count += 1
-
     if deleted_count > 0:
         try:
             with open(output_path, "w", encoding="utf-8") as f:
@@ -245,6 +245,8 @@ def is_segment_transcribed(
 ) -> bool:
     """
     检查segment是否已经转录过。
+    匹配时尝试多种 path 格式：{language_code}/{wav_filename}、wav_filename、wav_filename 无扩展名，
+    以兼容已有 JSON 中可能存在的不同 path/audio_name 写法。
 
     Args:
         audio_path (str): 音频文件路径
@@ -258,20 +260,35 @@ def is_segment_transcribed(
     Returns:
         bool: 如果已转录返回True，否则返回False
     """
-    # 构造格式化的路径：{language_code}/{wav_filename}
     wav_filename = os.path.basename(audio_path)
-    formatted_path = f"{language_code}/{wav_filename}"
-    segment_key = (formatted_path, float(start_time), float(end_time))
+    wav_filename_without_ext = os.path.splitext(wav_filename)[0]
+    start_f = float(start_time)
+    end_f = float(end_time)
 
-    if segment_key not in transcribed_segments:
+    # 尝试多种 path 格式与 transcribed_segments 中的 key 匹配
+    path_variants = [
+        f"{language_code}/{wav_filename}",  # 标准格式
+        wav_filename,
+        wav_filename_without_ext,
+    ]
+    matched_key = None
+    for path_variant in path_variants:
+        candidate_key = (path_variant, start_f, end_f)
+        if candidate_key in transcribed_segments:
+            matched_key = candidate_key
+            break
+
+    if matched_key is None:
         return False
 
-    # 如果未开启 force，或者没有文本信息缓存，则只要存在记录就认为已转录
-    if not force or segment_texts is None:
+    # 未开启 force 时，只要存在记录就认为已转录，跳过
+    if not force:
         return True
 
-    # force 模式下，如果该片段文本为空，则视为“未完成”，需要重新转录
-    text = segment_texts.get(segment_key, "")
+    # force 模式下，没有文本缓存则无法判断是否为空，视为需重跑；有缓存则根据文本是否为空决定
+    if segment_texts is None:
+        return False
+    text = segment_texts.get(matched_key, "")
     if isinstance(text, str) and text.strip() == "":
         return False
 
@@ -506,7 +523,6 @@ def main():
         # 修复后重新加载已转录的segments（因为可能更新了id或删除了不匹配的条目）
         transcribed_segments, segment_texts = load_transcribed_segments(language, model_name)
         print(f"  修复后重新加载 {len(transcribed_segments)} 个已转录的segments")
-
         # 按 audio_name 分组处理
         segments_by_audio = defaultdict(list)
         for segment in segments_data:
@@ -558,7 +574,7 @@ def main():
                 # 构造格式化的路径：{language}/{audio_filename}
                 audio_filename = os.path.basename(audio_path)
                 formatted_path = f"{language}/{audio_filename}"
-
+                
                 # 检查该segment是否已经转录过
                 if is_segment_transcribed(
                     audio_path,

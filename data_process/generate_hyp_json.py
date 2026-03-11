@@ -12,20 +12,15 @@ from tqdm import tqdm
 # ============================
 
 BATCHES = [
-    "testbatch",
-    "20251212",
-    "20251205",
-    "20251219",
-    "20251226",
+   "testbatch",
 ]
 
 # 根路径（原样）
-ROOT = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/text"
+ROOT = "E:/Desktop/master/master_3/benchmark/Multilingual-ASR-Benchmark/data/text/CH-EN-Dialects"
 
 # hyp 输入根路径（原样）
 HYP_ROOT_PREFIX = (
-    "/inspire/hdd/project/multilingualspeechrecognition/"
-    "chenxie-25019/yujietu/data/Multilingual-ASR-Benchmark/text/hyp"
+    "E:/Desktop/master/master_3/benchmark/Multilingual-ASR-Benchmark/results/CH-EN-Dialects"
 )
 
 # ============================
@@ -102,7 +97,7 @@ def extract_audio_name(item):
 def process_file(json_path: str, REF_ROOT: str, OUT_ROOT: str):
 
     filename = os.path.basename(json_path)
-    country = filename[:3]
+    country = filename.split("_")[0]
 
     ref_path, ref_index = load_ref(country, REF_ROOT)
     if ref_path is None:
@@ -143,6 +138,7 @@ def process_file(json_path: str, REF_ROOT: str, OUT_ROOT: str):
 
         text = clean_text(item.get("text", ""))
         model = item.get("model", "")
+        language  = country
 
         key = (audio_name, start)
 
@@ -158,10 +154,11 @@ def process_file(json_path: str, REF_ROOT: str, OUT_ROOT: str):
 
         new_items.append({
             "audio_name": audio_name,
-            "start": start,
-            "end": end,
             "text": text,
-            "model": model
+            "language": language,
+            "model": model,
+            "start_time": start,
+            "end_time": end,
         })
 
     all_items = old_items + new_items
