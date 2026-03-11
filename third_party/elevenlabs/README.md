@@ -176,6 +176,7 @@ python third_party/elevenlabs/elevenlabs_asr.py \
 
 | 语种代码 | 语言 | ElevenLabs 语言代码 | 说明 |
 |---------|------|-------------------|------|
+| `AR`  | 阿拉伯语 (ar) | ara | 阿拉伯语 |
 | `ARE` | 阿拉伯语 (ar) | ara | 阿拉伯语-阿联酋 |
 | `IRQ` | 阿拉伯语 (ar) | ara | 阿拉伯语-伊拉克 |
 | `DZA` | 阿拉伯语 (ar) | ara | 阿拉伯语-阿尔及利亚 |
@@ -190,7 +191,17 @@ python third_party/elevenlabs/elevenlabs_asr.py \
 | `PHL` | 菲律宾语 (fil) | fil | 菲律宾语 |
 | `MYS` | 马来语 (ms) | msa | 马来语 |
 | `USA` | 英语 (en) | eng | 英语 |
-| `CHN` | 中文 (zh) | zho | 中文（普通话） |
+| `CHN` | 中文 (zh) | zho | 中文 (普通话) |
+| `CHN-EN` | 英语 (en) | eng | 英语-中国 |
+| `IDN-EN` | 英语 (en) | eng | 英语-印度 |
+| `JPN-EN` | 英语 (en) | eng | 英语-日本 |
+| `PHL-EN` | 英语 (en) | eng | 英语-菲律宾 |
+| `SCT-EN` | 英语 (en) | eng | 英语-苏格兰 |
+| `SGP-EN` | 英语 (en) | eng | 英语-新加坡 |
+| `XIANG` | 中文 (zh) | eng | 中文-湘方言 |
+| `JIN` | 中文 (zh) | eng | 中文-晋方言 |
+
+
 
 其他语种映射关系请参考[Elevenlabs官方文档](https://elevenlabs.io/docs/capabilities/speech-to-text)的Supported lanauges
 

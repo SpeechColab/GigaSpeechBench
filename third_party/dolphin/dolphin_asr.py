@@ -15,6 +15,7 @@ from utils import save_transcription
 
 # 语言映射：将国家代码映射到 (lang_sym, region_sym) 二元组
 LANGUAGE_MAPPING = {
+    "AR": ("ar", ""),      # 阿拉伯语
     "ARE": ("ar", "AE"),      # 阿拉伯语-阿联酋
     "IRQ": ("ar", ""),     # 阿拉伯语-伊拉克
     "DZA": ("ar", ""),      # 阿拉伯语-阿尔及利亚
@@ -29,6 +30,8 @@ LANGUAGE_MAPPING = {
     "PHL": ("fil", "PH"),     # 菲律宾语
     "MYS": ("ms", "MY"),      # 马来语
     "CHN": ("zh", "CN"),      # 中文(普通话)
+    "XIANG": ("zh", "HUNAN"),      # 湘方言
+    "JIN": ("zh", "SHANXI"),      # 晋方言
 }
 
 
@@ -346,19 +349,25 @@ def main():
         total_audios = len(segments_by_audio)
         for audio_idx, (audio_name, segments) in enumerate(segments_by_audio.items(), 1):
             print(f"  [{audio_idx}/{total_audios}] 处理音频: {audio_name}")
-
-            # 构建音频文件路径：data/audio/testbatch/{language}/{audio_name}.wav
-            # 尝试多种可能的扩展名
+            # 构建音频文件路径：若 audio_name 已带扩展名则直接使用，否则尝试多种扩展名
             audio_extensions = ['.wav', '.mp3', '.flac', '.m4a']
             audio_path = None
-            
             lang_audio_dir = os.path.join(audio_dir, language)
-            for ext in audio_extensions:
-                potential_path = os.path.join(lang_audio_dir, f"{audio_name}{ext}")
-                if os.path.exists(potential_path):
-                    audio_path = potential_path
-                    break
-            
+
+            # 若已有扩展名则直接使用该路径，不再尝试追加扩展名
+            _, ext = os.path.splitext(audio_name)
+            if ext:
+                direct_path = os.path.join(lang_audio_dir, audio_name)
+                if os.path.exists(direct_path):
+                    audio_path = direct_path
+            else:
+                # 无扩展名时，尝试可能的扩展名
+                for ext in audio_extensions:
+                    potential_path = os.path.join(lang_audio_dir, f"{audio_name}{ext}")
+                    if os.path.exists(potential_path):
+                        audio_path = potential_path
+                        break
+
             if audio_path is None:
                 print(f"    警告：音频文件不存在，跳过。尝试路径: {lang_audio_dir}/{audio_name}[.wav|.mp3|.flac|.m4a]")
                 continue

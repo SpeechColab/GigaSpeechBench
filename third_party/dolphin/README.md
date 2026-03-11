@@ -158,6 +158,7 @@ python third_party/dolphin/dolphin_asr.py \
 
 | 语种代码 | 语言           | 地区代码 | 说明                |
 | -------- | -------------- | -------- | ------------------- |
+| `AR`   | 阿拉伯语 (ar)  | -        | 阿拉伯语           |
 | `ARE`  | 阿拉伯语 (ar)  | AE       | 阿拉伯语-阿联酋     |
 | `IRQ`  | 阿拉伯语 (ar)  | -        | 阿拉伯语-伊拉克     |
 | `DZA`  | 阿拉伯语 (ar)  | -        | 阿拉伯语-阿尔及利亚 |
@@ -171,7 +172,10 @@ python third_party/dolphin/dolphin_asr.py \
 | `VNM`  | 越南语 (vi)    | VN       | 越南语              |
 | `PHL`  | 菲律宾语 (fil) | PH       | 菲律宾语            |
 | `MYS`  | 马来语 (ms)    | MY       | 马来语              |
-| `CHN`  | 中文 (zh)      | CN       | 中文（普通话）      |
+| `CHN`  | 中文 (zh)      | CN       | 中文 (普通话)      |
+| `XIANG`| 中文 (zh)      | HUNAN    | 中文 (湘方言)      |
+| `JIN`  | 中文 (zh)      | SHANXI   | 中文 (晋方言)      |
+
 
 其他语种代码参考[DataoceanAI/Dolphin](https://github.com/DataoceanAI/Dolphin/blob/main/languages.md)说明
 
