@@ -22,21 +22,24 @@ import pandas as pd
 EXCEL_COUNTRIES = [
     "IRQ","DZA","ARE","EGY","MAR","SAU",
     "IDN","MYS","PHL","VNM","THA","JPN",
-    "KOR","CHN","USA"
+    "KOR","CHN","USA","CHN-EN","IDN-EN","JPN-EN","PHL-EN","SCT-EN","SGP-EN","XIANG","JIN"
 ]
 
-RESULTS_ROOT = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/results_common-voice"
+#RESULTS_ROOT = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/results_CH-EN-Dialects"
+RESULTS_ROOT = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/results_Low-Resource-Languages"
 
-REF_ROOT = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/text_normalized/fleurs/ref"
+#REF_ROOT = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/text_normalized/CH-EN-Dialects/ref"
+REF_ROOT = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/text_normalized/Low-Resource-Languages/ref"
 # =========================
 # 白名单（唯一合法 model）
 # =========================
 
 COVERAGE_MODELS = {
     "AZURE",
+    "BIGASR_V400",
     "CHIRP3",
-    "DOLPHIN_BASE",
     "DOLPHIN_SMALL",
+    "DOLPHIN_BASE",
     "ELEVENLABS_SCRIBE_V2",
     "FUN-ASR-MLT-NANO",
     "GEMINI_3_0_FLASH",
@@ -48,7 +51,10 @@ COVERAGE_MODELS = {
     "STT_KR_CONFORMER_TRANSDUCER_LARGE",
     "PARAKEET-TDT_CTC-0.6B-JA",
     "NVIDIA-NEMO",
-    "GEMINI"
+    "WHISPER-LARGE-V3",
+    "GEMINI",
+    "SEEDASR_2.0",
+    "GEMINI-3-FLASH-PREVIEW"
 }
 
 # =========================

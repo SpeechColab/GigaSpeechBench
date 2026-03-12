@@ -35,7 +35,7 @@ def remove_punctuation(text: str) -> str:
 
 def clean_text(t: str) -> str:
     t = t.strip()
-    t = remove_punctuation(t)
+    #t = remove_punctuation(t)
     return t
 
 

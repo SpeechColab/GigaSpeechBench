@@ -31,21 +31,22 @@ logging.basicConfig(
 # 常量
 # =========================
 WER_LANGS = ["IRQ","DZA","ARE","EGY","MAR","SAU",
-             "IDN","MYS","PHL","VNM","USA"]
-CER_LANGS = ["JPN","KOR","THA","CHN"]
+             "IDN","MYS","PHL","VNM","USA","CHN-EN","IDN-EN","JPN-EN","PHL-EN","SCT-EN","SGP-EN"]
+CER_LANGS = ["JPN","KOR","THA","CHN","JIN","XIANG"]
 
 ERR = "*"
 
 # =========================
 # 路径（normalized）
 # =========================
-REF_ROOT = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/text_normalized/common-voice/ref"
+#REF_ROOT = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/text_normalized/CH-EN-Dialects/ref"
+REF_ROOT = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/text_normalized/Low-Resource-Languages/ref"
 
+#HYP_ROOT = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/text_normalized/CH-EN-Dialects/hyp"
+HYP_ROOT = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/text_normalized/Low-Resource-Languages/hyp"
 
-HYP_ROOT = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/text_normalized/common-voice/hyp"
-
-OUT_ROOT = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/results_common-voice"
-
+#OUT_ROOT = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/results_CH-EN-Dialects"
+OUT_ROOT = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/results_Low-Resource-Languages"
 
 os.makedirs(OUT_ROOT, exist_ok=True)
 
@@ -75,24 +76,47 @@ def process_one_ref_hyp(ref_items, hyp_items, compute_CER, recogs_f, stats):
       valid_segments, duration_hours
     """
 
-    hyp_index = {
-        (norm_audio_name(h["audio_name"]), float(h["start"])): h["text"]
-        for h in hyp_items
-    }
+    hyp_index = defaultdict(list)
+
+    for h in hyp_items:
+        name = norm_audio_name(h["audio_name"])
+        start = float(h["start"])
+        hyp_index[name].append((start, h["text"]))
 
     valid = 0
     dur_sec = 0.0
 
     for r in ref_items:
-        key = (norm_audio_name(r["audio_name"]), float(r["start"]))
-        if key not in hyp_index:
+        name = norm_audio_name(r["audio_name"])
+        start_ref = float(r["start"])
+
+        if name not in hyp_index:
             continue
+
+        hyp_val = None
+        match_start = None
+
+        for start_hyp, text in hyp_index[name]:
+            if abs(start_ref - start_hyp) <= 0.1:
+                hyp_val = text
+                match_start = start_hyp
+                break
+
+        if hyp_val is None:
+            continue
+
+        hyp_index[name].remove((match_start, hyp_val))
 
         valid += 1
         dur_sec += float(r["end"]) - float(r["start"])
 
         ref_tok = r["text"].strip().split()
-        hyp_tok = hyp_index[key].strip().split()
+        if hyp_val is None:
+            # 这里可以跳过、报错或记录日志
+            print(f"[WARN] key {key} 在 hyp_index 中为空")
+            continue  # 或 hyp_tok = []
+        else:
+            hyp_tok = hyp_val.strip().split()
 
         if compute_CER:
             ref_tok = list("".join(ref_tok))

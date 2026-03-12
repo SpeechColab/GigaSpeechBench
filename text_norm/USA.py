@@ -13,6 +13,9 @@ FILLERS = re.compile(
 # 删除尖括号标签
 ANGLE_REGEX = re.compile(r"<[^>]*>")
 
+# 新增：删除 [] 标签
+BRACKET_REGEX = re.compile(r"\[[^\]]*\]")
+
 # 删除标点
 PUNCT_REGEX = re.compile(
     rf"[{re.escape(string.punctuation)}]"
@@ -33,6 +36,7 @@ digit_map_en = {
     "0": "ZERO", "1": "ONE", "2": "TWO", "3": "THREE", "4": "FOUR",
     "5": "FIVE", "6": "SIX", "7": "SEVEN", "8": "EIGHT", "9": "NINE",
 }
+
 DIGIT_REGEX = re.compile(r"[0-9]")
 
 
@@ -43,7 +47,7 @@ def normalize(text: str):
     # A）精确判断整句是否为垃圾词（严格匹配）
     t = text.strip().upper()
     if t in SKIP_WORDS_STRICT:
-        return None  
+        return None
 
     # B）统一大写
     text = t
@@ -54,16 +58,19 @@ def normalize(text: str):
     # D）删 <...>
     text = ANGLE_REGEX.sub("", text)
 
-    # E）删 COMMA / PERIOD / QUESTIONMARK / EXCLAMATIONPOINT
+    # E）删 [...]   ← 新增
+    text = BRACKET_REGEX.sub("", text)
+
+    # F）删 COMMA / PERIOD / QUESTIONMARK / EXCLAMATIONPOINT
     text = REMOVE_TAG_WORDS.sub("", text)
 
-    # F）删标点
+    # G）删标点
     text = PUNCT_REGEX.sub("", text)
 
-    # G）数字替换
+    # H）数字替换
     text = DIGIT_REGEX.sub(lambda m: digit_map_en[m.group(0)], text)
 
-    # H）收尾空格
+    # I）合并空格
     text = " ".join(text.split())
 
     return text
