@@ -97,8 +97,6 @@ def process_one_json(json_path: str, lang: str, skip_uids: set):
     for seg in segments:
         if seg.get("status") != "valid":
             continue
-        if not seg.get("text"):
-            continue
         start_sec = float(seg["start"])
         end_sec = float(seg["end"])
 
@@ -209,7 +207,7 @@ def main():
                     )
 
         for fname in os.listdir(lang_dir):
-            if not fname.endswith("#raw.json"):
+            if not fname.endswith(".json"):
                 continue
 
             json_path = os.path.join(lang_dir, fname)
