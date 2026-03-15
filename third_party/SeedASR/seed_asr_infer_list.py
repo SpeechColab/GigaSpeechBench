@@ -17,7 +17,7 @@ import requests
 
 
 DEFAULT_BATCH_OUTPUT_ROOT = Path(
-    "/Users/niuzhikang/Desktop/tmp/Multilingual-ASR-Benchmark/output_segments/seedasr1_400/ref"
+    "/Users/niuzhikang/Desktop/tmp/Multilingual-ASR-Benchmark/Vertical-Domain_segments/seedasr1_400/ref"
 )
 DEFAULT_BATCH_INPUT_ROOT = Path(
     "/Users/niuzhikang/Desktop/tmp/Multilingual-ASR-Benchmark/output_segments/audio/testbatch"
@@ -41,11 +41,13 @@ class SeedASR():
             "enable_speaker_info": False,  # 关闭说话人信息输出
             "enable_punc": True,  # 开启标点符号
             "enable_itn": True,  # 开启文本规范化
-            "model_version": "400",  # 传 model_version = "400" 使用400模型效果
+            # "model_version": "400",  # 传 model_version = "400" 使用400模型效果
             "show_speech_rate": True,  # 开启语速信息输出
             "show_volume": True,  # 开启音量信息输出
             # "show_utterances": True,
         }
+        if self.model_id == "volc.bigasr.auc":
+            self.request_info["model_version"] = "400"  # bigasr默认使用400模型效果，seedasr默认使用310模型效果，使用400会报错
 
     def log_response_error(self, prefix, response):
         api_status = response.headers.get("X-Api-Status-Code", "<missing>")
