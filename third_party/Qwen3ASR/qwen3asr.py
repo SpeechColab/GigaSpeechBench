@@ -28,8 +28,8 @@ language_mapping = {
     "KOR": "ko",  # 韩国 -> 韩语
     "THA": "th",  # 泰国 -> 泰语
     "VNM": "vi",  # 越南 -> 越南语
-    "ZH": "zh",  # 中国 -> 中文（普通话、四川话、闽南语、吴语）
-    "EN": "en",  # 英文
+    "ZH": "zh",   # 中国 -> 中文（普通话、四川话、闽南语、吴语）
+    "EN": "en",   # 英文
 }
 
 
@@ -84,9 +84,9 @@ def process_one_json(json_path: str, lang: str, skip_uids: set):
         None,
     )
 
-    if not os.path.exists(wav_path):
-        print(f"[WARN] 找不到对应的 wav: {wav_path}")
-        raise
+    if wav_path is None or not os.path.exists(wav_path):
+        print(f"[WARN] 找不到对应的 wav: {base}.wav")
+        raise FileNotFoundError(f"找不到对应的 wav 文件: {base}.wav")
 
     print(f"\n[INFO] 处理: {json_path}")
 
