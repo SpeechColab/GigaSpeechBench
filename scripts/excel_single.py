@@ -26,10 +26,15 @@ EXCEL_COUNTRIES = [
 ]
 
 #RESULTS_ROOT = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/results_CH-EN-Dialects"
-RESULTS_ROOT = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/results_Low-Resource-Languages"
+#RESULTS_ROOT = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/results_Low-Resource-Languages"
+RESULTS_ROOT = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/results_fleurs"
+#RESULTS_ROOT = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/results_common-voice"
 
 #REF_ROOT = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/text_normalized/CH-EN-Dialects/ref"
-REF_ROOT = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/text_normalized/Low-Resource-Languages/ref"
+#REF_ROOT = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/text_normalized/Low-Resource-Languages/ref"
+REF_ROOT = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/text_normalized/fleurs/ref"
+#REF_ROOT = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/text_normalized/common-voice/ref"
+
 # =========================
 # 白名单（唯一合法 model）
 # =========================
@@ -54,7 +59,8 @@ COVERAGE_MODELS = {
     "WHISPER-LARGE-V3",
     "GEMINI",
     "SEEDASR_2.0",
-    "GEMINI-3-FLASH-PREVIEW"
+    "GEMINI-3-FLASH-PREVIEW",
+    "QWEN3-ASR-1.7B"
 }
 
 # =========================

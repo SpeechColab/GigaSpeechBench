@@ -40,13 +40,19 @@ ERR = "*"
 # 路径（normalized）
 # =========================
 #REF_ROOT = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/text_normalized/CH-EN-Dialects/ref"
-REF_ROOT = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/text_normalized/Low-Resource-Languages/ref"
+#REF_ROOT = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/text_normalized/Low-Resource-Languages/ref"
+REF_ROOT = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/text_normalized/fleurs/ref"
+#REF_ROOT = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/text_normalized/common-voice/ref"
 
 #HYP_ROOT = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/text_normalized/CH-EN-Dialects/hyp"
-HYP_ROOT = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/text_normalized/Low-Resource-Languages/hyp"
+#HYP_ROOT = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/text_normalized/Low-Resource-Languages/hyp"
+HYP_ROOT = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/text_normalized/fleurs/hyp"
+#HYP_ROOT = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/text_normalized/common-voice/hyp"
 
 #OUT_ROOT = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/results_CH-EN-Dialects"
-OUT_ROOT = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/results_Low-Resource-Languages"
+#OUT_ROOT = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/results_Low-Resource-Languages"
+OUT_ROOT = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/results_fleurs"
+#OUT_ROOT = "/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/results_common-voice"
 
 os.makedirs(OUT_ROOT, exist_ok=True)
 
@@ -63,6 +69,10 @@ def norm_audio_name(name: str) -> str:
     name = name.replace("\\", "/")
     base = os.path.basename(name)
     if base.lower().endswith(".wav"):
+        base = base[:-4]
+    if base.lower().endswith(".mp3"):
+        base = base[:-4]
+    if base.lower().endswith(".mp4"):
         base = base[:-4]
     return base
 
