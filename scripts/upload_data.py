@@ -27,7 +27,7 @@ api = HfApi(token=HF_TOKEN)
 # =========================
 
 LOCAL_FILE = Path(
-"/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/data/Multilingual-ASR-Benchmark/Low-Resource-Languages/audio/SYR.tar.gz"
+"/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/data/Multilingual-ASR-Benchmark/Low-Resource-Languages/audio/JPN_KOR_hard/JPN_20260323.tar.gz"
 )
 
 assert LOCAL_FILE.exists(), f"❌ 文件不存在: {LOCAL_FILE}"
@@ -40,7 +40,7 @@ print(f"⬆️ Uploading {LOCAL_FILE.name} ...")
 
 api.upload_file(
     path_or_fileobj=str(LOCAL_FILE),
-    path_in_repo=f"Low-Resource-Languages/audio/{LOCAL_FILE.name}",
+    path_in_repo=f"Low-Resource-Languages/audio/JPN_KOR_hard/{LOCAL_FILE.name}",
     repo_id=REPO_ID,
     repo_type=REPO_TYPE,
     commit_message=f"Upload {LOCAL_FILE.name}",
