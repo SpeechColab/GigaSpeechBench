@@ -1,6 +1,8 @@
 import regex as re
 from typing import Dict, List
 
+from text_norm._common import remove_paralinguistic_tags
+
 # 预定义常量（提升代码可维护性）
 # 马来语高频缩写映射表（扩展至覆盖90%+口语场景）
 MALAY_ABBREV_MAP: Dict[str, str] = {
@@ -78,6 +80,9 @@ def normalize(text: str) -> str:
     # 空文本保护
     if not text or text.strip() == "":
         return ""
+
+    # 移除副语言标签和填充词
+    text = remove_paralinguistic_tags(text)
 
     # Step 1: 移除所有特殊字符、标点、表情符号
     text = SPECIAL_CHARS_PATTERN.sub("", text)

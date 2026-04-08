@@ -36,6 +36,8 @@ PUNCT_REGEX = re.compile(
     r"|[\u2E00-\u2E7F]"
 )
 
+MATCH_TOL = 0.1
+
 def remove_punctuation(text: str) -> str:
     return PUNCT_REGEX.sub("", text)
 
@@ -55,8 +57,27 @@ def load_ref(country: str, REF_ROOT: str):
         return None, {}
     with open(p, "r", encoding="utf-8") as f:
         items = json.load(f)
-    ref_index = {(d["audio_name"], float(d["start"])): True for d in items}
+    ref_index = {}
+    for d in items:
+        audio = d.get("audio_name")
+        if not audio:
+            continue
+        try:
+            start = float(d.get("start", d.get("start_time", 0.0)))
+            end = float(d.get("end", d.get("end_time", 0.0)))
+        except Exception:
+            continue
+        if end <= start:
+            continue
+        ref_index.setdefault(audio, []).append((start, end))
     return p, ref_index
+
+
+def has_ref_match(ref_index, audio_name: str, start: float, end: float, tol: float = MATCH_TOL) -> bool:
+    for ref_start, ref_end in ref_index.get(audio_name, []):
+        if abs(start - ref_start) <= tol and abs(end - ref_end) <= tol:
+            return True
+    return False
 
 
 def load_existing_hyp(out_path: str):
@@ -140,9 +161,7 @@ def process_file(json_path: str, REF_ROOT: str, OUT_ROOT: str):
         model = item.get("model", "")
         language  = country
 
-        key = (audio_name, start)
-
-        if key not in ref_index:
+        if not has_ref_match(ref_index, audio_name, start, end):
             continue
 
         if key in existed_keys:
@@ -258,8 +277,7 @@ def run_gradio(
         text = clean_text(item.get("text", ""))
         model = item.get("model", "")
 
-        key = (audio_name, start)
-        if key not in ref_index:
+        if not has_ref_match(ref_index, audio_name, start, end):
             continue
 
         new_items.append({

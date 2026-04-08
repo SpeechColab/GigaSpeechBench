@@ -1,11 +1,16 @@
 import regex as re
 
+from text_norm._common import remove_paralinguistic_tags
+
 # -----------------------------
 # saudi normalization
 # -----------------------------
 def normalize(text: str) -> str:
     if text is None:
         return ""
+
+    # 移除副语言标签和填充词
+    text = remove_paralinguistic_tags(text)
 
     # Remove punctuation
     text = re.sub(r"[\p{P}\p{S}]", "", text)

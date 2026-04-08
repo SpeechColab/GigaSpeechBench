@@ -1,5 +1,7 @@
 import regex as re
 
+from text_norm._common import remove_paralinguistic_tags
+
 
 def normalize(text: str) -> str:
     """
@@ -22,6 +24,9 @@ def normalize(text: str) -> str:
     Returns:
         规范化后的文本
     """
+    # 移除副语言标签和填充词
+    text = remove_paralinguistic_tags(text)
+
     # 移除 Tashkeel (发音符号)
     # Unicode 范围 U+0617–U+061A (Quranic annotation), U+064B–U+0652 (Standard Tashkeel)
     patt_tashkeel = re.compile(r'[\u0617-\u061A\u064B-\u0652]')

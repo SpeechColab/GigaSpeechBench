@@ -2,6 +2,8 @@ import re
 import unicodedata
 from typing import List
 
+from text_norm._common import remove_paralinguistic_tags
+
 def normalize(text: str) -> str:
     """
     菲律宾语规范化（最终稳定版）
@@ -24,6 +26,9 @@ def normalize(text: str) -> str:
 
     if not text or not text.strip():
         return text
+
+    # 移除副语言标签和填充词
+    text = remove_paralinguistic_tags(text)
 
     protected_spans = []
     text = protect_special_content(text, protected_spans)

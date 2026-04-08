@@ -1,6 +1,8 @@
 import re
 import unicodedata
 
+from text_norm._common import remove_paralinguistic_tags
+
 def normalize(text: str) -> str:
     """
     Most complete Thai normalization for CER:
@@ -39,6 +41,9 @@ def normalize(text: str) -> str:
 
     # 1. Unicode NFC normalization (VERY IMPORTANT)
     text = unicodedata.normalize("NFC", text)
+
+    # 1.5. 移除副语言标签和填充词
+    text = remove_paralinguistic_tags(text)
 
     # 2. Remove annotation inside [], (), {}
     text = re.sub(BRACKET_PATTERN, "", text)

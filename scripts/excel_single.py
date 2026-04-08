@@ -28,6 +28,36 @@ COVERAGE_MODELS = {
     "QWEN3-ASR-1.7B","FUN-ASR-NANO","SEEDASR2","SEEDASR"
 }
 
+# 纵向排序 + 显示名称映射  (display_name, {internal_names...})
+MODEL_ORDER = [
+    ("Azure",                   {"AZURE"}),
+    ("Chirp3",                  {"CHIRP3"}),
+    ("elevenlabs_scribe_v2",    {"ELEVENLABS_SCRIBE_V2"}),
+    ("meta(omniASR_LLM_3B)",    {"OMNIASR_LLM_3B"}),
+    ("qwen3-asr-flash",         {"QWEN3-ASR-FLASH"}),
+    ("qwen3-asr",               {"QWEN3-ASR-1.7B"}),
+    ("nvidia-nemo",             {"NVIDIA-NEMO"}),
+    ("gpt4o-transcribe",        {"GPT4O-TRANSCRIBE"}),
+    ("gemini 3.0 flash",        {"GEMINI_3_0_FLASH", "GEMINI-3-FLASH-PREVIEW"}),
+    ("whisper",                  {"WHISPER", "WHISPER-LARGE-V3"}),
+    ("dolphin_small",           {"DOLPHIN_SMALL"}),
+    ("dolphin_base",            {"DOLPHIN_BASE"}),
+    ("fun-asr-mlt-nano",        {"FUN-ASR-MLT-NANO", "FUN-ASR-NANO"}),
+    ("seedasr-1-BIGASR_V400",   {"BIGASR_V400", "SEEDASR"}),
+    ("SEEDASR_2.0",             {"SEEDASR_2.0", "SEEDASR2"}),
+]
+
+def _build_internal_to_display():
+    """internal name -> display name"""
+    m = {}
+    for display, internals in MODEL_ORDER:
+        for i in internals:
+            m[i] = display
+    return m
+
+_INT2DISP = _build_internal_to_display()
+_DISP_ORDER = [d for d, _ in MODEL_ORDER]
+
 # =========================
 # 工具函数
 # =========================
@@ -83,9 +113,15 @@ def scan_results(results_root: str, excel_countries):
             if not err_path:
                 continue
             val = extract_value(err_path)
-            table.setdefault(model_clean, {})[country] = val
+            # 映射到显示名称，同一显示名称的模型合并到同一行
+            display = _INT2DISP.get(model_clean, model_clean)
+            table.setdefault(display, {})[country] = val
     df = pd.DataFrame.from_dict(table, orient="index")
     df = df.reindex(columns=excel_countries)
+    # 按 MODEL_ORDER 排序，未知模型排在最后
+    ordered = [d for d in _DISP_ORDER if d in df.index]
+    remaining = [d for d in df.index if d not in ordered]
+    df = df.reindex(ordered + remaining)
     return df.fillna("-")
 
 # =========================
@@ -110,11 +146,14 @@ def load_ref_counts(ref_root: str):
 # =========================
 # 主入口
 # =========================
-def main(results_root: str, ref_root: str, excel_countries):
+def main(results_root: str, ref_root: str, excel_countries, skip_existing: bool = False):
     print(f"📂 扫描 results 目录: {results_root}")
     ref_count = load_ref_counts(ref_root)
     df = scan_results(results_root, excel_countries)
     out_xlsx = os.path.join(results_root, "results.xlsx")
+    if skip_existing and os.path.exists(out_xlsx):
+        print(f"⏭️ Skip existing Excel: {out_xlsx}")
+        return
     df.to_excel(out_xlsx)
     print(f"✔️ WER/CER Excel → {out_xlsx}")
     print("\n📊 ref 段数统计：")
@@ -127,5 +166,7 @@ if __name__ == "__main__":
     parser.add_argument("--ref_root", type=str, required=True)
     parser.add_argument("--excel_countries", type=str, nargs="+", required=True,
                         help="列出要生成 Excel 的国家/区域，如 AGR-CH AIT-CH ...")
+    parser.add_argument("--skip_existing", type=int, choices=[0, 1], default=0,
+                        help="1: skip existing Excel; 0: overwrite")
     args = parser.parse_args()
-    main(args.results_root, args.ref_root, args.excel_countries)
+    main(args.results_root, args.ref_root, args.excel_countries, bool(args.skip_existing))

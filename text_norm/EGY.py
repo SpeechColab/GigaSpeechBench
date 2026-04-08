@@ -1,6 +1,8 @@
 import re
 from typing import Dict
 
+from text_norm._common import remove_paralinguistic_tags
+
 def normalize(text: str) -> str:
     """
     埃及阿拉伯语文本规范化函数
@@ -24,7 +26,10 @@ def normalize(text: str) -> str:
     """
     if not text.strip():
         return text
-    
+
+    # 移除副语言标签和填充词
+    text = remove_paralinguistic_tags(text)
+
     # 第一步：标准化阿拉伯字母变体
     
     # Alef的各种变体映射为标准alef

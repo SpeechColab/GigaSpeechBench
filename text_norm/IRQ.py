@@ -1,5 +1,7 @@
 import regex as re
 
+from text_norm._common import remove_paralinguistic_tags
+
 def normalize(text: str) -> str:
     """
     Arabic text normalization:
@@ -15,6 +17,9 @@ def normalize(text: str) -> str:
     ---------
     normalized text
     """
+    # 移除副语言标签和填充词
+    text = remove_paralinguistic_tags(text)
+
     # Remove punctuation
     text = re.sub(r"[\p{p}\p{s}]", "", text)
 

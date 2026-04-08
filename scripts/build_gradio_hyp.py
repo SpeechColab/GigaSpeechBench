@@ -45,6 +45,7 @@ CER_LANGS = ["JPN","KOR","THA","CHN","JIN","XIANG","YUE","WU","MIN","AGR-CH","AI
              "ART-CH","BIO-CH","ECM-CH","EDU-CH","ENG-CH","ENT-CH","FIN-CH","HUM-CH",
              "LAW-CH","MED-CH","MIL-CH"]
 ERR = "*"
+MATCH_TOL = 0.1
 
 # =========================
 # 路径配置 (💡 以后只需修改这里)
@@ -161,6 +162,7 @@ def process_country_eval(country):
             for h_norm in norm_hyp_items:
                 name = norm_audio_name(h_norm.get("audio_name", ""))
                 start_hyp = float(h_norm.get("start", 0.0))
+                end_hyp = float(h_norm.get("end", 0.0))
                 
                 # 获取 Normalized HYP (防御 null)
                 hyp_text_norm = h_norm.get("text_normalized") or h_norm.get("text") or ""
@@ -168,14 +170,20 @@ def process_country_eval(country):
                 # 寻找对应的 RAW HYP (防御 null)
                 hyp_text_raw = hyp_text_norm # Fallback
                 for h_raw in raw_hyp_index.get(name, []):
-                    if abs(float(h_raw.get("start", 0.0)) - start_hyp) <= 0.1:
+                    if (
+                        abs(float(h_raw.get("start", 0.0)) - start_hyp) <= MATCH_TOL
+                        and abs(float(h_raw.get("end", 0.0)) - end_hyp) <= MATCH_TOL
+                    ):
                         hyp_text_raw = h_raw.get("text") or ""
                         break
 
                 # 寻找对应的 REF
                 matched_ref = None
                 for r in ref_index.get(name, []):
-                    if abs(float(r.get("start", 0.0)) - start_hyp) <= 0.1:
+                    if (
+                        abs(float(r.get("start", 0.0)) - start_hyp) <= MATCH_TOL
+                        and abs(float(r.get("end", 0.0)) - end_hyp) <= MATCH_TOL
+                    ):
                         matched_ref = r
                         break
 

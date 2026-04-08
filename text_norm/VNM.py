@@ -2,6 +2,8 @@ import re
 import sys
 import unicodedata
 
+from text_norm._common import remove_paralinguistic_tags
+
 # --- 依赖库检查 ---
 try:
     from underthesea import text_normalize as underthesea_normalize
@@ -60,6 +62,9 @@ def normalize(text: str) -> str:
     """
     if not text:
         return ""
+
+    # 移除副语言标签和填充词
+    text = remove_paralinguistic_tags(text)
 
     # Unicode NFC 归一化 (解决 NFD 分解字符问题)
     text = unicodedata.normalize("NFC", text)

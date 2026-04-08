@@ -4,6 +4,8 @@ import unicodedata
 import os
 from typing import Dict, Pattern
 
+from text_norm._common import remove_paralinguistic_tags
+
 # --- 依赖库检查 ---
 # num2words库用于数字转印尼语词汇，ASR评测中核心依赖
 try:
@@ -473,6 +475,9 @@ def normalize(text: str) -> str:
     # 步骤1: 预理检查
     if not text or text.strip() == "":
         return ""
+
+    # 移除副语言标签和填充词
+    text = remove_paralinguistic_tags(text)
 
     # 步骤2: Unicode预处理
     text = _preprocess_unicode(text)

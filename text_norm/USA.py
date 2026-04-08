@@ -1,6 +1,8 @@
 import re
 import string
 
+from text_norm._common import remove_paralinguistic_tags
+
 # 只有整句是下面这几个才跳过（大小写不敏感）
 SKIP_WORDS_STRICT = {"SIL", "MUSIC", "NOISE", "OTHER"}
 
@@ -43,6 +45,9 @@ DIGIT_REGEX = re.compile(r"[0-9]")
 def normalize(text: str):
     if not text:
         return ""
+
+    # 移除副语言标签和填充词
+    text = remove_paralinguistic_tags(text)
 
     # A）精确判断整句是否为垃圾词（严格匹配）
     t = text.strip().upper()

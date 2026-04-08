@@ -1,5 +1,7 @@
 import regex as re
 
+from text_norm._common import remove_paralinguistic_tags
+
 
 def normalize(text: str) -> str:
     """
@@ -10,6 +12,9 @@ def normalize(text: str) -> str:
     2. Remove diacritics
     3. Eastern Arabic numerals to Western Arabic numerals
     """
+    # 移除副语言标签和填充词
+    text = remove_paralinguistic_tags(text)
+
     # Remove punctuation
     # punctuation = r'[!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~،؛؟]'
     # text = re.sub(punctuation, "", text)

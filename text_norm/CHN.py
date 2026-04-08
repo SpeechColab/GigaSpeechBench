@@ -1,6 +1,8 @@
 import re
 import string
 
+from text_norm._common import remove_paralinguistic_tags
+
 # ------------------------------------------------
 # 标点
 # ------------------------------------------------
@@ -43,6 +45,9 @@ DIGIT_REGEX = re.compile(r"[0-9]")
 def normalize(text: str) -> str:
 
     text = text.strip()
+
+    # 移除副语言标签和填充词
+    text = remove_paralinguistic_tags(text)
 
     # 删除括号内容
     text = SQUARE_REGEX.sub("", text)

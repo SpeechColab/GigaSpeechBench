@@ -1,101 +1,120 @@
-#!/bin/bash
-# ==========================================
-# run_all.sh
-# 依次运行 ASR Bench 流程，MODULE 内置
-# ==========================================
+#!/usr/bin/env bash
 
-# ===== 内置 MODULE 选项 =====
-# 可修改这里选择要跑的模块：
-# 选择 CH-EN-Dialects / Low-Resource-Languages / Vertical-Domain
-MODULE="fleurs"
+set -euo pipefail
 
-BASE_DIR="/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark"
+# Usage:
+#   bash example.sh [MODULE] [SKIP_EXISTING]
+# MODULE: CH-EN-Dialects | Low-Resource-Languages | Vertical-Domain | all
+# SKIP_EXISTING: 1 skip existing outputs, 0 overwrite existing outputs
 
-case $MODULE in
-    "CH-EN-Dialects")
-        REF_OLD="/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/data/Multilingual-ASR-Benchmark/CH-EN-Dialects/text/ref"
-        HYP_OLD="/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/data/Multilingual-ASR-Benchmark/CH-EN-Dialects/text/hyp"
-        REF_NORM_OUT="/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/text_normalized/CH-EN-Dialects"
-        HYP_NORM_OUT="/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/text_normalized/CH-EN-Dialects"
-        REF_OUT="$BASE_DIR/data/text/CH-EN-Dialects/ref"
-        HYP_OUT="$BASE_DIR/data/text/CH-EN-Dialects/hyp"
-        RESULTS_OUT="/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/results_CH-EN-Dialects"
-        EXCEL_COUNTRIES=("CHN-EN" "IDN-EN" "JPN-EN" "PHL-EN" "SCT-EN" "SGP-EN" "XIANG" "JIN" "GAN" "MIN" "YUE" "WU")
+MODULE="${1:-CH-EN-Dialects}"
+SKIP_EXISTING="${2:-${SKIP_EXISTING:-1}}"
+BASE_DIR="$(cd "$(dirname "$0")" && pwd)"
+DATA_ROOT="${DATA_ROOT:-/home/v-yujietu/BenchData/Multilingual-ASR-Benchmark}"
+PYTHON_BIN="${PYTHON_BIN:-python3}"
+
+if [[ "$SKIP_EXISTING" != "0" && "$SKIP_EXISTING" != "1" ]]; then
+    echo "SKIP_EXISTING must be 0 or 1"
+    exit 1
+fi
+
+run_one_module() {
+    local module="$1"
+
+    REF_OLD="$DATA_ROOT/$module/text/ref"
+    HYP_OLD="$DATA_ROOT/$module/text/hyp"
+
+    REF_OUT="$BASE_DIR/data/text/$module/ref"
+    HYP_OUT="$BASE_DIR/data/text/$module/hyp"
+
+    NORM_OUT="$BASE_DIR/data/text_normalized/$module"
+    RESULTS_OUT="$BASE_DIR/data/results_$module"
+
+    if [[ "$SKIP_EXISTING" == "0" ]]; then
+        rm -rf "$BASE_DIR/data/text/$module" "$NORM_OUT" "$RESULTS_OUT"
+    fi
+
+    echo "=============================================="
+    echo "Running ASR Bench pipeline for $module"
+    echo "SKIP_EXISTING = $SKIP_EXISTING"
+    echo "BASE_DIR   = $BASE_DIR"
+    echo "DATA_ROOT  = $DATA_ROOT"
+    echo "REF_OLD    = $REF_OLD"
+    echo "HYP_OLD    = $HYP_OLD"
+    echo "=============================================="
+
+    if [[ ! -d "$REF_OLD" || ! -d "$HYP_OLD" ]]; then
+        echo "Input text directories not found under $DATA_ROOT/$module"
+        exit 1
+    fi
+
+echo "Step 1/6: Build consolidated REF json"
+"$PYTHON_BIN" "$BASE_DIR/data_process/generate_ref_json_single.py" \
+    --old_ref_root "$REF_OLD" \
+    --out_ref_root "$REF_OUT" \
+    --skip_existing "$SKIP_EXISTING"
+
+echo "Step 2/6: Build model-wise HYP json"
+"$PYTHON_BIN" "$BASE_DIR/data_process/generate_hyp_json_single.py" \
+    --hyp_input_root "$HYP_OLD" \
+    --out_hyp_root "$HYP_OUT" \
+    --ref_root "$REF_OUT" \
+    --skip_existing "$SKIP_EXISTING"
+
+echo "Step 3/6: Normalize REF"
+"$PYTHON_BIN" "$BASE_DIR/data_process/normalization_single_ref.py" \
+    --ref_root "$REF_OUT" \
+    --out_root "$NORM_OUT" \
+    --workers 4 \
+    --skip_existing "$SKIP_EXISTING"
+
+echo "Step 4/6: Normalize HYP"
+"$PYTHON_BIN" "$BASE_DIR/data_process/normalization_single_hyp.py" \
+    --hyp_root "$HYP_OUT" \
+    --ref_root "$REF_OUT" \
+    --out_root "$NORM_OUT" \
+    --workers 4 \
+    --skip_existing "$SKIP_EXISTING"
+
+echo "Step 5/6: Compute WER/CER"
+"$PYTHON_BIN" "$BASE_DIR/scripts/compute_wer_single.py" \
+    --ref_root "$NORM_OUT/ref" \
+    --hyp_root "$NORM_OUT/hyp" \
+    --out_root "$RESULTS_OUT" \
+    --skip_existing "$SKIP_EXISTING"
+
+echo "Step 6/6: Build Excel"
+mapfile -t EXCEL_COUNTRIES < <(find "$NORM_OUT/ref" -maxdepth 1 -name '*.json' -printf '%f\n' | sed 's/\.json$//' | sort)
+if [[ ${#EXCEL_COUNTRIES[@]} -eq 0 ]]; then
+    echo "No normalized ref files found in $NORM_OUT/ref"
+    exit 1
+fi
+
+"$PYTHON_BIN" "$BASE_DIR/scripts/excel_single.py" \
+    --results_root "$RESULTS_OUT" \
+    --ref_root "$NORM_OUT/ref" \
+    --excel_countries "${EXCEL_COUNTRIES[@]}" \
+    --skip_existing "$SKIP_EXISTING"
+
+echo "=============================================="
+echo "Pipeline finished for $module"
+echo "Results: $RESULTS_OUT"
+echo "=============================================="
+
+}
+
+case "$MODULE" in
+    "CH-EN-Dialects"|"Low-Resource-Languages"|"Vertical-Domain")
+        run_one_module "$MODULE"
         ;;
-    "Low-Resource-Languages")
-        REF_OLD="/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/data/Multilingual-ASR-Benchmark/Low-Resource-Languages/text/ref"
-        HYP_OLD="/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/data/Multilingual-ASR-Benchmark/Low-Resource-Languages/text/hyp"
-        REF_NORM_OUT="/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/text_normalized/Low-Resource-Languages"
-        HYP_NORM_OUT="/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/text_normalized/Low-Resource-Languages"
-        REF_OUT="/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/text/Low-Resource-Languages/ref"
-        HYP_OUT="/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/Multilingual-ASR-Benchmark/data/text/Low-Resource-Languages/hyp"
-        RESULTS_OUT="$BASE_DIR/data/results_Low-Resource-Languages"
-        EXCEL_COUNTRIES=("IRQ" "DZA" "ARE" "EGY" "MAR" "SAU" "SYR" "IDN" "MYS" "PHL" "VNM" "THA" "JPN" "JPN_hard" "KOR"	"KOR_hard")
-        ;;
-    "Vertical-Domain")
-        REF_OLD="/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/data/Multilingual-ASR-Benchmark/Vertical-Domain/text/ref"
-        HYP_OLD="/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/data/Multilingual-ASR-Benchmark/Vertical-Domain/text/hyp"
-        REF_OUT="$BASE_DIR/data/text/Vertical-Domain/ref"
-        HYP_OUT="$BASE_DIR/data/text/Vertical-Domain/hyp"
-        REF_NORM_OUT="$BASE_DIR/data/text_normalized/Vertical-Domain"
-        HYP_NORM_OUT="$BASE_DIR/data/text_normalized/Vertical-Domain"
-        RESULTS_OUT="$BASE_DIR/data/results_Vertical-Domain"
-        EXCEL_COUNTRIES=("AGR-CH" "AIT-CH" "ART-CH" "BIO-CH" "ECM-CH" "ENG-CH" "ENT-CH" "FIN-CH" "HUM-CH" "LAW-CH" "MED-CH" "MIL-CH" "AGR-EN" "AIT-EN" "ART-EN" "BIO-EN" "ECM-EN" "ENG-EN" "ENT-EN" "FIN-EN" "HUM-EN" "LAW-EN" "MED-EN" "MIL-EN")
-        ;;
-    "fleurs")
-        REF_OLD="/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/data/fleurs/text/ref"
-        HYP_OLD="/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/data/fleurs/text/hyp"
-        REF_OUT="$BASE_DIR/data/text/fleurs/ref"
-        HYP_OUT="$BASE_DIR/data/text/fleurs/hyp"
-        REF_NORM_OUT="$BASE_DIR/data/text_normalized/fleurs"
-        HYP_NORM_OUT="$BASE_DIR/data/text_normalized/fleurs"
-        RESULTS_OUT="$BASE_DIR/data/results_fleurs"
-        EXCEL_COUNTRIES=("EGY" "IDN" "MYS" "PHL" "VNM" "THA" "JPN" "KOR")
-        ;;
-    "cv")
-        REF_OLD="/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/data/common-voice/text/ref"
-        HYP_OLD="/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yujietu/data/common-voice/text/hyp"
-        REF_OUT="$BASE_DIR/data/text/common-voice/ref"
-        HYP_OUT="$BASE_DIR/data/text/common-voice/hyp"
-        REF_NORM_OUT="$BASE_DIR/data/text_normalized/common-voice"
-        HYP_NORM_OUT="$BASE_DIR/data/text_normalized/common-voice"
-        RESULTS_OUT="$BASE_DIR/data/results_common-voice"
-        EXCEL_COUNTRIES=("AR" "IDN" "VNM" "THA" "JPN" "KOR")
+    "all")
+        run_one_module "CH-EN-Dialects"
+        run_one_module "Low-Resource-Languages"
+        run_one_module "Vertical-Domain"
         ;;
     *)
-        echo "Invalid MODULE: $MODULE"
+        echo "Unsupported MODULE: $MODULE"
+        echo "Supported: CH-EN-Dialects | Low-Resource-Languages | Vertical-Domain | all"
         exit 1
         ;;
 esac
-
-echo "=============================================="
-echo "Running ASR Bench pipeline for $MODULE"
-echo "=============================================="
-
-# Step 1: 生成 REF
-echo "💡 Step 1: Non-batch REF generation"
-#python3 $BASE_DIR/data_process/generate_ref_json_single.py --old_ref_root $REF_OLD --out_ref_root $REF_OUT
-
-# Step 2: 生成 HYP
-echo "💡 Step 2: Non-batch HYP generation"
-python3 $BASE_DIR/data_process/generate_hyp_json_single.py --hyp_input_root $HYP_OLD --out_hyp_root $HYP_OUT
-
-# Step 3: REF 文本归一化
-echo "💡 Step 3: REF normalization"
-#python3 $BASE_DIR/data_process/normalization_single_ref.py --ref_root $REF_OUT --out_root $REF_NORM_OUT --workers 4
-
-# Step 4: HYP 文本归一化
-echo "💡 Step 4: HYP normalization"
-python3 $BASE_DIR/data_process/normalization_single_hyp.py --hyp_root $HYP_OUT --ref_root $REF_OUT --out_root $HYP_NORM_OUT --workers 4
-
-# Step 5: 单 batch WER/CER
-echo "💡 Step 5: WER/CER evaluation"
-python3 $BASE_DIR/scripts/compute_wer_single.py --ref_root "$REF_NORM_OUT/ref" --hyp_root "$HYP_NORM_OUT/hyp" --out_root $RESULTS_OUT
-
-# Step 6: Excel 汇总
-echo "💡 Step 6: Excel generation"
-python3 $BASE_DIR/scripts/excel_single.py --results_root $RESULTS_OUT --ref_root "$REF_NORM_OUT/ref" --excel_countries ${EXCEL_COUNTRIES[@]}
-
-echo "=============================================="
-echo "✅ Pipeline finished for $MODULE"
-echo "=============================================="

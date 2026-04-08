@@ -37,6 +37,7 @@ CER_LANGS = ["JPN","JPN_hard","KOR","KOR_hard","THA","CHN","JIN","XIANG","YUE","
              "MIN","AGR-CH","AIT-CH","ART-CH","BIO-CH","ECM-CH","EDU-CH","ENG-CH","ENT-CH",
              "FIN-CH","HUM-CH","LAW-CH","MED-CH","MIL-CH"]
 ERR = "*"
+MATCH_TOL = 0.1
 
 # =========================
 # 工具函数
@@ -44,43 +45,85 @@ ERR = "*"
 def norm_audio_name(name: str) -> str:
     name = name.replace("\\", "/")
     base = os.path.basename(name)
-    for ext in [".wav", ".mp3", ".mp4"]:
+    for ext in [".wav", ".mp3", ".mp4", ".webm"]:
         if base.lower().endswith(ext):
             base = base[:-len(ext)]
     return base
 
+
+def fmt_seg(seg):
+    if not seg:
+        return ""
+    audio = str(seg.get("audio_name", "")).replace("\t", " ").replace("\n", " ")
+    start = seg.get("start", "")
+    end = seg.get("end", "")
+    text = str(seg.get("text", "")).replace("\t", " ").replace("\n", " ").strip()
+    return f"audio_name={audio}; start={start}; end={end}; text={text}"
+
 def process_one_ref_hyp(ref_items, hyp_items, compute_CER, recogs_f, stats):
     hyp_index = defaultdict(list)
-    for h in hyp_items:
+    hyp_records = []
+    for i, h in enumerate(hyp_items):
         name = norm_audio_name(h["audio_name"])
         start = float(h["start"])
-        hyp_index[name].append((start, h["text"]))
+        end = float(h["end"])
+        rec = {
+            "idx": i,
+            "audio_name": h.get("audio_name", ""),
+            "start": start,
+            "end": end,
+            "text": h.get("text", ""),
+            "matched": False,
+        }
+        hyp_records.append(rec)
+        hyp_index[name].append(rec)
 
     valid = 0
     dur_sec = 0.0
+    first_unmatched_ref = None
     for r in ref_items:
         name = norm_audio_name(r["audio_name"])
         start_ref = float(r["start"])
+        end_ref = float(r["end"])
 
         if name not in hyp_index:
+            if first_unmatched_ref is None:
+                first_unmatched_ref = {
+                    "audio_name": r.get("audio_name", ""),
+                    "start": r.get("start", ""),
+                    "end": r.get("end", ""),
+                    "text": r.get("text", ""),
+                }
             continue
 
-        hyp_val = None
-        match_start = None
-        for start_hyp, text in hyp_index[name]:
-            if abs(start_ref - start_hyp) <= 0.1:
-                hyp_val = text
-                match_start = start_hyp
-                break
+        hyp_match = None
+        best_score = None
+        for cand in hyp_index[name]:
+            start_hyp = float(cand["start"])
+            end_hyp = float(cand["end"])
+            if abs(start_ref - start_hyp) <= MATCH_TOL and abs(end_ref - end_hyp) <= MATCH_TOL:
+                score = abs(start_ref - start_hyp) + abs(end_ref - end_hyp)
+                if best_score is None or score < best_score:
+                    best_score = score
+                    hyp_match = cand
 
-        if hyp_val is None:
+        if hyp_match is None:
+            if first_unmatched_ref is None:
+                first_unmatched_ref = {
+                    "audio_name": r.get("audio_name", ""),
+                    "start": r.get("start", ""),
+                    "end": r.get("end", ""),
+                    "text": r.get("text", ""),
+                }
             continue
-        hyp_index[name].remove((match_start, hyp_val))
+        hyp_match["matched"] = True
+        hyp_index[name].remove(hyp_match)
 
         valid += 1
         dur_sec += float(r["end"]) - float(r["start"])
 
         ref_tok = r["text"].strip().split()
+        hyp_val = str(hyp_match.get("text", ""))
         hyp_tok = hyp_val.strip().split() if hyp_val else []
 
         if compute_CER:
@@ -104,7 +147,19 @@ def process_one_ref_hyp(ref_items, hyp_items, compute_CER, recogs_f, stats):
             else:
                 stats["C"] += 1
                 stats["N"] += 1
-    return valid, dur_sec / 3600.0
+
+    first_unmatched_hyp = None
+    for rec in hyp_records:
+        if not rec["matched"]:
+            first_unmatched_hyp = {
+                "audio_name": rec.get("audio_name", ""),
+                "start": rec.get("start", ""),
+                "end": rec.get("end", ""),
+                "text": rec.get("text", ""),
+            }
+            break
+
+    return valid, dur_sec / 3600.0, first_unmatched_ref, first_unmatched_hyp
 
 def write_errs_and_summary(out_dir, country, model, stats, compute_CER):
     N = stats["N"]
@@ -121,7 +176,7 @@ def write_errs_and_summary(out_dir, country, model, stats, compute_CER):
 # =========================
 # 主入口（单 batch，可传参）
 # =========================
-def main(REF_ROOT, HYP_ROOT, OUT_ROOT):
+def main(REF_ROOT, HYP_ROOT, OUT_ROOT, skip_existing=False):
     logging.info("====== Single Batch Evaluation ======")
     # 🔹 打印目录路径
     print(f"🔹 REF 根目录: {REF_ROOT}")
@@ -152,17 +207,25 @@ def main(REF_ROOT, HYP_ROOT, OUT_ROOT):
         for model, hyp_items in hyp_by_model.items():
             stats = defaultdict(int)
             out_dir = Path(OUT_ROOT) / country / model
+            seg_path = out_dir / "segment_check.txt"
+            if skip_existing and seg_path.exists():
+                logging.info(f"[SKIP] {country}/{model}: existing {seg_path}")
+                continue
             out_dir.mkdir(parents=True, exist_ok=True)
             with open(out_dir / f"recogs-{country}-{model}.txt", "w", encoding="utf8") as rec_f:
-                valid, dur_h = process_one_ref_hyp(ref_items, hyp_items, compute_CER, rec_f, stats)
+                valid, dur_h, first_unmatched_ref, first_unmatched_hyp = process_one_ref_hyp(
+                    ref_items, hyp_items, compute_CER, rec_f, stats
+                )
             write_errs_and_summary(out_dir, country, model, stats, compute_CER)
 
             ref_n = len(ref_items)
             hyp_n = len(hyp_items)
-            with open(out_dir / "segment_check.txt", "w", encoding="utf8") as f:
+            with open(seg_path, "w", encoding="utf8") as f:
                 f.write(f"ref_segments={ref_n}\n")
                 f.write(f"hyp_segments={hyp_n}\n")
                 f.write(f"matched_segments={valid}\n")
+                f.write(f"first_unmatched_in_hyp={fmt_seg(first_unmatched_ref)}\n")
+                f.write(f"first_unmatched_in_ref={fmt_seg(first_unmatched_hyp)}\n")
             logging.info(f"[CHECK] {country}/{model}: ref={ref_n} hyp={hyp_n} matched={valid}")
         del ref_items
         gc.collect()
@@ -173,5 +236,12 @@ if __name__ == "__main__":
     parser.add_argument("--ref_root", type=str, required=True)
     parser.add_argument("--hyp_root", type=str, required=True)
     parser.add_argument("--out_root", type=str, required=True)
+    parser.add_argument("--skip_existing", type=int, choices=[0, 1], default=0,
+                        help="1: skip existing model-level outputs; 0: overwrite")
     args = parser.parse_args()
-    main(REF_ROOT=args.ref_root, HYP_ROOT=args.hyp_root, OUT_ROOT=args.out_root)
+    main(
+        REF_ROOT=args.ref_root,
+        HYP_ROOT=args.hyp_root,
+        OUT_ROOT=args.out_root,
+        skip_existing=bool(args.skip_existing),
+    )
