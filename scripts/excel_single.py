@@ -96,7 +96,25 @@ def pick_err_file(m_dir: str):
 # =========================
 # 扫描结果
 # =========================
-def scan_results(results_root: str, excel_countries):
+def _is_fully_matched(m_dir: str) -> bool:
+    """Check segment_check.txt: return True only if matched == ref."""
+    seg_path = os.path.join(m_dir, "segment_check.txt")
+    if not os.path.isfile(seg_path):
+        return False
+    vals = {}
+    try:
+        with open(seg_path, "r", encoding="utf8") as f:
+            for line in f:
+                if "=" in line:
+                    k, v = line.strip().split("=", 1)
+                    vals[k] = v
+        ref_n = int(vals.get("ref_segments", -1))
+        matched_n = int(vals.get("matched_segments", -2))
+        return ref_n == matched_n
+    except Exception:
+        return False
+
+def scan_results(results_root: str, excel_countries, matched_only: bool = False):
     table = {}
     for country in excel_countries:
         c_dir = os.path.join(results_root, country)
@@ -108,6 +126,8 @@ def scan_results(results_root: str, excel_countries):
                 continue
             model_clean = normalize_model_name(model)
             if model_clean not in COVERAGE_MODELS:
+                continue
+            if matched_only and not _is_fully_matched(m_dir):
                 continue
             err_path = pick_err_file(m_dir)
             if not err_path:
@@ -146,10 +166,12 @@ def load_ref_counts(ref_root: str):
 # =========================
 # 主入口
 # =========================
-def main(results_root: str, ref_root: str, excel_countries, skip_existing: bool = False):
+def main(results_root: str, ref_root: str, excel_countries, skip_existing: bool = False, matched_only: bool = False):
     print(f"📂 扫描 results 目录: {results_root}")
+    if matched_only:
+        print("🔒 matched_only 模式：只写入 ref==matched 的结果")
     ref_count = load_ref_counts(ref_root)
-    df = scan_results(results_root, excel_countries)
+    df = scan_results(results_root, excel_countries, matched_only=matched_only)
     out_xlsx = os.path.join(results_root, "results.xlsx")
     if skip_existing and os.path.exists(out_xlsx):
         print(f"⏭️ Skip existing Excel: {out_xlsx}")
@@ -168,5 +190,7 @@ if __name__ == "__main__":
                         help="列出要生成 Excel 的国家/区域，如 AGR-CH AIT-CH ...")
     parser.add_argument("--skip_existing", type=int, choices=[0, 1], default=0,
                         help="1: skip existing Excel; 0: overwrite")
+    parser.add_argument("--matched_only", type=int, choices=[0, 1], default=0,
+                        help="1: only include fully matched (ref==matched) results; 0: include all")
     args = parser.parse_args()
-    main(args.results_root, args.ref_root, args.excel_countries, bool(args.skip_existing))
+    main(args.results_root, args.ref_root, args.excel_countries, bool(args.skip_existing), bool(args.matched_only))
