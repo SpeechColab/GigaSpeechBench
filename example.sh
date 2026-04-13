@@ -116,22 +116,34 @@ echo "Pipeline finished for $module"
 echo "Results: $RESULTS_OUT"
 echo "=============================================="
 
+# Hotword WER: only for Vertical-Domain when entity_ref exists
+ENTITY_REF_DIR="$DATA_ROOT/$module/text/entity_ref"
+if [[ "$module" == "Vertical-Domain" && -d "$ENTITY_REF_DIR" ]]; then
+    echo "Step Extra: Hotword WER evaluation"
+    "$PYTHON_BIN" "$BASE_DIR/scripts/hotword_wer.py" \
+        --result_dir "$ENTITY_REF_DIR" \
+        --hyp_dir "$HYP_OLD" \
+        --out_dir "$BASE_DIR/data/results_hotword"
+fi
+
 }
 
 case "$MODULE" in
-    "CH-EN-Dialects"|"Low-Resource-Languages"|"Vertical-Domain")
+    "CH-EN-Dialects"|"Low-Resource-Languages"|"Vertical-Domain"|"fleurs"|"common-voice")
         run_one_module "$MODULE"
         ;;
     "all")
         run_one_module "CH-EN-Dialects"
         run_one_module "Low-Resource-Languages"
         run_one_module "Vertical-Domain"
+        run_one_module "fleurs"
+        run_one_module "common-voice"
         echo "Step 7: Merge all results into all_results.xlsx"
         "$PYTHON_BIN" "$BASE_DIR/scripts/merge_excel.py" --base_dir "$BASE_DIR"
         ;;
     *)
         echo "Unsupported MODULE: $MODULE"
-        echo "Supported: CH-EN-Dialects | Low-Resource-Languages | Vertical-Domain | all"
+        echo "Supported: CH-EN-Dialects | Low-Resource-Languages | Vertical-Domain | fleurs | common-voice | all"
         exit 1
         ;;
 esac

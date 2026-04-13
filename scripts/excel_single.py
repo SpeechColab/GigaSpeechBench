@@ -24,8 +24,8 @@ COVERAGE_MODELS = {
     "ELEVENLABS_SCRIBE_V2","FUN-ASR-MLT-NANO","GEMINI_3_0_FLASH","GPT4O-TRANSCRIBE",
     "OMNIASR_LLM_3B","QWEN3-ASR-FLASH","STT_AR_FASTCONFORMER_HYBRID_LARGE_PCD_V1.0.NEMO",
     "WHISPER","STT_KR_CONFORMER_TRANSDUCER_LARGE","PARAKEET-TDT_CTC-0.6B-JA",
-    "NVIDIA-NEMO","WHISPER-LARGE-V3","GEMINI","SEEDASR_2.0","GEMINI-3-FLASH-PREVIEW",
-    "QWEN3-ASR-1.7B","FUN-ASR-NANO","SEEDASR2","SEEDASR"
+    "NVIDIA-NEMO","WHISPER-LARGE-V3","GEMINI","GEMINI_3_0_FLASH","SEEDASR_2.0",
+    "GEMINI-3-FLASH-PREVIEW","QWEN3-ASR-1.7B","FUN-ASR-NANO","SEEDASR2","SEEDASR"
 }
 
 # 纵向排序 + 显示名称映射  (display_name, {internal_names...})
@@ -38,7 +38,7 @@ MODEL_ORDER = [
     ("qwen3-asr",               {"QWEN3-ASR-1.7B"}),
     ("nvidia-nemo",             {"NVIDIA-NEMO"}),
     ("gpt4o-transcribe",        {"GPT4O-TRANSCRIBE"}),
-    ("gemini 3.0 flash",        {"GEMINI_3_0_FLASH", "GEMINI-3-FLASH-PREVIEW"}),
+    ("gemini 3.0 flash",        {"GEMINI_3_0_FLASH", "GEMINI-3-FLASH-PREVIEW", "GEMINI"}),
     ("whisper",                  {"WHISPER", "WHISPER-LARGE-V3"}),
     ("dolphin_small",           {"DOLPHIN_SMALL"}),
     ("dolphin_base",            {"DOLPHIN_BASE"}),
@@ -138,10 +138,8 @@ def scan_results(results_root: str, excel_countries, matched_only: bool = False)
             table.setdefault(display, {})[country] = val
     df = pd.DataFrame.from_dict(table, orient="index")
     df = df.reindex(columns=excel_countries)
-    # 按 MODEL_ORDER 排序，未知模型排在最后
-    ordered = [d for d in _DISP_ORDER if d in df.index]
-    remaining = [d for d in df.index if d not in ordered]
-    df = df.reindex(ordered + remaining)
+    # 严格按 MODEL_ORDER 排序，所有模型都要出现（没数据的显示 "-"）
+    df = df.reindex(_DISP_ORDER)
     return df.fillna("-")
 
 # =========================

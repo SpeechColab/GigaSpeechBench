@@ -18,28 +18,38 @@ EXCLUDE_COLS = {"EDU-EN", "EDU-CH"}
 COLUMN_ORDER = {
     "Low-Resource-Languages": [
         "IRQ", "DZA", "ARE", "EGY", "MAR", "SAU", "SYR",
-        "IDN", "MYS", "PHL", "VNM", "THA",
+        "IDN", "MYS", "PHL", "PHL_EN", "PHL_noEN", "VNM", "THA",
         "JPN", "JPN_hard", "KOR", "KOR_hard",
     ],
     "CH-EN-Dialects": [
         "CHN-EN", "IDN-EN", "JPN-EN", "PHL-EN", "SCT-EN", "SGP-EN",
         "XIANG", "JIN", "GAN", "MIN", "YUE", "WU",
     ],
-    "Vertical-Domain": [
+    "Vertical-Domain-CH": [
         "AGR-CH", "AIT-CH", "ART-CH", "BIO-CH", "ECM-CH", "ENG-CH",
         "ENT-CH", "FIN-CH", "HUM-CH", "LAW-CH", "MED-CH", "MIL-CH",
+    ],
+    "Vertical-Domain-EN": [
         "AGR-EN", "AIT-EN", "ART-EN", "BIO-EN", "ECM-EN",
         "ENG-EN", "ENT-EN", "FIN-EN", "HUM-EN", "LAW-EN", "MED-EN", "MIL-EN",
     ],
+    "fleurs": [
+        "EGY", "IDN", "JPN", "KOR", "MYS", "PHL", "THA", "VNM",
+    ],
+    "common-voice": [
+        "AR", "IDN", "JPN", "KOR", "THA", "VNM",
+    ],
 }
 
-MODULE_ORDER = ["Low-Resource-Languages", "CH-EN-Dialects", "Vertical-Domain"]
+MODULE_ORDER = ["Low-Resource-Languages", "CH-EN-Dialects", "Vertical-Domain-CH", "Vertical-Domain-EN", "fleurs", "common-voice"]
 
 
-def reorder_columns(df: pd.DataFrame, fixed_order: list) -> pd.DataFrame:
+def reorder_columns(df: pd.DataFrame, fixed_order: list, strict: bool = False) -> pd.DataFrame:
     # Drop excluded columns
     df = df.drop(columns=[c for c in EXCLUDE_COLS if c in df.columns], errors="ignore")
     ordered = [c for c in fixed_order if c in df.columns]
+    if strict:
+        return df[ordered]
     extras = sorted(c for c in df.columns if c not in fixed_order)
     return df[ordered + extras]
 
@@ -88,14 +98,22 @@ def style_worksheet(ws):
 
 def main(base_dir: str):
     out = os.path.join(base_dir, "data", "all_results.xlsx")
+    # Vertical-Domain-CH and Vertical-Domain-EN both read from results_Vertical-Domain
+    SOURCE_MAP = {
+        "Vertical-Domain-CH": "Vertical-Domain",
+        "Vertical-Domain-EN": "Vertical-Domain",
+    }
+    # These sheets only keep columns in their fixed order (no extras)
+    STRICT_MODULES = {"Vertical-Domain-CH", "Vertical-Domain-EN"}
     with pd.ExcelWriter(out, engine="openpyxl") as writer:
         for module in MODULE_ORDER:
-            path = os.path.join(base_dir, f"data/results_{module}/results.xlsx")
+            source = SOURCE_MAP.get(module, module)
+            path = os.path.join(base_dir, f"data/results_{source}/results.xlsx")
             if not os.path.isfile(path):
                 print(f"⚠️  {module}: {path} not found, skipped")
                 continue
             df = pd.read_excel(path, index_col=0)
-            df = reorder_columns(df, COLUMN_ORDER.get(module, []))
+            df = reorder_columns(df, COLUMN_ORDER.get(module, []), strict=module in STRICT_MODULES)
             df = add_min_row(df)
             df.to_excel(writer, sheet_name=module)
             style_worksheet(writer.sheets[module])
