@@ -13,9 +13,16 @@ MATCH_TOL = 0.1
 
 def normalize_audio_name(name: str) -> str:
     base = os.path.basename(str(name).replace("\\", "/"))
-    for ext in (".wav", ".mp3", ".mp4", ".webm"):
-        if base.lower().endswith(ext):
-            return base[:-len(ext)]
+    changed = True
+    while changed:
+        changed = False
+        for ext in (".wav", ".mp3", ".mp4", ".webm"):
+            if base.lower().endswith(ext):
+                base = base[:-len(ext)]
+                changed = True
+                break
+    if base.endswith("#raw"):
+        base = base[:-4]
     return base
 
 
