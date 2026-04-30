@@ -1,4 +1,4 @@
-# Multilingual ASR Benchmark
+# 🌍 Multilingual ASR Benchmark
 
 <p align="center">
   <b>A Large-Scale Multilingual Speech Recognition Benchmark for Low-Resource Languages</b><br>
@@ -6,50 +6,47 @@
 </p>
 
 <p align="center">
-  <a href="#leaderboard">Leaderboard</a> •
-  <a href="#dataset">Dataset</a> •
-  <a href="#quick-start">Quick Start</a> •
-  <a href="#evaluation">Evaluation</a> •
-  <a href="#contributing">Contributing</a>
+  <img src="https://img.shields.io/badge/Languages-14+-blue" alt="Languages">
+  <img src="https://img.shields.io/badge/Duration-308h-green" alt="Duration">
+  <img src="https://img.shields.io/badge/Segments-260K+-orange" alt="Segments">
+  <img src="https://img.shields.io/badge/Models-14+-red" alt="Models">
+  <img src="https://img.shields.io/badge/License-Non--Commercial-lightgrey" alt="License">
+</p>
+
+<p align="center">
+  <a href="#-leaderboard--排行榜">🏆 Leaderboard</a> •
+  <a href="#-dataset--数据集">📦 Dataset</a> •
+  <a href="#-quick-start--快速开始">🚀 Quick Start</a> •
+  <a href="#-evaluation--评测">📊 Evaluation</a> •
+  <a href="#-contributing--贡献">🤝 Contributing</a>
 </p>
 
 ---
 
-## Participating Institutions / 参与机构
+## 👥 Participating Institutions / 参与机构
 
-- **Shanghai Jiao Tong University (SJTU)** 上海交通大学
-- **Microsoft** 微软
+<!-- TODO: Fill in participating institutions / 请补充参与机构 -->
 
 ---
 
-## Leaderboard
+## 🏆 Leaderboard / 排行榜
 
 > **Low-Resource Languages ASR — WER/CER (%) ↓**
 >
 > 低资源语言 ASR — 词/字错误率 (%) ↓
 >
-> 14 languages/dialects • ~308 hours • 260K+ segments
+> 📊 14 languages & dialects • ⏱ ~308 hours • 🎙 260K+ segments
 
-| Model | IRQ | DZA | ARE | EGY | MAR | SAU | SYR | IDN | MYS | PHL | PHL\_EN | PHL\_noEN | VNM | THA | JPN | JPN\_hard | KOR | KOR\_hard | AVG |
-|:--|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
-| Duration | 20.4h | 20.0h | 19.3h | 20.2h | 20.0h | 20.3h | 20.2h | 21.2h | 18.9h | 21.5h | 12.1h | 9.4h | 21.3h | 20.9h | 20.1h | 1.1h | 20.3h | 1.6h | |
-| Azure | 34.74 | 51.37 | 42.87 | 47.70 | 56.69 | 20.18 | 17.77 | 25.72 | 35.47 | 26.19 | 25.08 | 27.76 | 11.00 | 15.77 | 11.01 | 35.22 | 7.04 | 22.93 | **28.58** |
-| Chirp3 | 35.78 | 53.20 | 42.92 | 42.79 | 52.34 | 16.81 | 24.14 | 20.27 | 29.31 | 28.29 | 26.15 | 31.33 | 9.68 | 17.55 | 11.17 | 31.98 | 6.96 | 19.68 | **27.80** |
-| ElevenLabs Scribe v2 | 38.86 | 50.62 | 46.21 | 44.54 | 60.11 | 33.46 | 14.76 | 23.39 | 38.95 | 27.34 | 24.22 | 31.76 | 10.62 | 14.02 | 11.84 | 33.46 | 5.91 | 18.69 | **29.38** |
-| Gemini 3.0 Flash | 38.68 | 44.49 | 45.81 | 41.87 | 52.07 | 21.43 | 14.66 | 28.18 | 45.21 | 30.32 | 27.13 | 34.87 | 12.61 | 28.62 | 17.05 | 42.89 | 10.00 | 22.56 | **31.03** |
-| GPT-4o Transcribe | 54.60 | 63.34 | 26.28 | 64.29 | 71.29 | 42.46 | 31.68 | 38.27 | 52.55 | 38.70 | 39.91 | 36.99 | 29.30 | 48.79 | 24.46 | 45.36 | 31.37 | 38.23 | **43.22** |
-| Qwen3-ASR-Flash | 33.29 | 57.28 | 44.28 | 48.86 | 68.53 | 19.30 | 14.42 | 20.75 | 60.57 | 47.98 | 42.99 | 55.07 | 11.36 | 17.11 | 9.95 | 32.46 | 10.83 | 18.96 | **34.11** |
-| Qwen3-ASR-1.7B | 41.47 | 63.54 | 53.32 | 59.30 | 76.68 | 25.99 | 18.52 | 22.80 | 51.04 | 51.70 | 47.04 | 58.33 | 12.00 | 15.30 | 11.30 | 44.52 | 7.13 | 20.36 | **37.80** |
-| NVIDIA NeMo | 43.39 | 62.78 | 56.08 | 54.91 | 73.68 | 29.40 | 20.15 | - | - | - | - | - | - | - | 15.31 | 33.91 | 14.55 | 40.65 | **40.44** |
-| Whisper Large v3 | 51.14 | 72.15 | 68.46 | 69.86 | 91.91 | 32.89 | 19.14 | 27.84 | 46.58 | 31.00 | 28.42 | 34.68 | 18.37 | 27.06 | 15.13 | 42.43 | 11.14 | 31.59 | **39.99** |
-| FunASR v1.5 | 53.52 | 66.41 | 66.74 | 63.37 | 74.13 | 37.72 | 24.26 | 21.42 | 33.98 | 28.08 | 25.78 | 31.40 | 12.19 | 17.67 | 10.55 | - | 6.89 | - | **35.88** |
-| FunASR-MLT-Nano | - | - | - | - | - | - | 33.67 | 27.90 | 43.35 | 36.59 | 35.05 | 38.78 | 14.09 | 20.87 | 10.14 | 33.01 | 9.75 | 24.32 | **27.29** |
-| Meta OmniASR 3B | 39.06 | 62.47 | 56.34 | 52.46 | 68.48 | 25.48 | 17.89 | 38.48 | 69.16 | 45.20 | 42.53 | 49.00 | 19.71 | 30.93 | 32.88 | 71.34 | 15.38 | 55.81 | **44.03** |
-| Dolphin Small | 62.24 | 72.69 | 75.71 | 74.80 | 76.02 | 51.09 | 30.06 | 33.50 | 53.13 | 61.28 | 63.99 | 57.42 | 21.82 | 24.63 | 22.35 | 45.57 | 29.48 | 43.25 | **49.95** |
-| Dolphin Base | 65.64 | 78.56 | 83.06 | 85.48 | 89.83 | 52.60 | 38.16 | 32.43 | 55.30 | 68.60 | 69.85 | 66.81 | 21.76 | 27.28 | 20.48 | 43.81 | 19.67 | 41.71 | **53.39** |
-| **Best** | **33.29** | **44.49** | **26.28** | **41.87** | **52.07** | **16.81** | **14.42** | **20.27** | **29.31** | **26.19** | **24.22** | **27.76** | **9.68** | **14.02** | **9.95** | **31.98** | **5.91** | **18.69** | **27.29** |
+<!-- Leaderboard table / image placeholder -->
+<!-- TODO: Insert leaderboard image or interactive table here -->
+<!-- 排行榜表格/图片占位 -->
 
-### Language Key / 语言代码
+<p align="center">
+  <i>📋 Full results available in <code>data/all_results_besteff.xlsx</code></i><br>
+  <i>📋 完整结果请查看 <code>data/all_results_besteff.xlsx</code></i>
+</p>
+
+### 🗺 Language Key / 语言代码
 
 | Code | Language / 语言 | Region / 地区 |
 |:-----|:----------------|:-------------|
@@ -70,9 +67,9 @@
 
 ---
 
-## Dataset
+## 📦 Dataset / 数据集
 
-### Overview / 概览
+### 📈 Overview / 概览
 
 | Stat | Value |
 |:-----|:------|
@@ -83,7 +80,7 @@
 | Annotation | Human-annotated transcription with speaker metadata |
 | Source | YouTube, curated per-language |
 
-### Data Format / 数据格式
+### 📝 Data Format / 数据格式
 
 Each audio file has a corresponding JSON annotation:
 
@@ -122,15 +119,15 @@ Each audio file has a corresponding JSON annotation:
 
 ---
 
-## Quick Start
+## 🚀 Quick Start / 快速开始
 
-### Requirements / 环境依赖
+### ⚙️ Requirements / 环境依赖
 
 ```bash
 pip install kaldialign
 ```
 
-### Full Evaluation Pipeline / 完整评测流程
+### 🔄 Full Evaluation Pipeline / 完整评测流程
 
 ```bash
 # Step 1: Generate reference JSON from raw annotations
@@ -164,7 +161,7 @@ Or run the entire pipeline with one command:
 bash example.sh Low-Resource-Languages
 ```
 
-### Adding a New Model / 接入新模型
+### ➕ Adding a New Model / 接入新模型
 
 Place your model output in the standard JSON format:
 
@@ -188,15 +185,15 @@ Save as `{LANG}_{MODEL}.json` in the hyp directory, then re-run the pipeline.
 
 ---
 
-## Evaluation
+## 📊 Evaluation / 评测
 
-### ASR Evaluation / 语音识别评测
+### 🎯 ASR Evaluation / 语音识别评测
 
 - **WER** (Word Error Rate): For alphabetic languages (Arabic, Indonesian, Vietnamese, etc.)
 - **CER** (Character Error Rate): For CJK languages (Japanese, Korean, Chinese)
 - Text normalization is applied per-language before scoring
 
-### Speech Translation Evaluation / 语音翻译评测
+### 🌐 Speech Translation Evaluation / 语音翻译评测
 
 Supports BLEU, chrF++, TER, and neural metrics (COMET):
 
@@ -211,7 +208,7 @@ python third_party/gemini_translation/eval_st_openstbench.py --results_dir data/
 
 ---
 
-## Project Structure / 项目结构
+## 📁 Project Structure / 项目结构
 
 ```
 Multilingual-ASR-Benchmark/
@@ -234,7 +231,7 @@ Multilingual-ASR-Benchmark/
 
 ---
 
-## Contributing
+## 🤝 Contributing / 贡献
 
 We welcome contributions of new model results. Please:
 
@@ -246,7 +243,7 @@ We welcome contributions of new model results. Please:
 
 ---
 
-## License
+## 📄 License / 许可
 
 This project is for **non-commercial research purposes only**. The audio data is sourced from publicly available content and is subject to the original content creators' licenses.
 
@@ -254,7 +251,7 @@ This project is for **non-commercial research purposes only**. The audio data is
 
 ---
 
-## Citation
+## 📖 Citation / 引用
 
 If you use this benchmark in your research, please cite:
 
