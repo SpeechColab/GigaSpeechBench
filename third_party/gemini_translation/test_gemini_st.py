@@ -13,7 +13,7 @@ from pathlib import Path
 from pydub import AudioSegment
 from google import genai
 
-API_KEY = "REDACTED_GEMINI_KEY"
+API_KEY = os.getenv("GEMINI_API_KEY")
 MODEL_NAME = "gemini-2.0-flash"
 
 # Audio search paths

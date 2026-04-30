@@ -18,7 +18,7 @@ except ImportError:
         pass  # 占位，实际用自定义保存逻辑
 
 ########################################  参数配置  ########################################
-API_KEY      = "REDACTED_GEMINI_KEY"  # 你的 API Key
+API_KEY      = os.getenv("GEMINI_API_KEY")  # set via environment variable
 ROOT_DIR     = r"E:\workspace\SH-ASR\testbatch_processed"  # 待转录音频根目录
 TESTMARK_DIR = r"E:\workspace\SH-ASR\testmark"             # 参考格式根目录
 OUTPUT_DIR   = r"E:\workspace\SH-ASR\results"              # 输出结果根目录

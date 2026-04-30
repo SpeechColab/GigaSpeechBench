@@ -16,7 +16,7 @@ os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "0"
 # HF 配置
 # =========================
 
-HF_TOKEN = "REDACTED_HF_TOKEN"
+HF_TOKEN = os.getenv("HF_TOKEN")
 REPO_ID = "AlexTYJ/Multilingual-ASR-Benchmark"
 REPO_TYPE = "dataset"
 

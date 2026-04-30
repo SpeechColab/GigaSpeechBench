@@ -7,7 +7,7 @@ from collections import defaultdict
 from pydub import AudioSegment
 from openai import OpenAI
 
-API_KEY = "REDACTED_OPENAI_KEY"
+API_KEY = os.getenv("OPENAI_API_KEY")
 MODEL = "gpt-4o-transcribe"
 
 BASE = "/home/v-yujietu/BenchData/Multilingual-ASR-Benchmark"

@@ -5,7 +5,7 @@ from collections import defaultdict
 import dashscope
 
 dashscope.base_http_api_url = "https://dashscope.aliyuncs.com/api/v1"
-API_KEY = "REDACTED_DASHSCOPE_KEY"
+API_KEY = os.getenv("DASHSCOPE_API_KEY")
 
 BASE = "/home/v-yujietu/BenchData/Multilingual-ASR-Benchmark"
 REF_DIR = os.path.join(BASE, "common-voice/text/ref/VNM")

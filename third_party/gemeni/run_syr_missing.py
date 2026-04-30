@@ -5,7 +5,7 @@ from collections import defaultdict
 from pydub import AudioSegment
 from google import genai
 
-API_KEY = "REDACTED_GEMINI_KEY"
+API_KEY = os.getenv("GEMINI_API_KEY")
 MODEL_NAME = "gemini-2.0-flash"
 OUTPUT_MODEL = "gemini-3-flash-preview"  # match existing hyp model field
 

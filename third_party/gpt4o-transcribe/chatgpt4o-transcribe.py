@@ -25,7 +25,7 @@ except ImportError:
 # 注意：替换为你的 OpenAI API Key
     
 
-API_KEY      = "REDACTED_OPENAI_KEY"  
+API_KEY      = os.getenv("OPENAI_API_KEY")  # set via environment variable
 ROOT_DIR     = r"/Users/wangpeng/Desktop/data4test_v2"  # <--- 修改为您的数据目录
 TESTMARK_DIR = r"/Users/wangpeng/Desktop/data4test_v2"  # <--- 修改为您的数据目录
 OUTPUT_DIR   = r"/Users/wangpeng/Desktop/data4test_v2/asr_results_output" # <--- 修改为您希望保存结果的目录

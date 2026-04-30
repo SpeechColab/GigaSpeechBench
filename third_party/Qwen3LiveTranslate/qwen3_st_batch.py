@@ -24,7 +24,7 @@ import traceback
 import dashscope
 
 dashscope.base_http_api_url = "https://dashscope.aliyuncs.com/api/v1"
-API_KEY = os.getenv("DASHSCOPE_API_KEY", "REDACTED_DASHSCOPE_KEY")
+API_KEY = os.getenv("DASHSCOPE_API_KEY")
 MODEL_NAME = "qwen3-livetranslate-flash"
 
 AUDIO_ROOTS = [

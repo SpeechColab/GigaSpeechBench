@@ -8,7 +8,7 @@ from collections import defaultdict
 import dashscope
 
 dashscope.base_http_api_url = "https://dashscope.aliyuncs.com/api/v1"
-API_KEY = "REDACTED_DASHSCOPE_KEY"
+API_KEY = os.getenv("DASHSCOPE_API_KEY")
 MODEL = "qwen3.5-omni-flash"
 OUTPUT_MODEL = "qwen3.5-omni-flash"  # model field in hyp
 
