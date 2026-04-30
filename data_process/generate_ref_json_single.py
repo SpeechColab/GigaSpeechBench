@@ -4,13 +4,21 @@
 import argparse
 import json
 import os
+import re
 from pathlib import Path
+
+
+def _load_json_tolerant(path: Path):
+    """Load JSON with tolerance for trailing commas."""
+    text = path.read_text(encoding="utf-8")
+    text = re.sub(r',\s*([}\]])', r'\1', text)
+    return json.loads(text)
 
 
 def iter_ref_segments(country_dir: Path):
     for jf in sorted(country_dir.glob("*.json")):
         try:
-            data = json.loads(jf.read_text(encoding="utf-8"))
+            data = _load_json_tolerant(jf)
         except Exception:
             continue
 

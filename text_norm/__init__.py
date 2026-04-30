@@ -27,8 +27,8 @@ _LANG_ALIASES = {
     # _hard 变体
     "JPN_HARD": "JPN",
     "KOR_HARD": "KOR",
-    # SYR 走 ARE (同属阿拉伯语)
-    "SYR": "ARE",
+    # SYR 有独立的叙利亚方言 normalizer
+    # "SYR": "ARE",  # 不再使用 ARE，改用 SYR.py
 }
 
 
@@ -55,8 +55,8 @@ def get_normalizer(lang_code: str):
     if code in _LANG_ALIASES:
         candidates.append(_LANG_ALIASES[code])
 
-    # 2. 原始代码 (仅 3 字母)
-    if len(code) == 3:
+    # 2. 原始代码 (2-3 字母均可)
+    if 2 <= len(code) <= 3:
         candidates.append(code)
 
     # 3. 连字符前缀

@@ -58,6 +58,8 @@ def load_ref(country: str, REF_ROOT: str):
     with open(p, "r", encoding="utf-8") as f:
         items = json.load(f)
     ref_index = {}
+    # Also build a normalized index: replace # with _ for fuzzy matching
+    ref_index_norm = {}
     for d in items:
         audio = d.get("audio_name")
         if not audio:
@@ -70,13 +72,23 @@ def load_ref(country: str, REF_ROOT: str):
         if end <= start:
             continue
         ref_index.setdefault(audio, []).append((start, end))
-    return p, ref_index
+        # Normalized key: # -> _ for cross-matching
+        norm_key = audio.replace('#', '_')
+        ref_index_norm.setdefault(norm_key, []).append((start, end))
+    return p, ref_index, ref_index_norm
 
 
-def has_ref_match(ref_index, audio_name: str, start: float, end: float, tol: float = MATCH_TOL) -> bool:
+def has_ref_match(ref_index, audio_name: str, start: float, end: float, tol: float = MATCH_TOL, ref_index_norm=None) -> bool:
+    # Try exact match first
     for ref_start, ref_end in ref_index.get(audio_name, []):
         if abs(start - ref_start) <= tol and abs(end - ref_end) <= tol:
             return True
+    # Try normalized match (# -> _ on both sides)
+    if ref_index_norm:
+        norm_key = audio_name.replace('#', '_')
+        for ref_start, ref_end in ref_index_norm.get(norm_key, []):
+            if abs(start - ref_start) <= tol and abs(end - ref_end) <= tol:
+                return True
     return False
 
 
@@ -120,7 +132,7 @@ def process_file(json_path: str, REF_ROOT: str, OUT_ROOT: str):
     filename = os.path.basename(json_path)
     country = filename.split("_")[0]
 
-    ref_path, ref_index = load_ref(country, REF_ROOT)
+    ref_path, ref_index, ref_index_norm = load_ref(country, REF_ROOT)
     if ref_path is None:
         return False
 
@@ -161,7 +173,7 @@ def process_file(json_path: str, REF_ROOT: str, OUT_ROOT: str):
         model = item.get("model", "")
         language  = country
 
-        if not has_ref_match(ref_index, audio_name, start, end):
+        if not has_ref_match(ref_index, audio_name, start, end, ref_index_norm=ref_index_norm):
             continue
 
         if key in existed_keys:
@@ -242,9 +254,11 @@ def run_gradio(
 ):
 
     ref_index = {}
+    ref_index_norm = {}
     for REF_ROOT in ref_roots:
-        _, idx = load_ref(country, REF_ROOT)
+        _, idx, idx_norm = load_ref(country, REF_ROOT)
         ref_index.update(idx)
+        ref_index_norm.update(idx_norm)
 
     out_country_dir = os.path.join(out_root, country)
     os.makedirs(out_country_dir, exist_ok=True)
@@ -277,7 +291,7 @@ def run_gradio(
         text = clean_text(item.get("text", ""))
         model = item.get("model", "")
 
-        if not has_ref_match(ref_index, audio_name, start, end):
+        if not has_ref_match(ref_index, audio_name, start, end, ref_index_norm=ref_index_norm):
             continue
 
         new_items.append({

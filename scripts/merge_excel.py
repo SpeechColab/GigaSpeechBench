@@ -43,6 +43,8 @@ MODEL_ORDER = [
     ("dolphin_small",           {"DOLPHIN_SMALL"}),
     ("dolphin_base",            {"DOLPHIN_BASE"}),
     ("fun-asr-mlt-nano",        {"FUN-ASR-MLT-NANO", "FUN-ASR-NANO"}),
+    ("funasr1.5",               {"FUN-ASR", "FUNASR_V1.5"}),
+    ("qwen3.5-omni-flash",      {"QWEN3.5-OMNI-FLASH"}),
     ("seedasr-1-BIGASR_V400",   {"BIGASR_V400", "SEEDASR"}),
     ("SEEDASR_2.0",             {"SEEDASR_2.0", "SEEDASR2"}),
 ]
@@ -66,10 +68,10 @@ COLUMN_ORDER = {
         "XIANG", "JIN", "GAN", "MIN", "YUE", "WU",
     ],
     "fleurs": [
-        "EGY", "IDN", "JPN", "KOR", "MYS", "PHL", "THA", "VNM",
+        "EGY", "IDN", "MYS", "PHL", "VNM", "THA", "JPN", "KOR",
     ],
     "common-voice": [
-        "AR", "IDN", "JPN", "KOR", "THA", "VNM",
+        "AR", "IDN", "VNM", "THA", "JPN", "KOR",
     ],
     "Vertical-Domain-CH": [
         "AGR-CH", "AIT-CH", "ART-CH", "BIO-CH", "ECM-CH", "ENG-CH",
@@ -117,6 +119,8 @@ HOTWORD_INT2DISP = {
     "DOLPHIN_BASE": "dolphin_base",
     "FUN-ASR-MLT-NANO": "fun-asr-mlt-nano",
     "FUN-ASR-NANO": "fun-asr-mlt-nano",
+    "FUN-ASR": "funasr1.5",
+    "QWEN3.5-OMNI-FLASH": "qwen3.5-omni-flash",
     "BIGASR": "seedasr-1-BIGASR_V400",
     "BIGASR_V400": "seedasr-1-BIGASR_V400",
     "SEEDASR": "seedasr-1-BIGASR_V400",
@@ -147,8 +151,11 @@ TEXT_SOURCE_MAP = {
 # 工具
 # =========================
 def normalize_model_name(model: str) -> str:
-    if re.match(r"^[A-Z]{3}_", model):
-        return model[4:]
+    m = re.match(r"^([A-Z]{3})_(.+)$", model)
+    if m:
+        rest = m.group(2)
+        if rest in _INT2DISP:
+            return rest
     return model
 
 
@@ -411,9 +418,61 @@ def write_sheet(ws, table: dict, columns: list, durations: dict = None, mode: st
         else:
             cell.value = "-"
 
+    # AVG 列 (每个模型的平均值，只算有数值结果的列)
+    avg_fill = PatternFill(start_color="DAEEF3", end_color="DAEEF3", fill_type="solid")
+    avg_ci = len(columns) + 2
+    # Duration row
+    ws.cell(row=1, column=avg_ci, value="").fill = dur_fill
+    ws.cell(row=1, column=avg_ci).alignment = center
+    # Header
+    hdr = ws.cell(row=2, column=avg_ci, value="AVG")
+    hdr.font = bold
+    hdr.alignment = center
+    hdr.fill = avg_fill
+    # Model rows
+    for ri, disp in enumerate(_DISP_ORDER, start=3):
+        vals = []
+        for col in columns:
+            entry = table.get(disp, {}).get(col)
+            if not entry:
+                continue
+            value, matched, ref_n, matched_n = entry
+            if mode == "besteff":
+                if isinstance(value, float):
+                    vals.append(value)
+            elif mode == "counts":
+                pass  # no avg for counts
+            else:
+                if matched is True and isinstance(value, float):
+                    vals.append(value)
+        cell = ws.cell(row=ri, column=avg_ci)
+        cell.alignment = center
+        cell.fill = avg_fill
+        if vals:
+            cell.value = round(sum(vals) / len(vals), 2)
+            cell.number_format = "0.00"
+            cell.font = bold
+        else:
+            cell.value = "-"
+    # MIN row AVG
+    min_avgs = []
+    for disp in _DISP_ORDER:
+        cell_val = ws.cell(row=_DISP_ORDER.index(disp) + 3, column=avg_ci).value
+        if isinstance(cell_val, (int, float)):
+            min_avgs.append(cell_val)
+    min_avg_cell = ws.cell(row=min_row_idx, column=avg_ci)
+    min_avg_cell.alignment = center
+    min_avg_cell.font = bold
+    min_avg_cell.fill = avg_fill
+    if min_avgs:
+        min_avg_cell.value = round(min(min_avgs), 2)
+        min_avg_cell.number_format = "0.00"
+    else:
+        min_avg_cell.value = "-"
+
     # 列宽
     ws.column_dimensions["A"].width = 26
-    for ci in range(2, len(columns) + 2):
+    for ci in range(2, avg_ci + 1):
         ws.column_dimensions[get_column_letter(ci)].width = 14
 
 

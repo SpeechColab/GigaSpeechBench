@@ -25,7 +25,8 @@ COVERAGE_MODELS = {
     "OMNIASR_LLM_3B","QWEN3-ASR-FLASH","STT_AR_FASTCONFORMER_HYBRID_LARGE_PCD_V1.0.NEMO",
     "WHISPER","STT_KR_CONFORMER_TRANSDUCER_LARGE","PARAKEET-TDT_CTC-0.6B-JA",
     "NVIDIA-NEMO","WHISPER-LARGE-V3","GEMINI","GEMINI_3_0_FLASH","SEEDASR_2.0",
-    "GEMINI-3-FLASH-PREVIEW","QWEN3-ASR-1.7B","FUN-ASR-NANO","SEEDASR2","SEEDASR"
+    "GEMINI-3-FLASH-PREVIEW","QWEN3-ASR-1.7B","FUN-ASR-NANO","SEEDASR2","SEEDASR",
+    "FUN-ASR","QWEN3.5-OMNI-FLASH","FUNASR_V1.5"
 }
 
 # 纵向排序 + 显示名称映射  (display_name, {internal_names...})
@@ -43,6 +44,8 @@ MODEL_ORDER = [
     ("dolphin_small",           {"DOLPHIN_SMALL"}),
     ("dolphin_base",            {"DOLPHIN_BASE"}),
     ("fun-asr-mlt-nano",        {"FUN-ASR-MLT-NANO", "FUN-ASR-NANO"}),
+    ("funasr1.5",               {"FUN-ASR", "FUNASR_V1.5"}),
+    ("qwen3.5-omni-flash",      {"QWEN3.5-OMNI-FLASH"}),
     ("seedasr-1-BIGASR_V400",   {"BIGASR_V400", "SEEDASR"}),
     ("SEEDASR_2.0",             {"SEEDASR_2.0", "SEEDASR2"}),
 ]
@@ -76,8 +79,14 @@ def extract_value(path: str):
         return "-"
 
 def normalize_model_name(model: str):
-    if re.match(r"^[A-Z]{3}_", model):
-        return model[4:]
+    # Strip 3-letter country prefix (e.g. ARE_, DZA_) but NOT model names like FUNASR_
+    # Only strip if the prefix looks like a country code followed by a known model
+    m = re.match(r"^([A-Z]{3})_(.+)$", model)
+    if m:
+        prefix, rest = m.group(1), m.group(2)
+        # Check if rest (after stripping prefix) is a known model
+        if rest in COVERAGE_MODELS:
+            return rest
     return model
 
 def pick_err_file(m_dir: str):
