@@ -134,9 +134,9 @@ def process_dataset(audio_dir: str, label_dir: str, model_path: str):
 
 if __name__ == "__main__":
     CONFIG = {
-        "model_path": "/root/shared-nvme/haoranwang/nemo_asr/model/stt_ar_fastconformer_hybrid_large_pcd_v1ureau.0.nemo",
-        "audio_dir": "/root/shared-nvme/haoranwang/nemo_asr/audio_processed/DZA",
-        "label_dir": "/root/shared-nvme/haoranwang/nemo_asr/asr/20251219/DZA"
+        "model_path": "/path/to/nemo_asr/model/stt_ar_fastconformer_hybrid_large_pcd_v1ureau.0.nemo",
+        "audio_dir": "/path/to/nemo_asr/audio_processed/DZA",
+        "label_dir": "/path/to/nemo_asr/asr/20251219/DZA"
     }
     
     process_dataset(**CONFIG)

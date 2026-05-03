@@ -103,9 +103,9 @@ class KoreanASRProcessor:
 
 def main():
     CONFIG = {
-        "audio_dir": "/root/shared-nvme/haoranwang/nemo_asr/audio_processed/KOR",
-        "label_dir": "/root/shared-nvme/haoranwang/nemo_asr/20251226/KOR",
-        "model_path": "/root/shared-nvme/haoranwang/nemo_asr/model/stt_kr_conformer_transducer_large.nemo"
+        "audio_dir": "/path/to/nemo_asr/audio_processed/KOR",
+        "label_dir": "/path/to/nemo_asr/20251226/KOR",
+        "model_path": "/path/to/nemo_asr/model/stt_kr_conformer_transducer_large.nemo"
     }
     
     try:

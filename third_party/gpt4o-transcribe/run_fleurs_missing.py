@@ -10,7 +10,7 @@ from openai import OpenAI
 API_KEY = os.getenv("OPENAI_API_KEY")
 MODEL = "gpt-4o-transcribe"
 
-BASE = "/home/v-yujietu/BenchData/Multilingual-ASR-Benchmark"
+BASE = "/path/to/dataset"
 REF_ROOT = os.path.join(BASE, "fleurs/text/ref")
 HYP_DIR = os.path.join(BASE, "fleurs/text/hyp")
 AUDIO_ROOTS = [

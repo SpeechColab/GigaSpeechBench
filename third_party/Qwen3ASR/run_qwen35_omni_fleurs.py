@@ -12,7 +12,7 @@ API_KEY = os.getenv("DASHSCOPE_API_KEY")
 MODEL = "qwen3.5-omni-flash"
 OUTPUT_MODEL = "qwen3.5-omni-flash"  # model field in hyp
 
-BASE = "/home/v-yujietu/BenchData/Multilingual-ASR-Benchmark"
+BASE = "/path/to/dataset"
 TOL = 0.1
 
 LANG_MAP = {
@@ -53,7 +53,7 @@ MODULES = {
             os.path.join(BASE, "Low-Resource-Languages/audio/testbatch"),
             os.path.join(BASE, "Low-Resource-Languages/audio/batch_1"),
             os.path.join(BASE, "Low-Resource-Languages/audio/batch_2"),
-            "/home/v-yujietu/BenchData/SYR_audio_tmp",
+            "/path/to/SYR_audio",
         ],
     },
 }

@@ -7,7 +7,7 @@ import dashscope
 dashscope.base_http_api_url = "https://dashscope.aliyuncs.com/api/v1"
 API_KEY = os.getenv("DASHSCOPE_API_KEY")
 
-BASE = "/home/v-yujietu/BenchData/Multilingual-ASR-Benchmark"
+BASE = "/path/to/dataset"
 REF_DIR = os.path.join(BASE, "common-voice/text/ref/VNM")
 HYP_PATH = os.path.join(BASE, "common-voice/text/hyp/VNM_qwen3-asr-flash.json")
 AUDIO_ROOT = os.path.join(BASE, "common-voice/audio")

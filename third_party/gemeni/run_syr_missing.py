@@ -9,10 +9,10 @@ API_KEY = os.getenv("GEMINI_API_KEY")
 MODEL_NAME = "gemini-2.0-flash"
 OUTPUT_MODEL = "gemini-3-flash-preview"  # match existing hyp model field
 
-BASE = "/home/v-yujietu/BenchData/Multilingual-ASR-Benchmark"
+BASE = "/path/to/dataset"
 REF_DIR = os.path.join(BASE, "Low-Resource-Languages/text/ref/SYR")
 HYP_PATH = os.path.join(BASE, "Low-Resource-Languages/text/hyp/SYR_Gemini.json")
-AUDIO_DIR = "/home/v-yujietu/BenchData/SYR_audio_tmp/SYR"
+AUDIO_DIR = "/path/to/SYR/audio"
 TOL = 0.1
 
 def norm(a):

@@ -24,7 +24,7 @@ DEFAULT_LOCATION = "eu"
 MODEL_NAME = "chirp_3"
 LANGUAGE_CODE = "ar-SA"  # SYR = Syrian Arabic; fallback to ar-SA if needed
 
-BASE = "/home/v-yujietu/BenchData/Multilingual-ASR-Benchmark"
+BASE = "/path/to/dataset"
 REF_DIR = os.path.join(BASE, "Low-Resource-Languages/text/ref/SYR")
 HYP_PATH = os.path.join(BASE, "Low-Resource-Languages/text/hyp/SYR_chirp3.json")
 AUDIO_DIR = "/tmp/SYR_audio/SYR"

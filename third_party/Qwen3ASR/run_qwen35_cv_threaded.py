@@ -11,7 +11,7 @@ dashscope.base_http_api_url = "https://dashscope.aliyuncs.com/api/v1"
 API_KEY = os.getenv("DASHSCOPE_API_KEY")
 MODEL = "qwen3.5-omni-flash"
 MAX_WORKERS = 10
-BASE = "/home/v-yujietu/BenchData/Multilingual-ASR-Benchmark"
+BASE = "/path/to/dataset"
 
 lock = threading.Lock()
 rate_limiter = threading.Semaphore(MAX_WORKERS)

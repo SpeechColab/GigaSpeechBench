@@ -163,7 +163,7 @@ def main():
     args = parser.parse_args()
 
     # 中文ASR模型路径
-    MODEL_PATH = "/root/shared-nvme/haoranwang/nemo_asr/model/stt_zh_conformer_transducer_large.nemo"
+    MODEL_PATH = "/path/to/nemo_asr/model/stt_zh_conformer_transducer_large.nemo"
 
     try:
         processor = DialectChineseASRProcessor(MODEL_PATH)

@@ -162,7 +162,7 @@ def main():
                       help="Directory containing JSON labels")
     args = parser.parse_args()
 
-    MODEL_PATH = "/root/shared-nvme/haoranwang/nemo_asr/model/stt_en_conformer_transducer_large.nemo"
+    MODEL_PATH = "/path/to/nemo_asr/model/stt_en_conformer_transducer_large.nemo"
 
     try:
         processor = DialectEnglishASRProcessor(MODEL_PATH)

@@ -103,9 +103,9 @@ class ParakeetASRProcessor:
 
 def main():
     CONFIG = {
-        "audio_dir": "/root/shared-nvme/haoranwang/nemo_asr/audio_processed/JPN",
-        "label_dir": "/root/shared-nvme/haoranwang/nemo_asr/asr/JPN",
-        "model_path": "/root/shared-nvme/haoranwang/nemo_asr/model/parakeet-tdt_ctc-0.6b-ja.nemo"
+        "audio_dir": "/path/to/nemo_asr/audio_processed/JPN",
+        "label_dir": "/path/to/nemo_asr/asr/JPN",
+        "model_path": "/path/to/nemo_asr/model/parakeet-tdt_ctc-0.6b-ja.nemo"
     }
     
     try:
