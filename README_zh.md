@@ -11,7 +11,6 @@
 <p align="center">
   <img src="https://img.shields.io/badge/语言-14+-blue" alt="Languages">
   <img src="https://img.shields.io/badge/时长-280%2Bh-green" alt="Duration">
-  <img src="https://img.shields.io/badge/片段-260K+-orange" alt="Segments">
   <img src="https://img.shields.io/badge/模型-16+-red" alt="Models">
   <img src="https://img.shields.io/badge/许可-非商业-lightgrey" alt="License">
 </p>
@@ -34,7 +33,7 @@
 
 - 🔍 审查 `text_norm/{LANG}.py` 中的归一化规则
 - 🐛 反馈不正确的归一化问题
-- 🔧 提交 PR 改进你母语的文本归一化
+- � 在 [Issue](https://github.com/AlexTYJ/GigaSpeechBench/issues) 中提出你母语的改进建议
 
 我们同样欢迎：
 - 📊 新模型评测结果（使用 `scripts/save_results.py`）

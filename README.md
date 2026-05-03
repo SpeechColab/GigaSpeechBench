@@ -11,7 +11,6 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Languages-14+-blue" alt="Languages">
   <img src="https://img.shields.io/badge/Duration-280%2Bh-green" alt="Duration">
-  <img src="https://img.shields.io/badge/Segments-260K+-orange" alt="Segments">
   <img src="https://img.shields.io/badge/Models-16+-red" alt="Models">
   <img src="https://img.shields.io/badge/License-Non--Commercial-lightgrey" alt="License">
 </p>
@@ -34,7 +33,7 @@
 
 - 🔍 Review the normalization rules in `text_norm/{LANG}.py`
 - 🐛 Report issues with incorrect normalization
-- 🔧 Submit PRs to improve text normalization for your language
+- � Open an [Issue](https://github.com/AlexTYJ/GigaSpeechBench/issues) to suggest improvements for your language
 
 We also welcome:
 - 📊 New model evaluation results (use `scripts/save_results.py`)
