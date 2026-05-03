@@ -17,12 +17,37 @@
 </p>
 
 <p align="center">
+  <a href="#-call-for-contributions">📣 Call for Contributions</a> •
   <a href="#-leaderboard">🏆 Leaderboard</a> •
   <a href="#-dataset">📦 Dataset</a> •
   <a href="#-quick-start">🚀 Quick Start</a> •
-  <a href="#-evaluation">📊 Evaluation</a> •
-  <a href="#-contributing">🤝 Contributing</a>
+  <a href="#-evaluation">📊 Evaluation</a>
 </p>
+
+---
+
+## 📣 Call for Contributions
+
+**We need your help!** GigaSpeechBench covers 14+ low-resource languages and dialects, but our team lacks native speakers for many of them. The `text_norm/` module — which handles language-specific text normalization before WER/CER scoring — has significant room for improvement.
+
+**If you are a native speaker** of any of our supported languages (Arabic dialects, Indonesian, Malay, Filipino, Vietnamese, Thai, Japanese, Korean), we warmly invite you to:
+
+- 🔍 Review the normalization rules in `text_norm/{LANG}.py`
+- 🐛 Report issues with incorrect normalization
+- 🔧 Submit PRs to improve text normalization for your language
+
+We also welcome:
+- 📊 New model evaluation results (use `scripts/save_results.py`)
+- 🌐 Support for additional languages
+
+---
+
+## 📅 Timeline
+
+| Date | Milestone |
+|:-----|:----------|
+| **2026-05-04** | 🚀 GitHub repository released |
+| **Coming soon** | 📦 Full dataset release on HuggingFace |
 
 ---
 
@@ -203,7 +228,7 @@ GigaSpeechBench/
 │   ├── merge_excel.py      # Merge all results into one Excel
 │   ├── save_results.py     # Helper for model output formatting
 │   └── check.py            # Submission format validator
-├── text_norm/              # Per-language text normalizers
+├── text_norm/              # Per-language text normalizers (contributions welcome!)
 └── third_party/            # Model integration scripts
     ├── Azure/
     ├── Chirp3/
@@ -211,16 +236,6 @@ GigaSpeechBench/
     ├── whisper-large-v3/
     └── ...
 ```
-
----
-
-## 🤝 Contributing
-
-We welcome contributions of new model results:
-
-1. Run your ASR model on our test set
-2. Format output using `scripts/save_results.py`
-3. Submit a Pull Request with the results JSON
 
 ---
 

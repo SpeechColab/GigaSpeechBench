@@ -1,69 +1,50 @@
-## 📁 Project Structure
+# NVIDIA NeMo ASR
 
-```
-nemo_asr/
-├── ar_asr.py             # Arabic ASR processing script
-├── kor_asr.py            # Korean ASR processing script
-├── jpn_asr.py            # Japanese ASR processing script
-├── download.py           # Model下载脚本
-├── upload_data.py        
-├── utils.py              
-│
-├── Nvidia_Nemo_results/  # 识别结果输出目录
-├── labeled/              # 已标注数据目录
-├── testbatch_processed/  # Audio目录
-│
-├── *.nemo                # ASR模型文件
-└── pycache/              # Python编译缓
-```
+Batch ASR transcription using NVIDIA NeMo pre-trained models. Includes language-specific scripts for Arabic, Japanese, Korean, Chinese dialects, and English dialects.
 
-## 🚀 Quick Start
+---
 
-## 🛠️ Environment Setup
+## Scripts / 脚本
 
-### 系统要求
-- Python 3.8或更高版本
-- Linux系统 (推荐Ubuntu 18.04+)
+| File | Description |
+|:-----|:------------|
+| `ar_asr.py` | Arabic ASR / 阿拉伯语 ASR |
+| `jpn_asr.py` | Japanese ASR / 日语 ASR |
+| `kor_asr.py` | Korean ASR / 韩语 ASR |
+| `ZH-Dialects.py` | Chinese dialects ASR / 中文方言 ASR |
+| `EN_Dialects.py` | English dialects ASR / 英语方言 ASR |
+| `download.py` | Model download helper / 模型下载工具 |
 
-### 依赖安装
+## Setup / 环境配置
+
 ```bash
-pip install nemo_toolkit['asr']==1.23.0
-pip install librosa pydub soundfile tqdm
+pip install nemo_toolkit[asr]
 ```
-### 下载预训练模型
+
+## Usage / 使用方法
+
 ```bash
-python download.py
-```
-注：模型将自动下载至 ~/.cache/huggingface/hub/ 目录和指定目录
-
-## ⚡运行语音识别脚本	
-
-### 日语
-```bash
-python jpn_asr.py
-```
-### 韩语
-```bash
-python kor_asr.py
-```
-### Arabic
-```bash
-python ar_asr.py
+python ar_asr.py --input_dir /path/to/audio --output_dir /path/to/results
 ```
 
-### Config文件（在脚本中）
+## Output Format / 输出格式
 
-```<PYTHON>
-CONFIG = {
-    "audio_dir": "/root/shared-nvme/haoranwang/nemo_asr/testbatch_processed",  # Audio输入目录（按语言分类输入）
-    "label_dir": "/root/shared-nvme/haoranwang/nemo_asr/labeled",  # 标签文件目录（需与音频目录保持相同语言）
-    "result_dir": "./Nvidia_Nemo_results"  # 识别结果输出路径
-}
+Results should be saved in GigaSpeech-style JSON format using `scripts/save_results.py`:
+
+结果应使用 `scripts/save_results.py` 保存为 GigaSpeech 风格 JSON 格式：
+
+```python
+from scripts.save_results import ResultWriter
+
+writer = ResultWriter()
+writer.add(audio_name="ARE#UC...#raw", begin_time=0.0, end_time=5.0, text="transcribed text", lang="ARE")
+writer.save("results/model_name.json")
 ```
 
+---
 
+# NVIDIA NeMo ASR
 
+使用 NVIDIA NeMo 预训练模型进行批量 ASR 转录。包含阿拉伯语、日语、韩语、中文方言和英语方言的专用脚本。
 
-
-
-
+脚本和使用方法见上方英文部分。
