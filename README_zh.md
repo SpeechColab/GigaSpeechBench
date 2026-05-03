@@ -1,7 +1,7 @@
-# 🌍 GigaSpeechBench：多语种语音识别基准
+# 🌍 GigaSpeechBench
 
 <p align="center">
-  <b>面向低资源语言的大规模多语种语音识别基准</b>
+  <b>大规模多语种 ASR 基准（600+ 小时），覆盖低资源语言、方言、口音和领域，低资源语言子集附带中英日三语翻译。</b>
 </p>
 
 <p align="center">

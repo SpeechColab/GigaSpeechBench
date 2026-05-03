@@ -1,7 +1,7 @@
-# 🌍 GigaSpeechBench: Multilingual ASR Benchmark
+# 🌍 GigaSpeechBench
 
 <p align="center">
-  <b>A Large-Scale Multilingual Speech Recognition Benchmark for Low-Resource Languages</b>
+  <b>A large-scale multilingual ASR benchmark (600+ hours) spanning low-resource languages, dialects, accents, and domains, with Chinese–English–Japanese translations for the low-resource language subset.</b>
 </p>
 
 <p align="center">
