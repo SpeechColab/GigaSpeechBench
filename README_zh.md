@@ -1,7 +1,7 @@
-# 🌍 GigaSpeechBench
+<h1 align="center">🌍 GigaSpeechBench</h1>
 
 <p align="center">
-  <b>大规模多语种 ASR 基准（600+ 小时），覆盖低资源语言、方言、口音和领域，低资源语言子集附带中英日三语翻译。</b>
+  <b>大规模多语种 ASR & AST 基准（600+ 小时），覆盖低资源语言、方言、口音和领域。低资源语言子集附带中英日三语翻译，可用于语音翻译（AST）评测。</b>
 </p>
 
 <p align="center">

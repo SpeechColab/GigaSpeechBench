@@ -1,7 +1,7 @@
-# 🌍 GigaSpeechBench
+<h1 align="center">🌍 GigaSpeechBench</h1>
 
 <p align="center">
-  <b>A large-scale multilingual ASR benchmark (600+ hours) spanning low-resource languages, dialects, accents, and domains, with Chinese–English–Japanese translations for the low-resource language subset.</b>
+  <b>A large-scale multilingual ASR & AST benchmark (600+ hours) spanning low-resource languages, dialects, accents, and domains. The low-resource language subset includes Chinese–English–Japanese translations for speech translation (AST) evaluation.</b>
 </p>
 
 <p align="center">
