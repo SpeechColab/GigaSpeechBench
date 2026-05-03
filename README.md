@@ -53,7 +53,7 @@ We also welcome:
 > **Low-Resource Languages ASR — WER/CER (%) ↓**
 
 <p align="center">
-  <img src="image1.png" alt="ASR Performance for Low Resource Languages" width="100%">
+  <img src="assets/leaderboard_low_resource.png" alt="ASR Performance for Low Resource Languages" width="100%">
 </p>
 
 ### 🗺 Language Key
