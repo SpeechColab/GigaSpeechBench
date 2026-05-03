@@ -43,10 +43,8 @@ We also welcome:
 
 ## 📅 Timeline
 
-| Date | Milestone |
-|:-----|:----------|
-| **2026-05-04** | 🚀 GitHub repository released |
-| **Coming soon** | 📦 Full dataset release on HuggingFace |
+> 🚀 **2026-05-04** — GitHub repository released  
+> 📦 **Coming soon** — Full dataset release on HuggingFace
 
 ---
 
