@@ -34,10 +34,6 @@
   <img src="image1.png" alt="ASR Performance for Low Resource Languages" width="100%">
 </p>
 
-<p align="center">
-  <i>📋 Full results available in <code>data/all_results_besteff.xlsx</code></i>
-</p>
-
 ### 🗺 Language Key
 
 | Code | Language | Region |

@@ -34,10 +34,6 @@
   <img src="image1.png" alt="低资源语言 ASR 性能" width="100%">
 </p>
 
-<p align="center">
-  <i>📋 完整结果请查看 <code>data/all_results_besteff.xlsx</code></i>
-</p>
-
 ### 🗺 语言代码
 
 | 代码 | 语言 | 地区 |
