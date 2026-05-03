@@ -236,6 +236,6 @@ This project is for **non-commercial research purposes only**. The audio data is
 @misc{gigaspeechbench,
   title={GigaSpeechBench: A Large-Scale Multilingual ASR Benchmark for Low-Resource Languages},
   year={2026},
-  url={https://github.com/AlexTYJ/Multilingual-ASR-Benchmark}
+  url={https://github.com/AlexTYJ/GigaSpeechBench}
 }
 ```
