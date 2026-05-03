@@ -30,7 +30,7 @@
 
 **We need your help!** GigaSpeechBench covers 14+ low-resource languages and dialects, but our team lacks native speakers for many of them. The `text_norm/` module — which handles language-specific text normalization before WER/CER scoring — has significant room for improvement.
 
-**If you are a native speaker** of any of our supported languages (Arabic dialects, Indonesian, Malay, Filipino, Vietnamese, Thai, Japanese, Korean), we warmly invite you to:
+**If you are a native speaker** of any of our supported languages (Arabic dialects, Indonesian, Malay, Filipino/Tagalog, Vietnamese, Thai, Japanese, Korean), we warmly invite you to:
 
 - 🔍 Review the normalization rules in `text_norm/{LANG}.py`
 - 🐛 Report issues with incorrect normalization
@@ -72,7 +72,7 @@ We also welcome:
 | SYR | Syrian Arabic | Arab Region |
 | IDN | Indonesian | Southeast Asia |
 | MYS | Malay | Southeast Asia |
-| PHL | Filipino | Southeast Asia |
+| PHL | Filipino (Tagalog) | Southeast Asia |
 | VNM | Vietnamese | Southeast Asia |
 | THA | Thai | Southeast Asia |
 | JPN | Japanese | East Asia |
