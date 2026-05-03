@@ -7,7 +7,7 @@ from pathlib import Path
 from collections import defaultdict
 
 # =========================
-# 官方固定配置
+# Official configuration
 # =========================
 
 COUNTRY_LIST = {
@@ -57,7 +57,7 @@ REQUIRED_KEYS = {
 
 
 # =========================
-# 校验单个 JSON
+# Validate a single JSON file
 # =========================
 
 def check_json(json_path: Path):
@@ -66,73 +66,73 @@ def check_json(json_path: Path):
     try:
         data = json.loads(json_path.read_text(encoding="utf-8"))
     except Exception as e:
-        return {f"JSON 解析失败: {e}"}
+        return {f"JSON parse failed: {e}"}
 
     if not isinstance(data, list):
-        return {"JSON 顶层必须是 list"}
+        return {"JSON top-level must be a list"}
 
-    # language → segment 数校验
+    # language and segment count validation
     langs = {seg.get("language") for seg in data if isinstance(seg, dict)}
     langs = {l for l in langs if isinstance(l, str)}
 
     if len(langs) != 1:
-        problems.add("language 不唯一或缺失（一个 JSON 只能包含一个国家）")
+        problems.add("language must be unique (one country per JSON)")
     else:
         lang = next(iter(langs))
         if lang not in COUNTRY_LIST:
-            problems.add(f"language 不在国家列表中: {lang}")
+            problems.add(f"language not in country list: {lang}")
         else:
             expected = EXPECTED_SEGMENTS[lang]
             if len(data) != expected:
-                problems.add(f"segment 数量不一致（期望 {expected}，实际 {len(data)}）")
+                problems.add(f"segment count mismatch (expected {expected}, actual {len(data)}）")
 
     for seg in data:
         if not isinstance(seg, dict):
-            problems.add("存在非 dict 的 segment")
+            problems.add("found non-dict segment")
             break
 
         missing = REQUIRED_KEYS - seg.keys()
         if missing:
-            problems.add("存在缺失字段的 segment")
+            problems.add("found segment with missing fields")
             break
 
         if not isinstance(seg["audio_name"], str) or not seg["audio_name"].endswith(".wav"):
-            problems.add("存在 audio_name 非 .wav 的 segment")
+            problems.add("found segment where audio_name does not end with .wav")
 
         if not isinstance(seg["text"], str):
-            problems.add("存在 text 非字符串的 segment")
+            problems.add("found segment where text is not a string")
 
         if not isinstance(seg["model"], str) or seg["model"] not in MODEL_WHITELIST:
-            problems.add("存在 model 不在白名单的 segment")
+            problems.add("found segment with model not in whitelist")
 
         try:
             st = float(seg["start_time"])
             et = float(seg["end_time"])
             if et <= st or st < 0:
-                problems.add("存在非法时间区间（start_time / end_time）")
+                problems.add("found invalid time range (start_time / end_time)")
         except Exception:
-            problems.add("存在 start_time / end_time 非数值的 segment")
+            problems.add("found segment with non-numeric start_time / end_time")
 
     return problems
 
 
 # =========================
-# 主入口
+# Main entry
 # =========================
 
 def main():
     if len(sys.argv) != 2:
-        print("用法：python check.py <submission_dir>")
+        print("Usage: python check.py <submission_dir>")
         sys.exit(1)
 
     root = Path(sys.argv[1])
     if not root.is_dir():
-        print(f"[❌ ERROR] {root} 不是目录")
+        print(f"[❌ ERROR] {root} is not a directory")
         sys.exit(1)
 
     json_files = sorted(root.glob("*.json"))
     if not json_files:
-        print("[❌ ERROR] 目录下没有任何 json 文件")
+        print("[❌ ERROR] no JSON files found in directory")
         sys.exit(1)
 
     all_errors = {}
@@ -143,10 +143,10 @@ def main():
             all_errors[p.name] = sorted(probs)
 
     if not all_errors:
-        print("🎉 [PASS] 全部 JSON 校验通过，可以提交。")
+        print("🎉 [PASS] All JSON validation passed. Ready to submit.")
         sys.exit(0)
 
-    print(f"\n❌ 校验失败，共 {len(all_errors)} 个文件存在问题\n")
+    print(f"\n❌ Validation failed: {len(all_errors)} files have issues\n")
 
     for fname, probs in all_errors.items():
         print(f"{fname}:")

@@ -2,12 +2,10 @@
 # -*- coding: utf-8 -*-
 
 """
-Strict non-batch Excel 生成脚本（可传参）
+Generate WER/CER results Excel from evaluation outputs.
 
-- 扫描 results_root/<COUNTRY>/<MODEL>/ 
-- 强白名单 model
-- 输出单一 Excel（WER / CER）
-- 支持命令行指定 RESULTS_ROOT, REF_ROOT, EXCEL_COUNTRIES
+Scans results_root/{COUNTRY}/{MODEL}/ directories, extracts WER/CER values,
+and produces a single Excel file with model-vs-country matrix.
 """
 
 import os
@@ -16,9 +14,7 @@ import json
 import pandas as pd
 import argparse
 
-# =========================
-# 默认白名单 model
-# =========================
+# Model whitelist
 COVERAGE_MODELS = {
     "AZURE","BIGASR_V400","CHIRP3","DOLPHIN_SMALL","DOLPHIN_BASE",
     "ELEVENLABS_SCRIBE_V2","FUN-ASR-MLT-NANO","GEMINI_3_0_FLASH","GPT4O-TRANSCRIBE",
@@ -29,7 +25,7 @@ COVERAGE_MODELS = {
     "FUN-ASR","QWEN3.5-OMNI-FLASH","FUNASR_V1.5"
 }
 
-# 纵向排序 + 显示名称映射  (display_name, {internal_names...})
+# Model display order: (display_name, {internal_names...})
 MODEL_ORDER = [
     ("Azure",                   {"AZURE"}),
     ("Chirp3",                  {"CHIRP3"}),
@@ -62,10 +58,10 @@ _INT2DISP = _build_internal_to_display()
 _DISP_ORDER = [d for d, _ in MODEL_ORDER]
 
 # =========================
-# 工具函数
+# Utilities
 # =========================
 def extract_value(path: str):
-    """从 err* 文件中提取 %WER/CER"""
+    """Extract %WER/CER value from error file."""
     try:
         with open(path, "r", encoding="utf8") as f:
             for line in f:
@@ -103,7 +99,7 @@ def pick_err_file(m_dir: str):
     return os.path.join(m_dir, txts[0]) if txts else None
 
 # =========================
-# 扫描结果
+# Scan results
 # =========================
 def _is_fully_matched(m_dir: str) -> bool:
     """Check segment_check.txt: return True only if matched == ref."""
@@ -142,17 +138,17 @@ def scan_results(results_root: str, excel_countries, matched_only: bool = False)
             if not err_path:
                 continue
             val = extract_value(err_path)
-            # 映射到显示名称，同一显示名称的模型合并到同一行
+            # Map to display name; merge same-display models into one row
             display = _INT2DISP.get(model_clean, model_clean)
             table.setdefault(display, {})[country] = val
     df = pd.DataFrame.from_dict(table, orient="index")
     df = df.reindex(columns=excel_countries)
-    # 严格按 MODEL_ORDER 排序，所有模型都要出现（没数据的显示 "-"）
+    # Strict MODEL_ORDER sort; all models appear even if no data ("-")
     df = df.reindex(_DISP_ORDER)
     return df.fillna("-")
 
 # =========================
-# REF 段数统计
+# Ref segment counts
 # =========================
 def load_ref_counts(ref_root: str):
     ref_count = {}
@@ -171,21 +167,21 @@ def load_ref_counts(ref_root: str):
     return ref_count
 
 # =========================
-# 主入口
+# Main
 # =========================
 def main(results_root: str, ref_root: str, excel_countries, skip_existing: bool = False, matched_only: bool = False):
-    print(f"📂 扫描 results 目录: {results_root}")
+    print(f"Scanning results: {results_root}")
     if matched_only:
-        print("🔒 matched_only 模式：只写入 ref==matched 的结果")
+        print("Mode: matched_only (only fully aligned results)")
     ref_count = load_ref_counts(ref_root)
     df = scan_results(results_root, excel_countries, matched_only=matched_only)
     out_xlsx = os.path.join(results_root, "results.xlsx")
     if skip_existing and os.path.exists(out_xlsx):
-        print(f"⏭️ Skip existing Excel: {out_xlsx}")
+        print(f"Skipping existing Excel: {out_xlsx}")
         return
     df.to_excel(out_xlsx)
-    print(f"✔️ WER/CER Excel → {out_xlsx}")
-    print("\n📊 ref 段数统计：")
+    print(f"Wrote Excel: {out_xlsx}")
+    print("\nRef segment counts:")
     for c, n in sorted(ref_count.items()):
         print(f"  {c}: {n}")
 
@@ -194,7 +190,7 @@ if __name__ == "__main__":
     parser.add_argument("--results_root", type=str, required=True)
     parser.add_argument("--ref_root", type=str, required=True)
     parser.add_argument("--excel_countries", type=str, nargs="+", required=True,
-                        help="列出要生成 Excel 的国家/区域，如 AGR-CH AIT-CH ...")
+                        help="Countries/regions for Excel, e.g. AGR-CH AIT-CH ...")
     parser.add_argument("--skip_existing", type=int, choices=[0, 1], default=0,
                         help="1: skip existing Excel; 0: overwrite")
     parser.add_argument("--matched_only", type=int, choices=[0, 1], default=0,

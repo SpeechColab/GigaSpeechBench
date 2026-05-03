@@ -1,15 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""
-Single-batch ASR 评测脚本（可传参）
+"""ASR evaluation script: compute WER/CER from normalized ref and hyp JSON files.
 
-- 支持命令行指定 REF/HYP/OUT 根目录
-- 单 batch
-- model 名来自 hyp item["model"]
-- audio_name 去 .wav
-- 输出 ref/hyp/matched 段数一致性检查
-- 支持 WER/CER 自动判断
+Features:
+  - Automatic WER vs CER selection based on language
+  - Segment matching by (audio_name, start, end) with tolerance
+  - Alignment via kaldialign
+  - Outputs: recogs, error stats, segment check
 """
 
 import os
@@ -18,17 +16,9 @@ import logging
 from pathlib import Path
 from collections import defaultdict
 import kaldialign
-import gc
 import argparse
 
-# =========================
-# 日志
-# =========================
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
-
-# =========================
-# 常量
-# =========================
 WER_LANGS = ["IRQ","DZA","ARE","EGY","MAR","SAU","IDN","MYS","PHL","PHL_EN","PHL_noEN","VNM","SYR","USA",
              "CHN-EN","IDN-EN","JPN-EN","PHL-EN","SCT-EN","SGP-EN","AGR-EN","AIT-EN",
              "ART-EN","BIO-EN","ECM-EN","EDU-EN","ENG-EN","ENT-EN","FIN-EN","HUM-EN",
@@ -39,9 +29,7 @@ CER_LANGS = ["JPN","JPN_hard","KOR","KOR_hard","THA","CHN","JIN","XIANG","YUE","
 ERR = "*"
 MATCH_TOL = 0.1
 
-# =========================
-# 工具函数
-# =========================
+
 def norm_audio_name(name: str) -> str:
     name = name.replace("\\", "/")
     base = os.path.basename(name)
@@ -180,14 +168,11 @@ def write_errs_and_summary(out_dir, country, model, stats, compute_CER):
         print("model\tWER/CER", file=f)
         print(f"{model}\t{wer:.2f}", file=f)
 
-# =========================
-# 主入口（单 batch，可传参）
-# =========================
+
 def main(REF_ROOT, HYP_ROOT, OUT_ROOT, skip_existing=False):
-    logging.info("====== Single Batch Evaluation ======")
-    # 🔹 打印目录路径
-    print(f"🔹 REF 根目录: {REF_ROOT}")
-    print(f"🔹 HYP 根目录: {HYP_ROOT}")
+    logging.info("====== ASR Evaluation ======")
+    logging.info(f"REF: {REF_ROOT}")
+    logging.info(f"HYP: {HYP_ROOT}")
 
     for fn in os.listdir(REF_ROOT):
         if not fn.endswith(".json"):
@@ -234,9 +219,8 @@ def main(REF_ROOT, HYP_ROOT, OUT_ROOT, skip_existing=False):
                 f.write(f"first_unmatched_in_hyp={fmt_seg(first_unmatched_ref)}\n")
                 f.write(f"first_unmatched_in_ref={fmt_seg(first_unmatched_hyp)}\n")
             logging.info(f"[CHECK] {country}/{model}: ref={ref_n} hyp={hyp_n} matched={valid}")
-        del ref_items
-        gc.collect()
-    logging.info("✅ 单 batch 评测完成")
+
+    logging.info("Evaluation complete.")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Single-batch ASR evaluation")

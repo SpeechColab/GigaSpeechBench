@@ -544,7 +544,7 @@ def main():
     # resolve defaults relative to script location
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     data_root = os.environ.get("DATA_ROOT",
-        "/home/v-yujietu/BenchData/Multilingual-ASR-Benchmark")
+        os.path.join(base_dir, "data"))
 
     result_dir = args.result_dir or os.path.join(data_root, "Vertical-Domain", "text", "entity_ref")
     hyp_dir = args.hyp_dir or os.path.join(data_root, "Vertical-Domain", "text", "hyp")

@@ -1,20 +1,21 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Merge per-module results into a single all_results.xlsx with 6 sheets.
+Merge per-module evaluation results into all_results.xlsx.
 
-Sheet order (固定):
-    1. Low-Resource-Languages
-    2. CH-EN-Dialects
-    3. fleurs
-    4. common-voice
-    5. Vertical-Domain-CH
-    6. Vertical-Domain-EN
+Generates two Excel files:
+  - all_results_besteff.xlsx: shows WER/CER values (red for misaligned)
+  - all_results_counts.xlsx: shows matched/ref segment counts
 
-Cell logic:
-    - 若 matched_segments == ref_segments  -> 显示 WER/CER 数值
-    - 若不完全对齐                         -> 显示 "matched/ref" 字符串且单元格背景红色
-    - 若没数据                              -> 显示 "-"
+Sheet order:
+  1. Low-Resource-Languages
+  2. CH-EN-Dialects
+  3. fleurs
+  4. common-voice
+  5. Vertical-Domain-CH
+  6. Vertical-Domain-EN
+  7. Hotword-CH
+  8. Hotword-EN
 """
 
 import os
@@ -26,9 +27,7 @@ from openpyxl.styles import Font, Alignment, PatternFill
 from openpyxl.utils import get_column_letter
 
 
-# =========================
-# 模型白名单 + 显示名称映射
-# =========================
+# Model whitelist and display name mapping
 MODEL_ORDER = [
     ("Azure",                   {"AZURE"}),
     ("Chirp3",                  {"CHIRP3"}),
@@ -52,9 +51,7 @@ _INT2DISP = {i: d for d, internals in MODEL_ORDER for i in internals}
 _DISP_ORDER = [d for d, _ in MODEL_ORDER]
 
 
-# =========================
-# 每个 sheet 的列顺序 (国家/语言)
-# =========================
+# Column order per sheet (countries/languages)
 EXCLUDE_COLS = {"EDU-EN", "EDU-CH"}
 
 COLUMN_ORDER = {
@@ -83,7 +80,7 @@ COLUMN_ORDER = {
     ],
 }
 
-# 顺序固定：低资源 → 方言 → fleurs → commonvoice → 中文垂类 → 英文垂类 → hotword CH/EN
+# Fixed sheet order
 SHEET_ORDER = [
     "Low-Resource-Languages",
     "CH-EN-Dialects",
@@ -100,7 +97,7 @@ COLUMN_ORDER["Hotword-CH"] = COLUMN_ORDER["Vertical-Domain-CH"]
 COLUMN_ORDER["Hotword-EN"] = COLUMN_ORDER["Vertical-Domain-EN"]
 
 # Hotword model display mapping (internal dir name -> display name).
-# 目录命名和 results_Vertical-Domain 下略有差异 (BIGASR 无后缀, SEEDASR, etc.)
+# Directory naming may differ from results_Vertical-Domain.
 HOTWORD_INT2DISP = {
     "AZURE": "Azure",
     "CHIRP3": "Chirp3",
@@ -128,13 +125,13 @@ HOTWORD_INT2DISP = {
     "SEEDASR2": "SEEDASR_2.0",
 }
 
-# 模块 -> results_<dir>
+# Module -> results directory name mapping
 SOURCE_MAP = {
     "Vertical-Domain-CH": "Vertical-Domain",
     "Vertical-Domain-EN": "Vertical-Domain",
 }
 
-# 模块 -> data/text/<dir>/ref  (用于统计有效 ref 时长)
+# Module -> text source directory mapping (for ref duration stats)
 TEXT_SOURCE_MAP = {
     "Low-Resource-Languages": "Low-Resource-Languages",
     "CH-EN-Dialects": "CH-EN-Dialects",
@@ -148,7 +145,7 @@ TEXT_SOURCE_MAP = {
 
 
 # =========================
-# 工具
+# Utilities
 # =========================
 def normalize_model_name(model: str) -> str:
     m = re.match(r"^([A-Z]{3})_(.+)$", model)
@@ -210,14 +207,17 @@ def read_segment_check(m_dir: str):
 
 def load_ref_durations(base_dir: str, module: str, countries: list):
     """
-    读取 data/text/<source>/ref/<country>.json (valid 过滤后的扁平 ref) 并按
-    (end-start) 累加，返回 {country: 小时数}. 找不到文件的返回 None.
+    Read ref JSON and compute total duration (hours).
+    Returns {country: hours}. Missing files return None.
     """
     src = TEXT_SOURCE_MAP.get(module)
     out = {}
     if not src:
         return out
-    ref_root = os.path.join(base_dir, "data", "text", src, "ref")
+    # Support both new flat layout (data/text/ref/) and legacy (data/text/{source}/ref/)
+    ref_root = os.path.join(base_dir, "data", "text", "ref")
+    if not os.path.isdir(ref_root):
+        ref_root = os.path.join(base_dir, "data", "text", src, "ref")
     for country in countries:
         path = os.path.join(ref_root, f"{country}.json")
         if not os.path.isfile(path):
@@ -240,7 +240,7 @@ def load_ref_durations(base_dir: str, module: str, countries: list):
                 except Exception:
                     continue
         elif isinstance(data, dict):
-            # 兼容可能的 {audio: {segments:[...]}} 结构
+            # Compat: nested {audio: {segments:[...]}} format
             for v in data.values():
                 segs = v.get("segments", []) if isinstance(v, dict) else []
                 for seg in segs:
@@ -258,8 +258,8 @@ def load_ref_durations(base_dir: str, module: str, countries: list):
 
 
 # =========================
-# 扫描一个模块, 返回 {display_model: {country: (cell_value, is_matched_or_None)}}
-# is_matched: True/False/None  (None = 没有数据)
+# Scan one module -> {display_model: {country: (value, is_matched, ref_n, matched_n)}}
+
 # =========================
 def scan_module(results_root: str, countries: list):
     table = {disp: {} for disp in _DISP_ORDER}
@@ -289,20 +289,20 @@ def scan_module(results_root: str, countries: list):
                 else:
                     table[display][country] = ("-", None, ref_n, matched_n)
             else:
-                # 对齐失败：保留 wer 和段数信息
+                # Misaligned: keep WER and segment counts
                 table[display][country] = (wer, False, ref_n, matched_n)
     return table
 
 
 # =========================
-# 把一个模块写入 worksheet
+# Write one module to worksheet
 # =========================
 def write_sheet(ws, table: dict, columns: list, durations: dict = None, mode: str = "default"):
     """
     mode:
-      "default"  - 原始行为：完全对齐显示 WER，不对齐显示 matched/ref 标红
-      "besteff"  - 能测尽测：有 WER 就显示（不对齐也显示，标红），无数据才 "-"
-      "counts"   - 只显示 matched/ref，不对齐标红
+      "default"  - Show WER if aligned, "matched/ref" (red) if not
+      "besteff"  - Show WER always (red if misaligned), "-" if no data
+      "counts"   - Show matched/ref counts only, red if misaligned
     """
     bold = Font(bold=True)
     center = Alignment(horizontal="center", vertical="center")
@@ -312,7 +312,7 @@ def write_sheet(ws, table: dict, columns: list, durations: dict = None, mode: st
 
     durations = durations or {}
 
-    # Row 1: 时长 (valid ref)
+    # Row 1: Duration (valid ref)
     dc = ws.cell(row=1, column=1, value="Duration (valid ref)")
     dc.font = bold
     dc.alignment = center
@@ -328,7 +328,7 @@ def write_sheet(ws, table: dict, columns: list, durations: dict = None, mode: st
         cell.alignment = center
         cell.fill = dur_fill
 
-    # Row 2: 表头 (Model / 国家)
+    # Row 2: Header (Model / Country)
     ws.cell(row=2, column=1, value="Model").font = bold
     ws.cell(row=2, column=1).alignment = center
     for ci, col in enumerate(columns, start=2):
@@ -336,7 +336,7 @@ def write_sheet(ws, table: dict, columns: list, durations: dict = None, mode: st
         c.font = bold
         c.alignment = center
 
-    # 数据行 (从 row 3 开始)
+    # Data rows (from row 3)
     for ri, disp in enumerate(_DISP_ORDER, start=3):
         ws.cell(row=ri, column=1, value=disp).font = bold
         ws.cell(row=ri, column=1).alignment = center
@@ -350,7 +350,7 @@ def write_sheet(ws, table: dict, columns: list, durations: dict = None, mode: st
             value, matched, ref_n, matched_n = entry
 
             if mode == "counts":
-                # 只显示 matched/ref
+                # Show matched/ref only
                 if ref_n is not None and matched_n is not None:
                     cell.value = f"{matched_n}/{ref_n}"
                     if matched is False:
@@ -361,7 +361,7 @@ def write_sheet(ws, table: dict, columns: list, durations: dict = None, mode: st
                 else:
                     cell.value = "-"
             elif mode == "besteff":
-                # 能测尽测：有 WER 就显示，不对齐标红
+                # Best-effort: show WER, red if misaligned
                 if matched is True and isinstance(value, float):
                     cell.value = round(value, 2)
                     cell.number_format = "0.00"
@@ -380,7 +380,7 @@ def write_sheet(ws, table: dict, columns: list, durations: dict = None, mode: st
                 else:
                     cell.value = "-" if value == "-" else value
             else:
-                # default: 原始行为
+                # Default mode
                 if matched is False:
                     cell.value = f"{matched_n}/{ref_n}" if ref_n is not None else "-"
                     cell.fill = red_fill
@@ -391,7 +391,7 @@ def write_sheet(ws, table: dict, columns: list, durations: dict = None, mode: st
                 else:
                     cell.value = value
 
-    # MIN 行 (仅完全对齐的数值列 — default/counts; besteff 包含所有有值的)
+    # MIN row
     min_row_idx = len(_DISP_ORDER) + 3
     ws.cell(row=min_row_idx, column=1, value="MIN").font = bold
     ws.cell(row=min_row_idx, column=1).alignment = center
@@ -418,7 +418,7 @@ def write_sheet(ws, table: dict, columns: list, durations: dict = None, mode: st
         else:
             cell.value = "-"
 
-    # AVG 列 (每个模型的平均值，只算有数值结果的列)
+    # AVG column
     avg_fill = PatternFill(start_color="DAEEF3", end_color="DAEEF3", fill_type="solid")
     avg_ci = len(columns) + 2
     # Duration row
@@ -470,14 +470,14 @@ def write_sheet(ws, table: dict, columns: list, durations: dict = None, mode: st
     else:
         min_avg_cell.value = "-"
 
-    # 列宽
+    # Column widths
     ws.column_dimensions["A"].width = 26
     for ci in range(2, avg_ci + 1):
         ws.column_dimensions[get_column_letter(ci)].width = 14
 
 
 # =========================
-# Hotword 结果扫描与写入
+# Hotword results scanning and writing
 # =========================
 HOTWORD_METRICS = [
     ("WER (%)", "CER (%)", "wer"),
@@ -517,7 +517,7 @@ def _parse_hotword_result(path: str):
 
 def scan_hotword(results_root: str, domains: list):
     """Return {display_model: {domain: {metric: (value, is_matched)}}}."""
-    # 按 hotword 目录下的模型名显示
+    # Scan hotword directory for model results
     table = {}
     display_order = []
     for domain in domains:
@@ -555,7 +555,7 @@ def scan_hotword(results_root: str, domains: list):
                     cell_map[key] = (v, False, total, parsed["matched"])
             table[display][domain] = cell_map
 
-    # 按 _DISP_ORDER 排序
+    # Sort by _DISP_ORDER
     ordered = [d for d in _DISP_ORDER if d in table]
     ordered += [d for d in display_order if d not in _DISP_ORDER]
     return table, ordered
@@ -571,7 +571,7 @@ def write_hotword_sheet(ws, table: dict, ordered_models: list, columns: list, du
 
     durations = durations or {}
 
-    # 最顶部: 时长行 (valid ref)
+    # Top row: Duration (valid ref)
     dc = ws.cell(row=1, column=1, value="Duration (valid ref)")
     dc.font = bold
     dc.alignment = center
@@ -645,7 +645,7 @@ def write_hotword_sheet(ws, table: dict, ordered_models: list, columns: list, du
                         cell.value = value
             row += 1
 
-        # MIN 行 (only for besteff/default with WER metric)
+        # MIN row
         if mode != "counts" and metric_key == "wer":
             ws.cell(row=row, column=1, value="MIN").font = bold
             ws.cell(row=row, column=1).alignment = center
@@ -707,7 +707,10 @@ def main(base_dir: str):
                 continue
 
             source = SOURCE_MAP.get(module, module)
-            results_root = os.path.join(base_dir, "data", f"results_{source}")
+            # Support both new flat layout (data/results/) and legacy (data/results_{source}/)
+            results_root = os.path.join(base_dir, "data", "results")
+            if not os.path.isdir(results_root):
+                results_root = os.path.join(base_dir, "data", f"results_{source}")
             if not os.path.isdir(results_root):
                 continue
             cols = [c for c in COLUMN_ORDER[module] if c not in EXCLUDE_COLS]

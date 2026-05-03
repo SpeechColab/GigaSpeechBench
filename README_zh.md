@@ -1,4 +1,4 @@
-# 🌍 多语种语音识别基准
+# 🌍 GigaSpeechBench：多语种语音识别基准
 
 <p align="center">
   <b>面向低资源语言的大规模多语种语音识别基准</b>
@@ -12,7 +12,7 @@
   <img src="https://img.shields.io/badge/语言-14+-blue" alt="Languages">
   <img src="https://img.shields.io/badge/时长-308h-green" alt="Duration">
   <img src="https://img.shields.io/badge/片段-260K+-orange" alt="Segments">
-  <img src="https://img.shields.io/badge/模型-14+-red" alt="Models">
+  <img src="https://img.shields.io/badge/模型-16+-red" alt="Models">
   <img src="https://img.shields.io/badge/许可-非商业-lightgrey" alt="License">
 </p>
 
@@ -26,20 +26,13 @@
 
 ---
 
-## 👥 参与机构
-
-<!-- TODO: 请补充参与机构 -->
-
----
-
 ## 🏆 排行榜
 
 > **低资源语言 ASR — 词/字错误率 (%) ↓**
->
-> 📊 14 种语言/方言 • ⏱ ~308 小时 • 🎙 26 万+ 片段
 
-<!-- 排行榜表格/图片占位 -->
-<!-- TODO: 插入排行榜图片或交互式表格 -->
+<p align="center">
+  <img src="image1.png" alt="低资源语言 ASR 性能" width="100%">
+</p>
 
 <p align="center">
   <i>📋 完整结果请查看 <code>data/all_results_besteff.xlsx</code></i>
@@ -72,47 +65,74 @@
 
 | 统计项 | 数值 |
 |:-------|:-----|
-| 语言数 | 14（+ 2 个难集） |
+| 语言数 | 14（+ 2 个难度子集） |
 | 总时长 | ~308 小时 |
 | 总片段数 | 26 万+ |
 | 音频格式 | WAV（16kHz 单声道） |
 | 标注方式 | 人工转写，含说话人元信息 |
 | 数据来源 | YouTube，按语种精选 |
 
-### 📝 数据格式
+### 📝 数据格式（GigaSpeech 风格）
 
-每个音频文件对应一个 JSON 标注：
+每种语言包含一个 `metadata.json`，采用 GigaSpeech 格式：
 
 ```json
 {
-  "audio_name": "ARE#UCIJXOvggjKtCagMfxvcCzAA#RVSrDuhYDZA#raw",
-  "segments": [
+  "audios": [
     {
-      "start": 165.613,
-      "end": 169.92,
-      "text": "ياسيدي هذي مشكلة يعني طويلة، الواقع هو شوف احنا.",
-      "status": "valid",
-      "age_group": "Adults",
-      "gender": "Male",
-      "emotion": "Neutral",
-      "speaker": "Speaker1",
-      "index": 1,
-      "text_en": "Sir, this is indeed a complex problem...",
-      "text_zh": "先生，这个问题确实很复杂..."
+      "aid": "ARE#UCIJXOvggjKtCagMfxvcCzAA#RVSrDuhYDZA#raw",
+      "duration": 228.195,
+      "segments": [
+        {
+          "sid": "ARE#UCIJXOvggjKtCagMfxvcCzAA#RVSrDuhYDZA#raw_1",
+          "begin_time": 165.613,
+          "end_time": 169.92,
+          "text": "ياسيدي هذي مشكلة يعني طويلة، الواقع هو شوف احنا.",
+          "speaker": "Speaker1",
+          "gender": "Male",
+          "text_en": "Sir, this is indeed a complex problem...",
+          "text_zh": "先生，这个问题确实很复杂..."
+        }
+      ]
     }
   ]
 }
 ```
 
-| 字段 | 类型 | 说明 |
-|:-----|:-----|:-----|
-| `audio_name` | string | 音频标识符（同时也是 wav 文件名） |
-| `segments[].start` | float | 片段起始时间（秒） |
-| `segments[].end` | float | 片段结束时间（秒） |
-| `segments[].text` | string | 源语言转写文本 |
-| `segments[].status` | string | `valid`（有效）或 `invalid`（无效） |
-| `segments[].text_en` | string | 英文翻译（可选） |
-| `segments[].text_zh` | string | 中文翻译（可选） |
+模型结果也采用相同的 GigaSpeech 风格格式：
+
+```json
+{
+  "audios": [
+    {
+      "aid": "ARE#UCIJXOvggjKtCagMfxvcCzAA#RVSrDuhYDZA#raw",
+      "segments": [
+        {
+          "sid": "ARE#...#raw_1",
+          "begin_time": 165.613,
+          "end_time": 169.92,
+          "text": "模型转写结果",
+          "lang": "ARE"
+        }
+      ]
+    }
+  ]
+}
+```
+
+### 📂 目录结构
+
+```
+dataset/
+├── data/{LANG}/
+│   ├── metadata.json       # GigaSpeech 风格标注
+│   ├── audio/*.wav          # 音频文件
+│   └── md5                  # 音频校验和
+└── results/
+    ├── azure.json           # 模型假设（GigaSpeech 风格）
+    ├── chirp3.json
+    └── ...
+```
 
 ---
 
@@ -121,92 +141,92 @@
 ### ⚙️ 环境依赖
 
 ```bash
-pip install kaldialign
+pip install -r requirements.txt
 ```
 
-### 🔄 完整评测流程
+### 🔄 运行评测
 
 ```bash
-# 步骤1：从原始标注生成标准 ref JSON
-python data_process/generate_ref_json.py
-
-# 步骤2：从模型输出生成标准 hyp JSON
-python data_process/generate_hyp_json.py
-
-# 步骤3：文本归一化（标点、大小写等）
-python data_process/normalization_single_ref.py
-python data_process/normalization_single_hyp.py
-
-# 步骤4：计算 WER/CER
-python scripts/compute_wer.py
-
-# 步骤5：生成 Excel 报告
-python scripts/excel_single.py
-python scripts/merge_excel.py
+bash example.sh /path/to/dataset
 ```
 
-或一键运行完整流程：
+完整 4 步流程：
+1. **转换** — 解析 GigaSpeech 风格 JSON 为扁平格式
+2. **归一化** — 按语言做文本归一化（多核并行，支持缓存）
+3. **评测** — 按段对齐计算 WER/CER
+4. **报告** — 生成 Excel 结果表
 
+选项：
 ```bash
-bash example.sh Low-Resource-Languages
+bash example.sh /path/to/dataset --force         # 覆盖所有输出
+bash example.sh /path/to/dataset --workers 8     # 并行归一化
 ```
 
 ### ➕ 接入新模型
 
-将模型输出整理为标准 JSON 格式：
+使用辅助工具生成正确格式的结果：
 
-```json
-[
-  {
-    "audio_name": "ARE#UCIJXOvggjKtCagMfxvcCzAA#RVSrDuhYDZA#raw",
-    "text": "你的转写结果",
-    "model": "你的模型名",
-    "start": 165.613,
-    "end": 169.92
-  }
-]
+```python
+from scripts.save_results import ResultWriter
+
+writer = ResultWriter()
+for segment in my_results:
+    writer.add(
+        audio_name="ARE#UC...#raw",
+        begin_time=0.0,
+        end_time=5.0,
+        text="转写结果",
+        lang="ARE"
+    )
+writer.save("results/my_model.json")
 ```
 
-保存为 `{语言代码}_{模型名}.json` 到 hyp 目录，然后重新运行流程。
+然后重新运行流程即可。
 
 ---
 
 ## 📊 评测
 
 - **WER**（词错误率）：用于字母文字语言（阿拉伯语、印尼语、越南语等）
-- **CER**（字错误率）：用于 CJK 语言（日语、韩语、中文）
+- **CER**（字错误率）：用于 CJK 语言（日语、韩语、泰语）
 - 评测前会对每种语言进行相应的文本归一化
+- 段级匹配基于 (audio_name, start, end)，容差 0.1 秒
 
 ---
 
 ## 📁 项目结构
 
 ```
-Multilingual-ASR-Benchmark/
-├── data_process/          # 数据预处理脚本
-├── text_norm/             # 各语言文本归一化
-├── scripts/               # 评测与报告生成
-├── third_party/           # 模型接入脚本
-│   ├── Azure/
-│   ├── Chirp3/
-│   ├── gemeni/            # Gemini ASR
-│   ├── Qwen3ASR/
-│   ├── whisper-large-v3/
-│   └── ...
-├── build_gradio/          # Gradio 可视化界面
-├── example.sh             # 一键运行脚本
-└── README.md
+GigaSpeechBench/
+├── example.sh              # 一键评测流程
+├── requirements.txt        # Python 依赖
+├── data_process/
+│   ├── convert_data.py     # GigaSpeech JSON → 扁平格式
+│   └── normalize.py        # 多核并行文本归一化（支持缓存）
+├── scripts/
+│   ├── compute_wer_single.py  # WER/CER 计算
+│   ├── excel_single.py     # 单模块 Excel 报告
+│   ├── merge_excel.py      # 合并所有结果为总表
+│   ├── save_results.py     # 模型输出格式化工具
+│   └── check.py            # 提交格式校验
+├── text_norm/              # 各语言文本归一化
+└── third_party/            # 模型接入脚本
+    ├── Azure/
+    ├── Chirp3/
+    ├── Qwen3ASR/
+    ├── whisper-large-v3/
+    └── ...
 ```
 
 ---
 
 ## 🤝 贡献
 
-欢迎贡献新模型的评测结果，请：
+欢迎贡献新模型的评测结果：
 
 1. 在测试集上运行你的 ASR 模型
-2. 按标准 JSON 格式输出结果
-3. 提交包含 hyp JSON 文件的 Pull Request
+2. 使用 `scripts/save_results.py` 格式化输出
+3. 提交包含结果 JSON 的 Pull Request
 
 ---
 
@@ -218,11 +238,9 @@ Multilingual-ASR-Benchmark/
 
 ## 📖 引用
 
-如果您在研究中使用了本基准，请引用：
-
 ```bibtex
-@misc{multilingual-asr-benchmark,
-  title={Multilingual ASR Benchmark: A Large-Scale Evaluation for Low-Resource Languages},
+@misc{gigaspeechbench,
+  title={GigaSpeechBench: A Large-Scale Multilingual ASR Benchmark for Low-Resource Languages},
   year={2026},
   url={https://github.com/AlexTYJ/Multilingual-ASR-Benchmark}
 }

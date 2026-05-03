@@ -1,1 +1,5 @@
 kaldialign
+openpyxl
+pandas
+jieba
+sacrebleu
