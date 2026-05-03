@@ -83,7 +83,7 @@ We also welcome:
 
 | Stat | Value |
 |:-----|:------|
-| Languages | 14 (+ 2 hard subsets) |
+| Languages | 14 |
 | Total Duration | ~280+ hours |
 | Total Segments | 260,000+ |
 | Audio Format | WAV (16kHz mono) |
