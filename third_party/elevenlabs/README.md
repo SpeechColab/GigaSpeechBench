@@ -1,11 +1,11 @@
-# ElevenLabs ASR 转录脚本
+# ElevenLabs ASR Transcription Script
 
-该模块使用 **ElevenLabs** 语音识别 API，对音频文件进行批量转录。
+This module uses **ElevenLabs** 语音识别 API，对音频文件进行批量转录。
 
 ---
-## 1. 环境配置
+## 1. Environment Setup
 
-### 1.1 安装依赖
+### 1.1 Install dependencies
 
 ```bash
 pip install elevenlabs pydub
@@ -39,7 +39,7 @@ export ELEVENLABS_API_KEY="your_api_key_here"
 
 首先调用`data_process/generate_ref_json.py`脚本对参考文本文件进行合并处理
 
-#### 文本文件目录结构
+#### Text文件目录结构
 
 文本文件应按照以下目录结构组织：
 
@@ -52,7 +52,7 @@ export ELEVENLABS_API_KEY="your_api_key_here"
 ```
 
 **说明**:
-- 每个语种对应一个 JSON 文件
+- 每个language对应一个 JSON 文件
 - 文件命名格式: `{language_code}.json`
 - 默认路径: `data/text/testbatch/ref`
 
@@ -81,7 +81,7 @@ export ELEVENLABS_API_KEY="your_api_key_here"
 - `end`: 结束时间（秒）
 - `text`: 参考文本（ground truth）
 
-#### 音频文件目录结构
+#### Audio文件目录结构
 
 音频文件应按照以下目录结构组织：
 
@@ -97,7 +97,7 @@ export ELEVENLABS_API_KEY="your_api_key_here"
 ```
 
 **说明**:
-- 每个语种对应一个子目录
+- 每个language对应一个子目录
 - 目录命名格式: `{language_code}`
 - 音频文件命名: `{audio_name}.wav`
 - 默认路径: `data/audio/testbatch`
@@ -135,18 +135,18 @@ python third_party/elevenlabs/elevenlabs_asr.py \
 
 ---
 
-### 2.3 参数说明
+### 2.3 Parameter description
 
-- **`--languages`**: 指定要处理的语种代码，支持多个语种同时处理
+- **`--languages`**: 指定要处理的language代码，支持多个language同时处理
   - 示例: `--languages ARE IDN JPN`
-  - 支持的语种代码见 2.4 支持语种 部分
-  - 语种代码会自动转换为大写
+  - 支持的language代码见 2.4 支持language 部分
+  - language代码会自动转换为大写
 
 - **`--text_dir`**: 文本文件目录，应包含标准格式的 JSON 文件
   - 默认路径: `data/text/testbatch/ref`
   - 文件命名格式: `{language_code}.json`
   - 例如: `data/text/testbatch/ref/ARE.json`
-  - 每个语种对应一个 JSON 文件，包含该语种的所有片段信息
+  - 每个language对应一个 JSON 文件，包含该language的所有片段信息
 
 - **`--audio_dir`**: 音频文件根目录
   - 默认路径: `data/audio/testbatch`
@@ -170,32 +170,32 @@ python third_party/elevenlabs/elevenlabs_asr.py \
 
 ---
 
-### 2.4 支持语种
+### 2.4 支持language
 
-本测试集中，脚本支持以下语种及其映射关系：
+本测试集中，脚本支持以下language及其映射关系：
 
-| 语种代码 | 语言 | ElevenLabs 语言代码 | 说明 |
+| language代码 | 语言 | ElevenLabs 语言代码 | 说明 |
 |---------|------|-------------------|------|
 | `AR`  | 阿拉伯语 (ar) | ara | 阿拉伯语 |
 | `ARE` | 阿拉伯语 (ar) | ara | 阿拉伯语-阿联酋 |
-| `IRQ` | 阿拉伯语 (ar) | ara | 阿拉伯语-伊拉克 |
+| `IRQ` | 阿拉伯语 (ar) | ara | 阿拉伯语-Iraq |
 | `DZA` | 阿拉伯语 (ar) | ara | 阿拉伯语-阿尔及利亚 |
 | `EGY` | 阿拉伯语 (ar) | ara | 阿拉伯语-埃及 |
-| `SAU` | 阿拉伯语 (ar) | ara | 阿拉伯语-沙特 |
-| `MAR` | 阿拉伯语 (ar) | ara | 阿拉伯语-摩洛哥 |
-| `IDN` | 印尼语 (id) | ind | 印尼语 |
+| `SAU` | 阿拉伯语 (ar) | ara | 阿拉伯语-Saudi |
+| `MAR` | 阿拉伯语 (ar) | ara | 阿拉伯语-Morocco |
+| `IDN` | Indonesia语 (id) | ind | Indonesia语 |
 | `JPN` | 日语 (ja) | jpn | 日语 |
 | `KOR` | 韩语 (ko) | kor | 韩语 |
 | `THA` | 泰语 (th) | tha | 泰语 |
-| `VNM` | 越南语 (vi) | vie | 越南语 |
-| `PHL` | 菲律宾语 (fil) | fil | 菲律宾语 |
+| `VNM` | Vietnam语 (vi) | vie | Vietnam语 |
+| `PHL` | Philippines语 (fil) | fil | Philippines语 |
 | `MYS` | 马来语 (ms) | msa | 马来语 |
 | `USA` | 英语 (en) | eng | 英语 |
 | `CHN` | 中文 (zh) | zho | 中文 (普通话) |
 | `CHN-EN` | 英语 (en) | eng | 英语-中国 |
 | `IDN-EN` | 英语 (en) | eng | 英语-印度 |
-| `JPN-EN` | 英语 (en) | eng | 英语-日本 |
-| `PHL-EN` | 英语 (en) | eng | 英语-菲律宾 |
+| `JPN-EN` | 英语 (en) | eng | 英语-Japan |
+| `PHL-EN` | 英语 (en) | eng | 英语-Philippines |
 | `SCT-EN` | 英语 (en) | eng | 英语-苏格兰 |
 | `SGP-EN` | 英语 (en) | eng | 英语-新加坡 |
 | `XIANG` | 中文 (zh) | eng | 中文-湘方言 |
@@ -203,11 +203,11 @@ python third_party/elevenlabs/elevenlabs_asr.py \
 
 
 
-其他语种映射关系请参考[Elevenlabs官方文档](https://elevenlabs.io/docs/capabilities/speech-to-text)的Supported lanauges
+其他language映射关系请参考[Elevenlabs官方文档](https://elevenlabs.io/docs/capabilities/speech-to-text)的Supported lanauges
 
-### 语种映射说明
+### language映射说明
 
-- **语种代码**: 本测试集使用的国家/地区代码
+- **language代码**: 本测试集使用的国家/地区代码
 - **ElevenLabs 语言代码**: ElevenLabs API 使用的语言标识符
 ---
 
@@ -227,7 +227,7 @@ def transcribe_audio(
 ) -> str:
 ```
 
-#### 参数说明
+#### Parameters说明
 
 - **`audio_path`** (str): 音频文件的绝对路径
 - **`start_time`** (float): 起始时间（秒）
@@ -235,7 +235,7 @@ def transcribe_audio(
 - **`language`** (str): 国家代码（如 "ARE", "IRQ", "JPN"），将自动映射到 ElevenLabs API 支持的语言代码
 - **`model_id`** (str): ElevenLabs 模型 ID，默认为 "scribe_v1"
 
-#### 返回值
+#### Return值
 
 - **`str`**: 转录文本
 

@@ -1,26 +1,26 @@
 import nemo.collections.asr as nemo_asr
 
-# 加载模型（阿拉伯语）
+# Load model (Arabic)
 model = nemo_asr.models.ASRModel.from_pretrained("nvidia/stt_ar_fastconformer_hybrid_large_pcd_v1.0")
-custom_dir = "/root/shared-nvme/haoranwang/nemo_asr" # 自定义保存路径
+custom_dir = "/root/shared-nvme/haoranwang/nemo_asr" # Custom save path
 model.save_to(f"{custom_dir}/stt_ar_fastconformer_hybrid_large_pcd_v1.0.nemo")
 
-# 加载模型（韩语）
+# Load model (Korean)
 model = nemo_asr.models.ASRModel.from_pretrained("eesungkim/stt_kr_conformer_transducer_large")
-custom_dir = "/root/shared-nvme/haoranwang/nemo_asr" # 自定义保存路径
+custom_dir = "/root/shared-nvme/haoranwang/nemo_asr" # Custom save path
 model.save_to(f"{custom_dir}/stt_kr_conformer_transducer_large")
 
-# 加载模型（日语）
+# Load模型（日语）
 model = nemo_asr.models.ASRModel.from_pretrained("nvidia/parakeet-tdt_ctc-0.6b-ja")
-custom_dir = "/root/shared-nvme/haoranwang/nemo_asr" # 自定义保存路径
+custom_dir = "/root/shared-nvme/haoranwang/nemo_asr" # Custom save path
 model.save_to(f"{custom_dir}/parakeet-tdt_ctc-0.6b-ja")
 
-# 加载模型（中文）
+# Load模型（中文）
 model = nemo_asr.models.ASRModel.from_pretrained("nvidia/stt_zh_conformer_transducer_large")
-custom_dir = "/root/shared-nvme/haoranwang/nemo_asr" # 自定义保存路径
+custom_dir = "/root/shared-nvme/haoranwang/nemo_asr" # Custom save path
 model.save_to(f"{custom_dir}/stt_zh_conformer_transducer_large")
 
-# 加载模型（英语）
+# Load模型（英语）
 model = nemo_asr.models.ASRModel.from_pretrained("nvidia/stt_en_conformer_transducer_large")
-custom_dir = "/root/shared-nvme/haoranwang/nemo_asr" # 自定义保存路径
+custom_dir = "/root/shared-nvme/haoranwang/nemo_asr" # Custom save path
 model.save_to(f"{custom_dir}/stt_en_conformer_transducer_large")

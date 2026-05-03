@@ -5,7 +5,7 @@ from text_norm._common import remove_paralinguistic_tags
 
 
 def normalize(text: str) -> str:
-    # 移除副语言标签和填充词
+    # Remove paralinguistic tags and filler words
     text = remove_paralinguistic_tags(text)
 
     # Unicode NFKC normalization
@@ -23,8 +23,8 @@ def normalize(text: str) -> str:
 
     korean_english_only_pattern = re.compile(
         r"[^"
-        r"\uAC00-\uD7A3"  # Hangul Syllables (现代音节)
-        r"\u1100-\u11FF"  # Hangul Jamo (组合字母)
+        r"\uAC00-\uD7A3"  # Hangul Syllables (modern syllables)
+        r"\u1100-\u11FF"  # Hangul Jamo (combining letters)
         r"\u3130-\u318F"  # Hangul Compatibility Jamo (兼容字母)
         r"\uA960-\uA97F"  # Hangul Jamo Extended-A
         r"\uD7B0-\uD7FF"  # Hangul Jamo Extended-B

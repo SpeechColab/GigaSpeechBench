@@ -3,7 +3,7 @@ import string
 
 from text_norm._common import remove_paralinguistic_tags
 
-# 只有整句是下面这几个才跳过（大小写不敏感）
+# Skip only if entire sentence matches these (case-insensitive)
 SKIP_WORDS_STRICT = {"SIL", "MUSIC", "NOISE", "OTHER"}
 
 # fillers
@@ -12,13 +12,13 @@ FILLERS = re.compile(
     re.IGNORECASE
 )
 
-# 删除尖括号标签
+# Delete angle bracket tags
 ANGLE_REGEX = re.compile(r"<[^>]*>")
 
-# 新增：删除 [] 标签
+# Also delete [] tags
 BRACKET_REGEX = re.compile(r"\[[^\]]*\]")
 
-# 删除标点
+# Deletepunctuation
 PUNCT_REGEX = re.compile(
     rf"[{re.escape(string.punctuation)}]"
     r"|[\u3000-\u303F]"
@@ -28,7 +28,7 @@ PUNCT_REGEX = re.compile(
     r"|[\u2E00-\u2E7F]"
 )
 
-# 删除 COMMA / PERIOD / QUESTIONMARK / EXCLAMATIONPOINT （裸词）
+# Delete COMMA / PERIOD / QUESTIONMARK / EXCLAMATIONPOINT （裸词）
 REMOVE_TAG_WORDS = re.compile(
     r"\b(COMMA|PERIOD|QUESTIONMARK|EXCLAMATIONPOINT)\b",
     re.IGNORECASE
@@ -46,7 +46,7 @@ def normalize(text: str):
     if not text:
         return ""
 
-    # 移除副语言标签和填充词
+    # Remove paralinguistic tags and filler words
     text = remove_paralinguistic_tags(text)
 
     # A）精确判断整句是否为垃圾词（严格匹配）
@@ -69,10 +69,10 @@ def normalize(text: str):
     # F）删 COMMA / PERIOD / QUESTIONMARK / EXCLAMATIONPOINT
     text = REMOVE_TAG_WORDS.sub("", text)
 
-    # G）删标点
+    # G）删punctuation
     text = PUNCT_REGEX.sub("", text)
 
-    # H）数字替换
+    # H）numbersreplace
     text = DIGIT_REGEX.sub(lambda m: digit_map_en[m.group(0)], text)
 
     # I）合并空格

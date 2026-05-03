@@ -1,74 +1,74 @@
 """
-通用副语言标签和填充词移除模块。
+Common paralinguistic tag and filler word removal module.
 
-副语言通用标签（来自标注规范）：
-  [breath]        呼吸
-  [chocking]      哽咽
-  [humph]         哼声
-  [sigh]          叹气
-  [laugh]         笑声
-  [cough]         咳嗽
-  [hissing]       嘶声
-  [Throat clear]  清嗓子
+Paralinguistic tags (from annotation spec):
+  [breath]        breath
+  [chocking]      choking
+  [humph]         humph
+  [sigh]          sigh
+  [laugh]         laugh
+  [cough]         cough
+  [hissing]       hissing
+  [Throat clear]  throat clearing
 
-填充词标注规范：
-  #word  说话者犹豫/思考时使用的填充词，前面添加 # 号。
-         例如：# 呃、# أأأ、# eh
+Filler word annotation spec:
+  #word  Filler words used when speaker hesitates, prefixed with #.
+         e.g.: # uh, # أأأ, # eh
 
-其他常见标注：
-  <unk>           未知片段
-  (noise)         噪音
-  (overlap)       重叠语音
-  (~)             拖尾
-  (sil)           静音
+Other common annotations:
+  <unk>           unknown segment
+  (noise)         noise
+  (overlap)       overlapping speech
+  (~)             trailing
+  (sil)           silence
 """
 
 import re
 
 # ──────────────────────────────────────────────
-# 1. 方括号标签  [breath], [laugh], ...
+# 1. Bracket tags [breath], [laugh], ...
 # ──────────────────────────────────────────────
 _RE_SQUARE = re.compile(r"\[[^\]]*\]")
 
 # ──────────────────────────────────────────────
-# 2. 尖括号标签  <unk>, ...
+# 2. Angle bracket tags <unk>, ...
 # ──────────────────────────────────────────────
 _RE_ANGLE = re.compile(r"<[^>]*>")
 
 # ──────────────────────────────────────────────
-# 3. 圆括号标签  (noise), (overlap), (~), ...
-#    注意：只移除 "标签类" 短内容（≤30字符），
-#    避免误删真正的括号注释文本
+# 3. Parentheses tags (noise), (overlap), (~), ...
+# Only remove short tag-like content (<=30 chars),
+# to avoid deleting real parenthetical text
 # ──────────────────────────────────────────────
 _RE_PAREN = re.compile(r"\([^)]{0,30}\)")
 _RE_PAREN_CN = re.compile(r"（[^）]{0,30}）")
 
 # ──────────────────────────────────────────────
-# 4. 花括号标签  {breath}, ...
+# 4. Curly brace tags {breath}, ...
 # ──────────────────────────────────────────────
 _RE_BRACE = re.compile(r"\{[^}]*\}")
 
 # ──────────────────────────────────────────────
-# 5. 填充词标记  # word
-#    匹配 # 后跟可选空格再跟一个"词"（含尾随标点）
-#    例如: "# أأأ"  "# eh,"  "# อ่า"
-#    注意: 暂时禁用填充词移除，避免中文无空格导致
-#    整句被误删。仅移除 # 符号本身。
+# 5. Filler word markers: # word
+# Match # followed by optional space and a word
+# e.g.: "# uhh" "# eh," "# อ่า"
+# Note: filler removal disabled to avoid
+# deleting entire sentences in spaceless scripts.
 # ──────────────────────────────────────────────
 _RE_FILLER = re.compile(r"#\s*")
 
 # ──────────────────────────────────────────────
-# 6. 合并多余空白
+# 6. Merge extra whitespace
 # ──────────────────────────────────────────────
 _RE_MULTI_SPACE = re.compile(r"\s+")
 
 
 def remove_paralinguistic_tags(text: str) -> str:
     """
-    移除所有副语言标签和填充词标注，返回清理后的文本。
+    Remove all paralinguistic tags and filler annotations, return cleaned text。
 
-    处理顺序：
-      1. [...]  方括号标签
+    Processing order:
+      1. [...]  Bracket tags [breath], [laugh], ...
       2. <...>  尖括号标签
       3. (...)  圆括号标签（短内容）
       4. （...）全角圆括号标签（短内容）

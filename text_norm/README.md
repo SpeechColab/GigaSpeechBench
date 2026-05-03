@@ -1,12 +1,12 @@
 # text_norm
 
-本目录用于存放各语言的text_norm脚本。
+This directory contains per-language text normalization scripts。
 
-## 命名规则
+## Naming Convention
 
-- **文件名必须使用三字母全大写代码（如 ARE、JPN、KOR）**
+- **Filenames must use 3-letter uppercase codes（如 ARE、JPN、KOR）**
 
-- 每个文件对应一种语言的文本规范化逻辑
+- 每个文件对应一种语言的文本normalization逻辑
 
 - 示例：IRQ.py
 

@@ -4,7 +4,7 @@ import string
 from text_norm._common import remove_paralinguistic_tags
 
 # ------------------------------------------------
-# 标点
+# Punctuation
 # ------------------------------------------------
 
 PUNCT_REGEX = re.compile(
@@ -17,7 +17,7 @@ PUNCT_REGEX = re.compile(
 )
 
 # ------------------------------------------------
-# 删除括号内容
+# Delete parenthetical content
 # ------------------------------------------------
 
 SQUARE_REGEX = re.compile(r"\[[^\]]*\]")
@@ -25,13 +25,13 @@ ROUND_REGEX = re.compile(r"\([^)]*\)")
 CN_ROUND_REGEX = re.compile(r"（[^）]*）")
 
 # ------------------------------------------------
-# 删除所有空白
+# Delete all whitespace
 # ------------------------------------------------
 
 SPACE_REGEX = re.compile(r"\s+")
 
 # ------------------------------------------------
-# 数字 → 中文
+# Numbers → Chinese characters
 # ------------------------------------------------
 
 digit_map_chn = {
@@ -46,21 +46,21 @@ def normalize(text: str) -> str:
 
     text = text.strip()
 
-    # 移除副语言标签和填充词
+    # Remove paralinguistic tags and filler words
     text = remove_paralinguistic_tags(text)
 
-    # 删除括号内容
+    # Delete parenthetical content
     text = SQUARE_REGEX.sub("", text)
     text = ROUND_REGEX.sub("", text)
     text = CN_ROUND_REGEX.sub("", text)
 
-    # 删除标点
+    # Deletepunctuation
     text = PUNCT_REGEX.sub("", text)
 
-    # 数字 → 中文
+    # Numbers → Chinese characters
     text = DIGIT_REGEX.sub(lambda m: digit_map_chn[m.group(0)], text)
 
-    # 删除所有空格
+    # Delete所有空格
     text = SPACE_REGEX.sub("", text)
     return text
 

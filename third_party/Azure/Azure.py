@@ -11,10 +11,10 @@ from tqdm import tqdm
 from pydub import AudioSegment
 import azure.cognitiveservices.speech as speechsdk
 
-# ===================== 1. 语种映射配置 =====================
-# 语种映射表通常作为常量保留，若需要也可以将其改为外部 JSON 配置文件读取
+# ===================== 1. Language mapping config =====================
+# Language mapping table (can be changed to external JSON config)
 LANG_MAP = {
-    # --- 原有映射 ---
+    # --- Original mapping ---
     "ARE": "ar-AE",
     "DZA": "ar-DZ",
     "EGY": "ar-EG",
@@ -30,23 +30,23 @@ LANG_MAP = {
     "JPN": "ja-JP",
     "AR": "ar-SA",
 
-    "PHL-EN": "en-PH",  # 菲律宾英语
-    "SGP-EN": "en-SG",  # 新加坡英语
-    "SCT-EN": "en-GB",  # 苏格兰英语
+    "PHL-EN": "en-PH",  # Philippine English
+    "SGP-EN": "en-SG",  # Singapore English
+    "SCT-EN": "en-GB",  # Scottish English
 
-    "CHN-EN": "en-HK",  # 中式英语 
-    "IDN-EN": "en-US",  # 印尼英语
-    "JPN-EN": "en-US",  # 日式英语
-    "JIN": "zh-CN",     # 晋语
-    "XIANG": "zh-CN",   # 湘语
+    "CHN-EN": "en-HK",  # Chinese English 
+    "IDN-EN": "en-US",  # Indonesian English
+    "JPN-EN": "en-US",  # Japanese English
+    "JIN": "zh-CN",     # Jin dialect
+    "XIANG": "zh-CN",   # Xiang dialect
 }
 
 
-# ===================== 2. 参数解析 =====================
+# ===================== 2. Argument parsing =====================
 def parse_args():
     parser = argparse.ArgumentParser(description="Azure ASR Evaluation Script")
 
-    # 基础路径配置
+    # Base path config
     parser.add_argument("--base_dir", type=str, default="/workdir/Multilingual-ASR-Benchmark/CH-EN-Dialects",
                         help="基础数据集目录路径")
     
@@ -64,7 +64,7 @@ def parse_args():
 
     # Azure 与模型配置
     parser.add_argument("--model_name", type=str, default="azure",
-                        help="用于写入 JSON 结果的模型名称")
+                        help="used for写入 JSON 结果的模型名称")
     
     parser.add_argument("--speech_key", type=str, default=os.environ.get("SPEECH_KEY"),
                         help="Azure Speech API Key (默认从环境变量 SPEECH_KEY 中读取)")
@@ -291,7 +291,7 @@ if __name__ == "__main__":
             print(f"[WARNING] 未在 LANG_MAP 中找到 {lang} 的映射，跳过此文件。")
             continue
 
-        # 遍历该音频文件下的所有切片
+        # Iterate该音频文件下的所有切片
         for seg in tqdm(task["segments"], desc=f"{lang}/{audio_name}"):
             if seg.get("status") == "invalid":
                 continue
@@ -357,4 +357,4 @@ if __name__ == "__main__":
         print(f"Coverage    : {(total_found / total_valid * 100):.2f}%")
     print("==============================================")
 
-    print(f"\n[完成] 结果保存在：{SUBMISSION_ROOT}")
+    print(f"\n[完成] Save results在：{SUBMISSION_ROOT}")

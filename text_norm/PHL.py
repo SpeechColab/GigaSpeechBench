@@ -6,11 +6,11 @@ from text_norm._common import remove_paralinguistic_tags
 
 def normalize(text: str) -> str:
     """
-    菲律宾语规范化（最终稳定版）
+    Filipino normalization (stable version)
     
-    流程：
+    Pipeline:
     1. protect URL/email
-    2. 去重音
+    2. Remove accents
     3. 去重复字符
     4. 展开缩写
     5. 拼写标准化
@@ -21,13 +21,13 @@ def normalize(text: str) -> str:
     
     特点：
     - 不破坏 URL / email
-    - 适用于 ASR WER/CER
+    - 适used for ASR WER/CER
     """
 
     if not text or not text.strip():
         return text
 
-    # 移除副语言标签和填充词
+    # Remove paralinguistic tags and filler words
     text = remove_paralinguistic_tags(text)
 
     protected_spans = []
@@ -39,7 +39,7 @@ def normalize(text: str) -> str:
     text = expand_contractions(text)
     text = standardize_spelling(text)
 
-    # ===== 后处理 =====
+    # ===== 后process =====
     text = clean_text(text)
 
     text = remove_punctuation(text)   # 👈 关键：在 restore 前

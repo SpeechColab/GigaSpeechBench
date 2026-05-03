@@ -11,12 +11,12 @@ from typing import Dict, Any, Optional
 
 class ArabicASRProcessor:
     def __init__(self, model_path: str):
-        """阿拉伯语ASR处理器（自动跳过无效片段）"""
+        """Arabic ASR processor (auto-skip invalid segments)"""
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        print("⏳ 加载阿拉伯语模型...")
+        print("⏳ Loading Arabic model...")
         
         if not os.path.exists(model_path):
-            raise FileNotFoundError(f"模型文件未找到: {model_path}")
+            raise FileNotFoundError(f"Model file not found: {model_path}")
         
         self.model = EncDecHybridRNNTCTCModel.restore_from(model_path).to(self.device)
         self.model.eval()
@@ -29,7 +29,7 @@ class ArabicASRProcessor:
         )
 
     def _clean_text(self, text) -> str:
-        """清理转录文本为纯字符串"""
+        """clean up转录文本为纯字符串"""
         if isinstance(text, (list, tuple)):
             if len(text) > 0:
                 if isinstance(text[0], (list, tuple)):
@@ -57,7 +57,7 @@ class ArabicASRProcessor:
             return None
 
     def process_file(self, audio_path: str, label_path: str):
-        """处理单个音频文件"""
+        """process单个音频文件"""
         try:
             with open(label_path, 'r', encoding='utf-8') as f:
                 segments = json.load(f).get("segments", [])
@@ -72,7 +72,7 @@ class ArabicASRProcessor:
         print(f"\n🔊 处理 {Path(audio_path).name} [{country_code}]")
         
         for seg in tqdm(segments, desc="分段处理"):
-            # 跳过静音/无效片段
+            # Skip静音/无效片段
             if self._is_silent_segment(seg):
                 silent_count += 1
                 continue
@@ -107,7 +107,7 @@ class ArabicASRProcessor:
         print(f"  已跳过 {silent_count} 个静音片段，处理了 {processed_count} 个有效片段")
 
 def process_dataset(audio_dir: str, label_dir: str, model_path: str):
-    """处理整个数据集"""
+    """process整个数据集"""
     try:
         asr = ArabicASRProcessor(model_path)
     except Exception as e:
@@ -128,7 +128,7 @@ def process_dataset(audio_dir: str, label_dir: str, model_path: str):
                 asr.process_file(audio_file, label_file)
                 processed_files += 1
             else:
-                print(f"⚠️ 标签文件未找到: {label_file}")
+                print(f"⚠️ 标签文件not found: {label_file}")
     
     print(f"\n🎉 完成! 共处理 {processed_files} 个文件")
 

@@ -79,7 +79,7 @@ def get_parser():
 def get_omniasr_lang(language: str):
     """
     transform language code to omniasr lang id
-    仅在使用 LLM 系列解码时，需要提供 lang id，CTC系列不支持
+    Only LLM-series decoding requires lang id，CTC series does not support this
     """
     language = language.upper()
 
@@ -98,9 +98,9 @@ def get_omniasr_lang(language: str):
 
     elif language == 'IRQ':
         """
-        omnilingual-asr中相关伊拉克的lang有三种，可以都试一下效果：
-            美索不达米亚方言（帕尔米拉绿洲和幼发拉底河沿岸的居民点）、
-            北美索不达米亚方言、（北部使用）
+        omnilingual-asr中相关Iraq的lang有三种，可以都试一下效果：
+            Mesopotamian dialect（Palmyra oasis and settlements along the Euphrates）、
+            北Mesopotamian dialect、（北部使用）
             内志阿拉伯语（南部使用）
         """
         return 'acm_Arab'       # Mesopotamian Arabic
@@ -109,7 +109,7 @@ def get_omniasr_lang(language: str):
 
     elif language == 'SAU':
         """
-        omnilingual-asr中没有专门针对沙特的lang id
+        omnilingual-asr中没有专门针对Saudi的lang id
         相关的有三种：Najdi、Hijazi（红海沿岸）、Gulf Arabic（东部海湾沿岸）
         """
         return 'ars_Arab'       # Najdi Arabic 
@@ -137,7 +137,7 @@ def get_omniasr_lang(language: str):
 
     elif language == 'IDN':
         """
-        印尼语相当复杂，几个相关的 lang id:
+        Indonesia语相当复杂，几个相关的 lang id:
         """
         return 'ind_Latn'       # Indonesian
         # return 'bhz_Latn'       # Bada (Indonesia)

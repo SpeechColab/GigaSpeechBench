@@ -1,10 +1,10 @@
-# Dolphin ASR 转录脚本
+# Dolphin ASR Transcription Script
 
-该模块使用 **Dolphin** 多语种语音识别模型，对音频文件进行批量转录。
+This module uses **Dolphin** multilingual speech recognition model for batch audio transcription。
 
 ---
 
-## 1. 环境配置
+## 1. Environment Setup
 
 可参考原repo
 https://github.com/DataoceanAI/Dolphin
@@ -29,7 +29,7 @@ pip install git+https://github.com/SpeechOceanTech/Dolphin.git
 
 首先调用 `data_process/generate_ref_json.py`脚本对参考文本文件进行合并处理
 
-#### 文本文件目录结构
+#### Text文件目录结构
 
 文本文件应按照以下目录结构组织：
 
@@ -43,7 +43,7 @@ pip install git+https://github.com/SpeechOceanTech/Dolphin.git
 
 **说明**:
 
-- 每个语种对应一个 JSON 文件
+- 每个language对应一个 JSON 文件
 - 文件命名格式: `{language_code}.json`
 - 默认路径: `data/text/testbatch/ref`
 
@@ -74,7 +74,7 @@ pip install git+https://github.com/SpeechOceanTech/Dolphin.git
 - `end`: 结束时间（秒）
 - `text`: 参考文本（ground truth）
 
-#### 音频文件目录结构
+#### Audio文件目录结构
 
 音频文件应按照以下目录结构组织：
 
@@ -91,7 +91,7 @@ pip install git+https://github.com/SpeechOceanTech/Dolphin.git
 
 **说明**:
 
-- 每个语种对应一个子目录
+- 每个language对应一个子目录
 - 目录命名格式: `{language_code}`
 - 音频文件命名: `{audio_name}.wav`
 - 默认路径: `data/audio/testbatch`
@@ -118,19 +118,19 @@ python third_party/dolphin/dolphin_asr.py \
 
 ---
 
-### 2.3 参数说明
+### 2.3 Parameter description
 
-- **`--languages`**: 指定要处理的语种代码，支持多个语种同时处理
+- **`--languages`**: 指定要处理的language代码，支持多个language同时处理
 
   - 示例: `--languages JPN ARE IDN`
-  - 支持的语种代码见 2.4 支持语种部分
-  - 语种代码会自动转换为大写
+  - 支持的language代码见 2.4 支持language部分
+  - language代码会自动转换为大写
 - **`--text_dir`**: 文本文件目录，应包含标准格式的 JSON 文件
 
   - 默认路径: `data/text/testbatch/ref`
   - 文件命名格式: `{language_code}.json`
   - 例如: `data/text/testbatch/ref/JPN.json`
-  - 每个语种对应一个 JSON 文件，包含该语种的所有片段信息
+  - 每个language对应一个 JSON 文件，包含该language的所有片段信息
 - **`--audio_dir`**: 音频文件根目录
 
   - 默认路径: `data/audio/testbatch`
@@ -152,39 +152,39 @@ python third_party/dolphin/dolphin_asr.py \
 
 ---
 
-### 2.4 支持语种
+### 2.4 支持language
 
-本测试集中，脚本支持以下语种及其映射关系：
+本测试集中，脚本支持以下language及其映射关系：
 
-| 语种代码 | 语言           | 地区代码 | 说明                |
+| language代码 | 语言           | 地区代码 | 说明                |
 | -------- | -------------- | -------- | ------------------- |
 | `AR`   | 阿拉伯语 (ar)  | -        | 阿拉伯语           |
 | `ARE`  | 阿拉伯语 (ar)  | AE       | 阿拉伯语-阿联酋     |
-| `IRQ`  | 阿拉伯语 (ar)  | -        | 阿拉伯语-伊拉克     |
+| `IRQ`  | 阿拉伯语 (ar)  | -        | 阿拉伯语-Iraq     |
 | `DZA`  | 阿拉伯语 (ar)  | -        | 阿拉伯语-阿尔及利亚 |
 | `EGY`  | 阿拉伯语 (ar)  | EG       | 阿拉伯语-埃及       |
-| `SAU`  | 阿拉伯语 (ar)  | SA       | 阿拉伯语-沙特       |
-| `MAR`  | 阿拉伯语 (ar)  | MA       | 阿拉伯语-摩洛哥     |
-| `IDN`  | 印尼语 (id)    | ID       | 印尼语              |
+| `SAU`  | 阿拉伯语 (ar)  | SA       | 阿拉伯语-Saudi       |
+| `MAR`  | 阿拉伯语 (ar)  | MA       | 阿拉伯语-Morocco     |
+| `IDN`  | Indonesia语 (id)    | ID       | Indonesia语              |
 | `JPN`  | 日语 (ja)      | JP       | 日语                |
 | `KOR`  | 韩语 (ko)      | KR       | 韩语                |
 | `THA`  | 泰语 (th)      | TH       | 泰语                |
-| `VNM`  | 越南语 (vi)    | VN       | 越南语              |
-| `PHL`  | 菲律宾语 (fil) | PH       | 菲律宾语            |
+| `VNM`  | Vietnam语 (vi)    | VN       | Vietnam语              |
+| `PHL`  | Philippines语 (fil) | PH       | Philippines语            |
 | `MYS`  | 马来语 (ms)    | MY       | 马来语              |
 | `CHN`  | 中文 (zh)      | CN       | 中文 (普通话)      |
 | `XIANG`| 中文 (zh)      | HUNAN    | 中文 (湘方言)      |
 | `JIN`  | 中文 (zh)      | SHANXI   | 中文 (晋方言)      |
 
 
-其他语种代码参考[DataoceanAI/Dolphin](https://github.com/DataoceanAI/Dolphin/blob/main/languages.md)说明
+其他language代码参考[DataoceanAI/Dolphin](https://github.com/DataoceanAI/Dolphin/blob/main/languages.md)说明
 
-### 语种映射说明
+### language映射说明
 
 - **语言代码 (lang_sym)**: Dolphin 模型使用的语言标识符
-- **地区代码 (region_sym)**: 可选的地区标识符，用于区分同一语言的不同变体
+- **地区代码 (region_sym)**: 可选的地区标识符，used for区分同一语言的不同变体
 - 如果地区代码为空（`""`），则只指定语言，不指定地区
-- 如果语种代码不在映射表中，脚本会使用自动语言检测
+- 如果language代码不在映射表中，脚本会使用自动语言检测
 
 ---
 
@@ -204,7 +204,7 @@ def transcribe_audio(
 ) -> str:
 ```
 
-#### 参数说明
+#### Parameters说明
 
 - **`audio_path`** (str): 音频文件的绝对路径
 - **`start_time`** (float): 起始时间（秒）
@@ -212,7 +212,7 @@ def transcribe_audio(
 - **`language`** (str): 国家代码（如 "ARE", "IRQ", "JPN"），将自动映射到 dolphin 支持的语言代码
 - **`model`**: 已加载的 dolphin 模型对象
 
-#### 返回值
+#### Return值
 
 - **`str`**: 转录文本（不含特殊符号）
 
@@ -222,7 +222,7 @@ def transcribe_audio(
 from dolphin.transcribe import load_model
 from dolphin_asr import transcribe_audio
 
-# 加载模型
+# Load模型
 model = load_model(
     model_name="small",
     model_dir="/path/to/dolphin/models"

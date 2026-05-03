@@ -10,19 +10,19 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pydub import AudioSegment
 from pydub.utils import mediainfo
 
-# 导入 OpenAI 客户端
+# Import OpenAI client
 from openai import OpenAI
 
-# 从 utils 导入 save_transcription（如果没有，下方会提供替代实现）
+# Import from utils save_transcription（if not available, fallback implementation below）
 try:
     from utils import save_transcription
 except ImportError:
-    # 占位，实际用自定义保存逻辑
+    # placeholder, use custom save logic
     def save_transcription(audio_path, text, language, model, start_time, end_time):
         pass 
 
-########################################  参数配置  ########################################
-# 注意：替换为你的 OpenAI API Key
+########################################  Parameter config  ########################################
+# 注意：replace为你的 OpenAI API Key
     
 
 API_KEY      = os.getenv("OPENAI_API_KEY")  # set via environment variable
@@ -34,16 +34,16 @@ TEMP_DIR     = r"/Users/wangpeng/Desktop/data4test_v2/temp_segments_openai" # <-
 FINAL_OUTPUT_DIR = r"/Users/wangpeng/Desktop/data4test_v2/asr_results_all" # <--- 新增：最终合并结果目录
 
 MAX_WORKERS  = 16                                          
-########################################  参数配置  ########################################
+########################################  Parameter config  ########################################
 
-# 定义语言映射表：目录名 -> ISO-639-1 语言代码 (供 OpenAI API 使用)
+# 定义Language mapping表：目录名 -> ISO-639-1 语言代码 (供 OpenAI API 使用)
 LANG_MAP = {
     "ARE": "ar", "DZA": "ar", "EGY": "ar", "IRQ": "ar", "MAR": "ar", "SAU": "ar",
     "MYS": "ms", "IDN": "id", "PHL": "tl", "THA": "th", "VNM": "vi",
     "JPN": "ja", "KOR": "ko",
 }
 
-# 初始化 OpenAI 客户端（线程安全，无需每个线程创建）
+# Initialize OpenAI 客户端（Thread安全，无需每个Thread创建）
 client = OpenAI(api_key=API_KEY)
 
 # 创建必要目录
@@ -51,7 +51,7 @@ Path(TEMP_DIR).mkdir(exist_ok=True, parents=True)
 Path(OUTPUT_DIR).mkdir(exist_ok=True, parents=True)
 Path(FINAL_OUTPUT_DIR).mkdir(exist_ok=True, parents=True) # <--- 创建最终输出目录
 
-# 线程锁：避免多线程同时打印导致输出混乱
+# Thread锁：避免多Thread同时打印导致输出混乱
 print_lock = threading.Lock()
 
 def get_audio_segment(wav_path: str, start_sec: float, end_sec: float) -> AudioSegment:
@@ -62,7 +62,7 @@ def get_audio_segment(wav_path: str, start_sec: float, end_sec: float) -> AudioS
     return audio[start_ms:end_ms]
 
 def transcribe_segment_worker(segment_idx: int, segment_audio: AudioSegment, lang_code: str) -> tuple[int, str]:
-    """转录单个音频片段（线程工作函数）：返回 (分段索引, 转录文本)"""
+    """转录单个音频片段（Thread工作函数）：返回 (分段索引, 转录文本)"""
     temp_file = Path(TEMP_DIR) / f"temp_segment_{segment_idx}_{threading.get_ident()}.wav"
     
     segment_audio.export(str(temp_file), format="wav")
@@ -80,33 +80,33 @@ def transcribe_segment_worker(segment_idx: int, segment_audio: AudioSegment, lan
         temp_file.unlink(missing_ok=True) 
         
         with print_lock:
-            print(f"[线程完成] 分段 {segment_idx} 转录成功 (语言: {lang_code})")
+            print(f"[Thread完成] 分段 {segment_idx} 转录成功 (语言: {lang_code})")
         return (segment_idx, transcribed_text)
     
     except Exception as e:
         with print_lock:
             temp_file.unlink(missing_ok=True) 
-            print(f"[线程警告] 分段 {segment_idx} 转录失败：{e}")
+            print(f"[Thread警告] 分段 {segment_idx} 转录失败：{e}")
         return (segment_idx, "")
 
 # ==============================================================================
-# 新增功能：汇总和格式转换
+# 新增Features:汇总和格式convert
 # ==============================================================================
 
 # ==============================================================================
-# 新增功能：按语言汇总和格式转换
+# 新增Features:按语言汇总和格式convert
 # ==============================================================================
 
 def aggregate_results(output_dir: Path, root_dir: Path, lang_map: Dict[str, str], model_name: str, final_output_dir_path: Path):
     """
-    遍历 OUTPUT_DIR 下的所有 JSON 文件，按语言分组，并将它们的内容转换为统一的列表格式，
+    遍历 OUTPUT_DIR 下的所有 JSON 文件，按语言分组，并将它们的内容转换为unified列表格式，
     然后为每种语言生成一个独立的 JSON 文件，命名为 {language}_{model_name}.json。
     
     Args:
         output_dir (Path): 存放每个长音频 JSON 结果的根目录。
-        root_dir (Path): 长音频文件 ROOT_DIR，用于获取完整的 WAV 路径。
+        root_dir (Path): 长音频文件 ROOT_DIR，used for获取完整的 WAV 路径。
         lang_map (Dict[str, str]): 语言目录名到 ISO 代码的映射（虽然在此函数中主要使用目录名）。
-        model_name (str): 用于结果文件命名的模型名。
+        model_name (str): used for结果文件命名的模型名。
         final_output_dir_path (Path): 最终汇总结果的输出目录。
     """
     # 存储按语言分组的转录数据：{ "JPN": [ {entry1}, {entry2}, ... ], "MYS": [ ... ] }
@@ -133,14 +133,14 @@ def aggregate_results(output_dir: Path, root_dir: Path, lang_map: Dict[str, str]
             # 2. 确定语言目录名 (例如 JPN, MYS) - 这是分组的关键
             lang_dir_name = json_path.parent.name # 例如 JPN
             
-            # 初始化该语言的列表
+            # Initialize该语言的列表
             if lang_dir_name not in results_by_language:
                 results_by_language[lang_dir_name] = []
             
             # 3. 确定原始 WAV 文件的完整路径
             original_wav_path = root_dir / lang_dir_name / f"{audio_name}.wav"
             
-            # 4. 转换分段格式并添加到对应语言组
+            # 4. convert分段格式并添加到对应语言组
             for seg in segments:
                 transcribed_text = seg.get("text", "").strip()
                 if not transcribed_text:
@@ -184,13 +184,13 @@ def aggregate_results(output_dir: Path, root_dir: Path, lang_map: Dict[str, str]
 
 
 def main():
-    # ... (前面的代码保持不变，处理音频和转录)
+    # ... (前面的代码保持不变，process音频和转录)
     wav_list = list(Path(ROOT_DIR).rglob("*.wav"))
     if not wav_list:
         print("未找到任何 wav 文件，请检查目录设置！")
         return
 
-    # 逐个处理长音频（串行）
+    # 逐个process长音频（串行）
     for wav_path in tqdm(wav_list, desc="ChatGPT-4o ASR 主进程"):
         wav_path = wav_path.resolve()
         audio_name = wav_path.stem
@@ -238,7 +238,7 @@ def main():
             continue
         
         with print_lock:
-            print(f"\n[INFO] 开始处理音频 {audio_name} (语言: {lang_code})，共 {len(valid_tasks)} 个有效分段，使用 {MAX_WORKERS} 线程")
+            print(f"\n[INFO] 开始处理音频 {audio_name} (语言: {lang_code})，共 {len(valid_tasks)} 个有效分段，使用 {MAX_WORKERS} Thread")
         
         transcribed_results = {}
         
@@ -278,9 +278,9 @@ def main():
             }, f, ensure_ascii=False, indent=2)
         
         with print_lock:
-            print(f"\n[SUCCESS] 音频 {audio_name} 处理完成，结果保存至：{output_json_path}")
+            print(f"\n[SUCCESS] 音频 {audio_name} 处理完成，Save results至：{output_json_path}")
 
-    print(f"\n===== 所有长音频处理完成！分文件结果在 {OUTPUT_DIR} =====")
+    print(f"\n===== 所有长Audio processing完成！分文件结果在 {OUTPUT_DIR} =====")
     
     # <--- 新增：调用 JSON 合并功能 --->
     aggregate_results(Path(OUTPUT_DIR), Path(ROOT_DIR), LANG_MAP, MODEL_NAME, Path(FINAL_OUTPUT_DIR))

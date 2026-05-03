@@ -20,8 +20,8 @@ def save_transcription(
     end_time: float
 ) -> None:
     """
-    保存转录结果到/results/{language}_{model}.json文件
-    字段调整为audio_name格式，其他保持不变
+    Save transcription results to/results/{language}_{model}.json文件
+    Adjust fields to audio_name format, keep others unchanged
     """
     results_dir = os.path.join(os.getcwd(), "results")
     os.makedirs(results_dir, exist_ok=True)
@@ -29,7 +29,7 @@ def save_transcription(
     filename = f"{language}_{model}.json"
     output_path = os.path.join(results_dir, filename)
 
-    # 生成audio_name格式：ARE#UC_p5qypAZQAUkgtjoJk5_Bg#fLqRbOYZsHY#raw.wav
+    # Generate audio_name format：ARE#UC_p5qypAZQAUkgtjoJk5_Bg#fLqRbOYZsHY#raw.wav
     audio_name = f"{Path(audio_path).stem}#raw.wav"
 
     entry = {
@@ -60,19 +60,19 @@ def save_transcription(
 
 class DialectChineseASRProcessor:
     def __init__(self, model_path: str):
-        """中文方言ASR处理器（仅处理valid片段，纯ASR结果）"""
+        """中文方言ASRprocess器（仅processvalid片段，纯ASR结果）"""
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         print("⏳ 加载中文方言ASR模型...")
         
         if not os.path.exists(model_path):
-            raise FileNotFoundError(f"模型未找到: {model_path}")
+            raise FileNotFoundError(f"模型not found: {model_path}")
         
         self.model = ASRModel.restore_from(model_path).to(self.device)
         self.model.eval()
         print(f"✅ 模型加载完成 ({self.device})")
 
     def _clean_text(self, text) -> str:
-        """清理转录文本为纯字符串"""
+        """clean up转录文本为纯字符串"""
         if isinstance(text, (list, tuple)):
             if len(text) > 0:
                 if isinstance(text[0], (list, tuple)):
@@ -96,17 +96,17 @@ class DialectChineseASRProcessor:
             transcription = self.model.transcribe([audio_path], batch_size=1)
             return self._clean_text(transcription)
         except Exception as e:
-            print(f"⚠️ 转录错误: {str(e)}")
+            print(f"⚠️ 转录Error: {str(e)}")
             return ""
 
     def process_file(self, audio_path: str, label_path: str):
-        """处理单个音频文件（仅处理status=valid的片段）"""
+        """process单个音频文件（仅processstatus=valid的片段）"""
         # 从路径提取方言标识
         dialect = Path(audio_path).parent.name.upper()
         valid_dialects = {"JIN", "XIANG"}
         
         if dialect not in valid_dialects:
-            dialect = "ZH"  # 默认标记为中文
+            dialect = "ZH"  # Default标记为中文
             
         try:
             with open(label_path, 'r', encoding='utf-8') as f:

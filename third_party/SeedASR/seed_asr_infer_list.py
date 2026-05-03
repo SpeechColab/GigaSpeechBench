@@ -1,4 +1,4 @@
-### 字节ASR
+### ByteDance ASR
 import base64
 import json
 import os
@@ -11,8 +11,8 @@ from pathlib import Path
 import requests
 
 """
-使用的是录音文件识别大模型：豆包录音文件识别模型2.0
-链接：https://console.volcengine.com/speech/service/10012
+Using ByteDance Doubao recording recognition model2.0
+Link：https://console.volcengine.com/speech/service/10012
 """
 
 
@@ -31,7 +31,7 @@ class SeedASR():
     def __init__(self, appid, token, model_id="volc.seedasr.auc", requests_info=None):
         self.appid = appid
         self.token = token
-        self.model_id = model_id  # 豆包语音识别模型2.0的model_id是volc.seedasr.auc，豆包语音识别模型1.0的model_id是volc.bigasr.auc
+        self.model_id = model_id  # ByteDance Doubao Speech Recognition模型2.0的model_id是volc.seedasr.auc，ByteDance Doubao Speech Recognition模型1.0的model_id是volc.bigasr.auc
         self.submit_url = "https://openspeech-direct.zijieapi.com/api/v3/auc/bigmodel/submit"
         self.query_url = "https://openspeech-direct.zijieapi.com/api/v3/auc/bigmodel/query"
         self.request_info = requests_info if requests_info else {
@@ -39,8 +39,8 @@ class SeedASR():
             "enable_channel_split": False,  # 关闭双声道的识别
             "enable_ddc": False,  # 关闭语义顺滑
             "enable_speaker_info": False,  # 关闭说话人信息输出
-            "enable_punc": True,  # 开启标点符号
-            "enable_itn": True,  # 开启文本规范化
+            "enable_punc": True,  # 开启punctuation符号
+            "enable_itn": True,  # 开启文本normalization
             "model_version": "400",  # 传 model_version = "400" 使用400模型效果
             "show_speech_rate": True,  # 开启语速信息输出
             "show_volume": True,  # 开启音量信息输出
@@ -478,7 +478,7 @@ class SeedASR():
 
 
 if __name__ == "__main__":
-    # resource_id = "volc.bigasr.auc"  # 豆包语音识别模型1.0的model_id是volc.bigasr.auc，豆包语音识别模型2.0的model_id是volc.seedasr.auc
+    # resource_id = "volc.bigasr.auc"  # ByteDance Doubao Speech Recognition模型1.0的model_id是volc.bigasr.auc，ByteDance Doubao Speech Recognition模型2.0的model_id是volc.seedasr.auc
     resource_ids = ["volc.bigasr.auc", "volc.seedasr.auc"]
     for resource_id in resource_ids:
         asr = SeedASR(

@@ -42,7 +42,7 @@ def normalize(text: str) -> str:
     # 1. Unicode NFC normalization (VERY IMPORTANT)
     text = unicodedata.normalize("NFC", text)
 
-    # 1.5. 移除副语言标签和填充词
+    # 1.5. remove paralinguistic tags and filler words
     text = remove_paralinguistic_tags(text)
 
     # 2. Remove annotation inside [], (), {}

@@ -6,24 +6,24 @@ from typing import Dict, Pattern
 
 from text_norm._common import remove_paralinguistic_tags
 
-# --- 依赖库检查 ---
-# num2words库用于数字转印尼语词汇，ASR评测中核心依赖
+# --- Dependency check ---
+# num2words library for converting numbers to Indonesian words
 try:
     from num2words import num2words
 except ImportError:
-    print("错误: 未找到库 'num2words'。请执行: pip install num2words")
+    print("Error: library not found 'num2words'。Please run: pip install num2words")
     sys.exit(1)
 
 # =========================================================================
-# TSV数据加载和初始化
+# TSVData loading and initialization
 # =========================================================================
 
 def _get_tsv_path(rel_path: str) -> str:
-    """获取TSV文件的绝对路径"""
+    """Get absolute path of TSV file"""
     return os.path.join(os.path.dirname(__file__), 'ref_code', rel_path)
 
 def _load_tsv(filepath: str) -> Dict[str, str]:
-    """加载TSV文件并返回字典映射"""
+    """Load TSV file and return dict mapping"""
     mapping = {}
     try:
         with open(filepath, 'r', encoding='utf-8') as file:
@@ -33,23 +33,23 @@ def _load_tsv(filepath: str) -> Dict[str, str]:
                     key, value = line.split('\t', 1)
                     mapping[key.strip()] = value.strip()
     except FileNotFoundError:
-        print(f"警告: TSV文件未找到: {filepath}")
+        print(f"Warning: TSV file not found: {filepath}")
     except Exception as e:
-        print(f"警告: 加载TSV文件失败 {filepath}: {e}")
+        print(f"Warning: Failed to load TSV file {filepath}: {e}")
     return mapping
 
-# 从TSV文件加载数据 (基于ref_code/text_process.py逻辑)
+# Load data from TSV files (based on ref_code/text_process.py logic)
 CURRENCY_MAP = _load_tsv(_get_tsv_path('currency.tsv'))
 MEASUREMENT_MAP = _load_tsv(_get_tsv_path('measurements.tsv'))
 TIMEZONE_MAP = _load_tsv(_get_tsv_path('timezones.tsv'))
 
 # =========================================================================
-# 印尼语ASR文本规范化模块
+# Indonesian ASR text normalization module
 # =========================================================================
 
-# 印尼语常用缩写映射表 (按使用频率排序，长短语优先)
+# Indonesia语常用缩写映射表 (按使用频率排序，长短语优先)
 INDONESIAN_ABBREV_MAP: Dict[str, str] = {
-    # 高频口语短语 (优先处理，避免被单个词覆盖)
+    # 高频口语短语 (优先process，避免被单个词覆盖)
     "terima kasih": "makasih", "makasih": "terima kasih",  # 感谢表达统一
     "tidak apa": "ga apa", "gak apa": "tidak apa",  # 否定短语标准化
     
@@ -59,7 +59,7 @@ INDONESIAN_ABBREV_MAP: Dict[str, str] = {
     "saudara": "sdr", "sdr": "saudara",  # 通用尊称
     "anda": "anda", "kamu": "kamu", "engkau": "kamu",  # 第二人称统一
     
-    # 否定词变体 (印尼语口语中否定形式多样)
+    # 否定词变体 (Indonesia语口语中否定形式多样)
     "tidak": "tidak", "tak": "tidak", "nggak": "tidak", 
     "gak": "tidak", "ga": "tidak", "enggak": "tidak",
     "jangan": "jangan", "jgn": "jangan",  # 禁止词
@@ -71,8 +71,8 @@ INDONESIAN_ABBREV_MAP: Dict[str, str] = {
     "di": "di", "ke": "ke", "dari": "dr", "dr": "dari",  # 方位介词
     "pada": "pd", "pd": "pada", "untuk": "utk", "utk": "untuk",  # 功能介词
     
-    # 时间和数量词
-    "sekarang": "skrg", "skrg": "sekarang",  # 时间
+    # Time和数量词
+    "sekarang": "skrg", "skrg": "sekarang",  # Time
     "tadi": "td", "td": "tadi",  # 过去时
     "nanti": "nt", "nt": "nanti",  # 将来时
     "belum": "blm", "blm": "belum", "sudah": "sdh", "sdh": "sudah",  # 状态词
@@ -83,7 +83,7 @@ INDONESIAN_ABBREV_MAP: Dict[str, str] = {
     "karena": "krn", "krn": "karena", "jadi": "jdi", "jdi": "jadi",
 }
 
-# 印尼语月份名称
+# Indonesia语月份名称
 INDONESIAN_MONTHS = [
     "Januari", "Februari", "Maret", "April", "Mei", "Juni",
     "Juli", "Agustus", "September", "Oktober", "November", "Desember"
@@ -100,10 +100,10 @@ FILLER_PATTERNS: Pattern = re.compile(
     re.IGNORECASE
 )
 
-# 全角数字映射 (亚洲语言ASR输出中常见)
+# 全角numbers映射 (亚洲语言ASR输出中常见)
 FULLWIDTH_DIGITS_MAP = str.maketrans("０１２３４５６７８９", "0123456789")
 
-# 数字相关正则表达式模式
+# Numbers相关正则表达式模式
 NUMBER_PATTERN: Pattern = re.compile(r"(\d+)")
 DATE_PATTERN: Pattern = re.compile(r"\((\d{1,2})/(\d{1,2})(?:/(\d+))?\)")
 URL_PATTERN: Pattern = re.compile(r"https?://[^\s]+")
@@ -135,7 +135,7 @@ def _remove_fillers(text: str) -> str:
     功能说明:
     - 填充词是人在说话时的犹豫、停顿、思考时的无意义词汇
     - 这些词汇在ASR评测中应被视为噪音而非有效词汇
-    - 涵盖印尼语常见的各种填充词变体
+    - 涵盖Indonesia语常见的各种填充词变体
     
     参数:
         text: 原始ASR转写文本
@@ -149,7 +149,7 @@ def _remove_fillers(text: str) -> str:
 
 def _preprocess_unicode(text: str) -> str:
     """
-    Unicode预处理和规范化
+    Unicode预处理和normalization
     
     功能说明:
     - 解决不同来源文本的Unicode编码不一致问题
@@ -160,7 +160,7 @@ def _preprocess_unicode(text: str) -> str:
         text: 原始文本
         
     返回:
-        Unicode规范化后的文本
+        Unicodenormalization后的文本
     """
     text = unicodedata.normalize("NFC", text)
     zero_width_chars = re.compile(r"[\u200B\u200C\u200D\uFEFF]")
@@ -174,17 +174,17 @@ def _convert_currencies_tsv(text: str) -> str:
 
     功能说明:
     - 利用currency.tsv中35种货币符号的完整映射
-    - 支持全球主要货币转换为印尼语表达
-    - 处理货币金额+印尼语单位(ribu千,juta百万等)
+    - 支持全球主要货币转换为Indonesia语表达
+    - 处理货币金额+Indonesia语单位(ribu千,juta百万等)
     - 基于ref_code/text_process.py的货币处理逻辑优化
 
     参数:
         text: 处理后的文本
 
     返回:
-        货币转换为印尼语完整表达的文本
+        货币转换为Indonesia语完整表达的文本
     """
-    # 构建货币模式 (基于TSV数据中的所有货币符号)
+    # 构建currency模式 (基于TSV数据中的所有currency符号)
     currency_symbols = '|'.join(re.escape(symbol) for symbol in CURRENCY_MAP.keys())
     currency_pattern = re.compile(
         rf'({currency_symbols})?\s*([\d\.,]+)\s*(ribu|juta|miliar|triliun)?',
@@ -199,11 +199,11 @@ def _convert_currencies_tsv(text: str) -> str:
         unit = match.group(3) or ""
 
         try:
-            # 清理金额字符串
+            # Clean up金额字符串
             amount_str = re.sub(r'[.,\s]', '', amount_str)
             amount = float(amount_str) if '.' in amount_str else int(amount_str)
 
-            # 处理印尼语特有的数量单位
+            # ProcessIndonesia语特有的数量单位
             if unit:
                 if unit.lower() == 'ribu':
                     amount *= 1000
@@ -214,23 +214,23 @@ def _convert_currencies_tsv(text: str) -> str:
                 elif unit.lower() == 'triliun':
                     amount *= 1000000000000
 
-            # 从TSV数据中获取货币名称
+            # 从TSV数据中获取currency名称
             if currency_symbol and currency_symbol.upper() in CURRENCY_MAP:
                 currency_name = CURRENCY_MAP[currency_symbol.upper()]
             elif currency_symbol == 'Rp':
                 currency_name = 'rupiah'
             else:
-                currency_name = 'rupiah'  # 默认印尼盾
+                currency_name = 'rupiah'  # DefaultIndonesia盾
 
-            # 转换为印尼语
+            # Convert为Indonesia语
             amount_words = num2words(int(amount), lang='id')
             currency_phrase = f"{amount_words} {currency_name}"
 
-            # 替换原文本
+            # Replace原文本
             text = text.replace(match.group(0), currency_phrase)
 
         except (ValueError, TypeError):
-            # 转换失败时保持原样
+            # Convert失败时保持原样
             continue
 
     return text
@@ -250,9 +250,9 @@ def _convert_measurements_tsv(text: str) -> str:
         text: 处理后的文本
 
     返回:
-        度量衡转换为印尼语表达的文本
+        度量衡转换为Indonesia语表达的文本
     """
-    # 构建度量衡模式 (基于TSV数据中的所有单位)
+    # 构建measurement衡模式 (基于TSV数据中的所有单位)
     measurement_symbols = '|'.join(re.escape(symbol) for symbol in MEASUREMENT_MAP.keys())
     measurement_pattern = re.compile(
         rf'([\d\.,]+)\s*({measurement_symbols})',
@@ -266,7 +266,7 @@ def _convert_measurements_tsv(text: str) -> str:
         unit_symbol = match.group(2)
 
         try:
-            # 清理数字字符串
+            # Clean upnumbers字符串
             amount_str = re.sub(r'[.,\s]', '', amount_str)
             amount = float(amount_str) if '.' in amount_str else int(amount_str)
 
@@ -276,15 +276,15 @@ def _convert_measurements_tsv(text: str) -> str:
             else:
                 continue  # 未知单位跳过
 
-            # 转换为印尼语
+            # Convert为Indonesia语
             amount_words = num2words(int(amount), lang='id')
             measurement_phrase = f"{amount_words} {unit_name}"
 
-            # 替换原文本
+            # Replace原文本
             text = text.replace(match.group(0), measurement_phrase)
 
         except (ValueError, TypeError):
-            # 转换失败时保持原样
+            # Convert失败时保持原样
             continue
 
     return text
@@ -297,14 +297,14 @@ def _convert_timezones_tsv(text: str) -> str:
     功能说明:
     - 利用timezones.tsv中的时区映射
     - 处理时间+时区的组合表达式
-    - 支持印尼语特有时区(WIB、WITA、WIT)和国际时区(GMT)
+    - 支持Indonesia语特有时区(WIB、WITA、WIT)和国际时区(GMT)
     - 基于ref_code/text_process.py的时区处理逻辑
 
     参数:
         text: 处理后的文本
 
     返回:
-        时区转换为印尼语表达的文本
+        时区转换为Indonesia语表达的文本
     """
     # 构建时区模式
     timezone_symbols = '|'.join(re.escape(symbol) for symbol in TIMEZONE_MAP.keys())
@@ -327,7 +327,7 @@ def _convert_timezones_tsv(text: str) -> str:
             else:
                 continue  # 未知时区跳过
 
-            # 转换为印尼语
+            # Convert为Indonesia语
             hour_words = num2words(hour, lang='id')
             minute_words = num2words(minute, lang='id')
 
@@ -336,11 +336,11 @@ def _convert_timezones_tsv(text: str) -> str:
             else:
                 time_phrase = f"{hour_words} lewat {minute_words} menit {timezone_name}"
 
-            # 替换原文本
+            # Replace原文本
             text = text.replace(match.group(0), time_phrase)
 
         except (ValueError, TypeError):
-            # 转换失败时保持原样
+            # Convert失败时保持原样
             continue
 
     return text
@@ -348,7 +348,7 @@ def _convert_timezones_tsv(text: str) -> str:
 
 def _convert_numbers(text: str) -> str:
     """
-    将文本中的数字转换为印尼语词汇
+    将文本中的数字转换为Indonesia语词汇
     
     功能说明:
     - ASR系统常将数字识别为数字而非词汇，需要统一转换
@@ -359,13 +359,13 @@ def _convert_numbers(text: str) -> str:
         text: 处理后的文本
         
     返回:
-        数字转为印尼语词汇后的文本
+        数字转为Indonesia语词汇后的文本
     """
     def _number_to_indonesian(match):
         num_str = match.group(1)
         try:
             number = int(num_str)
-            # 对于大数字，使用更简洁的表达方式
+            # 对于大numbers，使用更简洁的表达方式
             if number >= 1000000:
                 return f" {num2words(number, lang='id', to='cardinal')} "
             else:
@@ -379,24 +379,24 @@ def _convert_numbers(text: str) -> str:
 
 def _convert_dates(text: str) -> str:
     """
-    处理日期表达式，转换为印尼语日期表达
+    处理日期表达式，转换为Indonesia语日期表达
     
     功能说明:
-    - ASR中常见DD/MM格式的日期需要转换为印尼语月份名
+    - ASR中常见DD/MM格式的日期需要转换为Indonesia语月份名
     - 支持带年份和不带年份的日期格式
     
     参数:
         text: 处理后的文本
         
     返回:
-        日期转换为印尼语表达的文本
+        日期转换为Indonesia语表达的文本
     """
     date_matches = DATE_PATTERN.finditer(text)
     
     for match in date_matches:
         try:
             day = int(match.group(1))
-            month = int(match.group(2)) - 1  # 转换为0-based索引
+            month = int(match.group(2)) - 1  # Convert为0-based索引
             year_str = match.group(3)
             
             # 验证月份范围
@@ -410,11 +410,11 @@ def _convert_dates(text: str) -> str:
                 else:
                     date_phrase = f" {day_words} {month_name} "
                 
-                # 替换原文本中的日期
+                # Replace原文本中的日期
                 text = text.replace(match.group(0), date_phrase)
                 
         except (ValueError, IndexError):
-            # 日期格式错误时保持原样
+            # Date格式错误时保持原样
             continue
     
     return text
@@ -422,12 +422,12 @@ def _convert_dates(text: str) -> str:
 
 def _normalize_abbreviations(text: str) -> str:
     """
-    标准化印尼语缩写
+    标准化Indonesia语缩写
     
     功能说明:
-    - 印尼语口语中有大量缩写变体
+    - Indonesia语口语中有大量缩写变体
     - 按长度倒序处理，避免短词覆盖长词
-    - 统一常见表达为标准印尼语
+    - 统一常见表达为标准Indonesia语
     
     参数:
         text: 处理后的文本
@@ -436,7 +436,7 @@ def _normalize_abbreviations(text: str) -> str:
         缩写标准化后的文本
     """
     for word, normalized in sorted(INDONESIAN_ABBREV_MAP.items(), key=lambda x: len(x[0]), reverse=True):
-        # 使用单词边界进行精确匹配，避免部分替换
+        # 使用单词边界进行精确匹配，避免部分replace
         pattern = re.compile(rf'\b{re.escape(word)}\b', re.IGNORECASE)
         text = pattern.sub(normalized, text)
     
@@ -445,97 +445,97 @@ def _normalize_abbreviations(text: str) -> str:
 
 def normalize(text: str) -> str:
     """
-    印尼语(IDN) ASR评测文本规范化主函数 (增强TSV版本)
+    Indonesia语(IDN) ASR评测文本normalization主函数 (增强TSV版本)
 
     处理流程(按ASR优先级设计):
-    1. 预处理检查: 空文本保护和Unicode规范化
+    1. 预处理检查: 空文本保护和Unicodenormalization
        (目的: 防止处理异常，解决编码不一致问题)
     2. ASR噪音清理: 移除语音识别特有的噪音标记和填充词
        (目的: 提高WER/CER计算准确性，避免无关标记影响评分)
     3. TSV数据增强处理: 利用ref_code中35种货币、114种度量衡、时区映射
-       (目的: 基于ref_code/text_process.py逻辑实现专业级文本处理)
-    4. 数字处理: 数值、日期转换为印尼语词汇
+       (目的: based on ref_code/text_process.py logic实现专业级文本处理)
+    4. 数字处理: 数值、日期转换为Indonesia语词汇
        (目的: ASR常将数字识别为数字，统一为词汇形式提高一致性)
-    5. 印尼语特化处理: 缩写标准化
-       (目的: 处理印尼语特有的语言现象，标准化表达形式)
-    6. 字符规范化: 标点移除、大小写统一、空格清理
+    5. Indonesia语特化处理: 缩写标准化
+       (目的: 处理Indonesia语特有的语言现象，标准化表达形式)
+    6. 字符normalization: 标点移除、大小写统一、空格清理
        (目的: 确保评测时字符和单词级别的准确对齐)
 
     参数:
-        text: ASR系统输出的原始印尼语文本
+        text: ASR系统输出的原始Indonesia语文本
 
     返回:
-        规范化后的文本，适用于WER/CER计算
+        normalization后的文本，适used forWER/CER计算
 
     TSV数据来源:
-        - currency.tsv: 35种全球货币符号到印尼语映射
-        - measurements.tsv: 114种度量衡单位到印尼语映射
-        - timezones.tsv: 印尼语和国际时区映射
+        - currency.tsv: 35种全球货币符号到Indonesia语映射
+        - measurements.tsv: 114种度量衡单位到Indonesia语映射
+        - timezones.tsv: Indonesia语和国际时区映射
     """
     # 步骤1: 预理检查
     if not text or text.strip() == "":
         return ""
 
-    # 移除副语言标签和填充词
+    # Remove paralinguistic tags and filler words
     text = remove_paralinguistic_tags(text)
 
-    # 步骤2: Unicode预处理
+    # 步骤2: Unicode预process
     text = _preprocess_unicode(text)
 
-    # 步骤3: ASR噪音清理
+    # 步骤3: ASR噪音clean up
     text = _remove_asr_noise(text)
     text = _remove_fillers(text)
 
-    # 步骤4: TSV数据增强处理 (基于ref_code/text_process.py逻辑)
-    text = _convert_dates(text)              # 日期处理
-    text = _convert_currencies_tsv(text)     # 货币处理 (35种货币)
-    text = _convert_measurements_tsv(text)   # 度量衡处理 (114种单位)
-    text = _convert_timezones_tsv(text)       # 时区处理
-    text = _convert_numbers(text)             # 普通数字处理
+    # 步骤4: TSV数据增强process (based on ref_code/text_process.py logic)
+    text = _convert_dates(text)              # Dateprocess
+    text = _convert_currencies_tsv(text)     # Currencyprocess (35种currency)
+    text = _convert_measurements_tsv(text)   # Measurement衡process (114种单位)
+    text = _convert_timezones_tsv(text)       # 时区process
+    text = _convert_numbers(text)             # 普通numbersprocess
 
-    # 步骤5: 印尼语特化处理
+    # 步骤5: Indonesia语特化process
     text = _normalize_abbreviations(text)
 
-    # 步骤6: 字符规范化
-    text = URL_PATTERN.sub(" ", text)  # 移除URL
-    text = re.sub(r"[^\w\s]", " ", text)  # 移除标点符号，只保留字母数字空格
-    text = text.translate(FULLWIDTH_DIGITS_MAP)  # 全角数字转半角
+    # 步骤6: 字符normalization
+    text = URL_PATTERN.sub(" ", text)  # RemoveURL
+    text = re.sub(r"[^\w\s]", " ", text)  # Removepunctuation符号，只保留字母numbers空格
+    text = text.translate(FULLWIDTH_DIGITS_MAP)  # 全角numbers转半角
     text = text.lower()  # 统一为小写
-    text = re.sub(r"\s+", " ", text).strip()  # 清理多余空格
+    text = re.sub(r"\s+", " ", text).strip()  # Clean up多余空格
 
     return text
 
 
 if __name__ == "__main__":
-    # 印尼语ASR文本规范化综合测试用例 (TSV增强版)
+    # Indonesia语ASR文本normalization综合测试用例 (TSV增强版)
     test_cases = [
-        # Group A: TSV货币处理 (35种货币映射)
+        # Group A: TSVcurrencyprocess (35种currency映射)
         ("A01", "Harganya Rp 50000", "harga lima puluh ribu rupiah"),
         ("A02", "Saya punya $100 dan €50", "saya punya seratus dollar amerika serikat dan lima puluh euro"),
         ("A03", "Harga 2 kg gandum £15", "harga dua kilogram gram lima belas pounds"),
         ("A04", "Ongkos ¥1000 untuk jasa", "ongkos seribu yen untuk jasa"),
 
-        # Group B: TSV度量衡处理 (114种单位映射)
+        # Group B: TSVmeasurement衡process (114种单位映射)
         ("B01", "Beratnya 2.5 kg dan panjang 100 cm", "beratnya dua koma lima kilogram dan panjang seratus centimeter"),
         ("B02", "Suhu 37°C dan tekanan 101.3 kpa", "suhu tiga puluh tujuh celsius dan tekanan seratus satu koma tiga kilopascal"),
         ("B03", "Kecepatan 100 km/jam dan daya 500 hp", "kecepatan seratus kilometer per jam dan daya lima ratus tenaga kuda"),
         ("B04", "Waktu 5 menit dan frekuensi 60 hz", "waktu lima menit dan frekuensi enam puluh hertz"),
 
-        # Group C: TSV时区处理 (印尼语和国际时区)
+        # Group C: TSV时区process (Indonesia语和国际时区)
         ("C01", "Jam 14:30 WIB di Jakarta", "jam empat belas lewat tiga puluh menit Waktu Indonesia Barat di jakarta"),
         ("C02", "Meeting jam 09:00 WITA di Bali", "meeting jam sembilan Waktu Indonesia Tengah di bali"),
         ("C03", "Acara jam 13:45 WIT di Papua", "acara jam tiga belas lewat empat puluh lima menit Waktu Indonesia Timur di papua"),
         ("C04", "Broadcast jam 20:00 GMT London", "broadcast jam dua puluh lewat nol menit G reenwich Mean Time london"),
 
-        # Group D: 日期处理
+        # Group D: 日期process
         ("D01", "Tanggal (25/12) adalah Natal", "tanggal dua puluh lima Desember adalah natal"),
         ("D02", "Acara pada (14/08/1945)", "acara pada empat belas Agustus satu ribu sembilan ratus empat puluh lima"),
 
-        # Group E: ASR噪音处理
+        # Group E: ASR噪音process
         ("E01", "[laughter] Halo [cough] pak", "halo bapak"),
         ("E02", "Ehm saya tidak tahu <unk>", "saya tidak tahu"),
 
-        # Group F: 印尼语缩写处理
+        # Group F: Indonesia语缩写process
         ("F01", "Pak mau pergi ga ke kantor?", "bapak mau pergi tidak ke kantor"),
         ("F02", "Skrng lg di rmh, blm sdh", "sekarang lagi di rumah belum sudah"),
 
@@ -551,7 +551,7 @@ if __name__ == "__main__":
         ("H04", "１２３全角", "seratus dua puluh tiga 全角"),
     ]
     
-    print("=== 印尼语 (IDN) ASR 文本规范化测试 (TSV增强版) ===")
+    print("=== Indonesia语 (IDN) ASR 文本normalization测试 (TSV增强版) ===")
     print("测试覆盖: TSV货币(35种)、度量衡(114种)、时区、日期、噪音清理、缩写标准化")
     print("=" * 80)
     
@@ -569,7 +569,7 @@ if __name__ == "__main__":
         # 简单验证: 输出不为空(除非输入确实为空)
         has_content = re.search(r'[a-zA-Z0-9]', raw_input)
         if has_content and result.strip() == "":
-            print(">>> 警告: 输入包含内容但输出为空!")
+            print(">>> Warning: 输入包含内容但输出为空!")
         elif result.strip() or not has_content:
             passed_tests += 1
             print("✓ 通过")
@@ -584,7 +584,7 @@ if __name__ == "__main__":
     print(f"成功率: {passed_tests/total_tests*100:.1f}%")
     
     if passed_tests == total_tests:
-        print("✓ 所有测试通过！印尼语text norm (TSV增强版) 实现就绪。")
+        print("✓ 所有测试通过！Indonesia语text norm (TSV增强版) 实现就绪。")
         print("✓ 已成功集成: 35种货币、114种度量衡、时区映射")
     else:
         print("⚠ 部分测试需要调整，请检查实现逻辑。")

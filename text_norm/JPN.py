@@ -5,7 +5,7 @@ from text_norm._common import remove_paralinguistic_tags
 
 
 def normalize(text: str) -> str:
-    # 移除副语言标签和填充词
+    # Remove paralinguistic tags and filler words
     text = remove_paralinguistic_tags(text)
 
     # Unicode NFKC normalization

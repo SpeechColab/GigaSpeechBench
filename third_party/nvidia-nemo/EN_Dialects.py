@@ -20,8 +20,8 @@ def save_transcription(
     end_time: float
 ) -> None:
     """
-    保存转录结果到/results/{language}_{model}.json文件
-    字段调整为audio_name格式，其他保持不变
+    Save transcription results to/results/{language}_{model}.json文件
+    Adjust fields to audio_name format, keep others unchanged
     """
     results_dir = os.path.join(os.getcwd(), "results")
     os.makedirs(results_dir, exist_ok=True)
@@ -29,7 +29,7 @@ def save_transcription(
     filename = f"{language}_{model}.json"
     output_path = os.path.join(results_dir, filename)
 
-    # 生成audio_name格式：ARE#UC_p5qypAZQAUkgtjoJk5_Bg#fLqRbOYZsHY#raw.wav
+    # Generate audio_name format：ARE#UC_p5qypAZQAUkgtjoJk5_Bg#fLqRbOYZsHY#raw.wav
     audio_name = f"{Path(audio_path).stem}#raw.wav"
 
     entry = {
@@ -60,7 +60,7 @@ def save_transcription(
 
 class DialectEnglishASRProcessor:
     def __init__(self, model_path: str):
-        """英语方言ASR处理器（仅处理valid片段，纯ASR结果）"""
+        """英语方言ASRprocess器（仅processvalid片段，纯ASR结果）"""
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         print("⏳ Loading English Dialect ASR Model...")
         
@@ -72,7 +72,7 @@ class DialectEnglishASRProcessor:
         print(f"✅ Model loaded ({self.device})")
 
     def _clean_text(self, text) -> str:
-        """清理转录文本为纯字符串"""
+        """clean up转录文本为纯字符串"""
         if isinstance(text, (list, tuple)):
             if len(text) > 0:
                 if isinstance(text[0], (list, tuple)):
@@ -100,7 +100,7 @@ class DialectEnglishASRProcessor:
             return ""
 
     def process_file(self, audio_path: str, label_path: str):
-        """处理单个音频文件（仅处理status=valid的片段）"""
+        """process单个音频文件（仅processstatus=valid的片段）"""
         # 从路径提取方言标识
         dialect = Path(audio_path).parent.name.upper()
         valid_dialects = {"CHN-EN", "IDN-EN", "JPN-EN", "PHL-EN", "SCT-EN", "SGP-EN"}

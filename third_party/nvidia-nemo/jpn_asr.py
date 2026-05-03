@@ -11,20 +11,20 @@ from utils import save_transcription
 
 class ParakeetASRProcessor:
     def __init__(self, model_path: str):
-        """日语ASR处理器（自动跳过无效片段）"""
+        """Japanese ASR processor (auto-skip invalid segments)"""
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
-        print("⏳ 加载日语模型...")
+        print("⏳ Loading Japanese model...")
         
         self.model_path = os.path.expanduser(model_path)
         
         if not os.path.exists(self.model_path):
-            raise FileNotFoundError(f"模型文件未找到: {self.model_path}")
+            raise FileNotFoundError(f"Model file not found: {self.model_path}")
         
         self.model = nemo_asr.models.ASRModel.restore_from(self.model_path).to(self.device)
         print(f"✅ 模型已加载 ({self.device})")
 
     def _process_segment(self, audio_path: str, start: float, end: float) -> str:
-        """处理音频片段"""
+        """process音频片段"""
         temp_dir = "temp_jpn_segments"
         os.makedirs(temp_dir, exist_ok=True)
         temp_path = os.path.join(temp_dir, f"{Path(audio_path).stem}_{start:.2f}-{end:.2f}.wav")
@@ -50,7 +50,7 @@ class ParakeetASRProcessor:
         )
 
     def process_file(self, audio_path: str, label_path: str):
-        """处理音频文件（自动跳过无效片段）"""
+        """process音频文件（自动跳过无效片段）"""
         lang = Path(audio_path).parent.name.upper() if Path(audio_path).parent.name.isalpha() else "JPN"
         
         try:
@@ -66,7 +66,7 @@ class ParakeetASRProcessor:
         processed_count = 0
         
         for seg in tqdm(segments, desc="分段处理"):
-            # 跳过静音/无效片段
+            # Skip静音/无效片段
             if self._is_silent_segment(seg):
                 silent_count += 1
                 continue

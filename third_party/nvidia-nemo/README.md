@@ -1,25 +1,25 @@
-## 📁 项目结构
+## 📁 Project Structure
 
 ```
 nemo_asr/
-├── ar_asr.py             # 阿拉伯语ASR处理脚本
-├── kor_asr.py            # 韩语ASR处理脚本
-├── jpn_asr.py            # 日语ASR处理脚本
-├── download.py           # 模型下载脚本
+├── ar_asr.py             # Arabic ASR processing script
+├── kor_asr.py            # Korean ASR processing script
+├── jpn_asr.py            # Japanese ASR processing script
+├── download.py           # Model下载脚本
 ├── upload_data.py        
 ├── utils.py              
 │
 ├── Nvidia_Nemo_results/  # 识别结果输出目录
 ├── labeled/              # 已标注数据目录
-├── testbatch_processed/  # 音频目录
+├── testbatch_processed/  # Audio目录
 │
 ├── *.nemo                # ASR模型文件
 └── pycache/              # Python编译缓
 ```
 
-## 🚀 快速开始
+## 🚀 Quick Start
 
-## 🛠️ 环境配置
+## 🛠️ Environment Setup
 
 ### 系统要求
 - Python 3.8或更高版本
@@ -46,16 +46,16 @@ python jpn_asr.py
 ```bash
 python kor_asr.py
 ```
-### 阿拉伯语
+### Arabic
 ```bash
 python ar_asr.py
 ```
 
-### 配置文件（在脚本中）
+### Config文件（在脚本中）
 
 ```<PYTHON>
 CONFIG = {
-    "audio_dir": "/root/shared-nvme/haoranwang/nemo_asr/testbatch_processed",  # 音频输入目录（按语言分类输入）
+    "audio_dir": "/root/shared-nvme/haoranwang/nemo_asr/testbatch_processed",  # Audio输入目录（按语言分类输入）
     "label_dir": "/root/shared-nvme/haoranwang/nemo_asr/labeled",  # 标签文件目录（需与音频目录保持相同语言）
     "result_dir": "./Nvidia_Nemo_results"  # 识别结果输出路径
 }

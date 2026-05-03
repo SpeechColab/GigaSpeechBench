@@ -2,16 +2,16 @@
 
 ## Installation
 
-请参考原repo:  
+See original repo:  
 https://github.com/facebookresearch/omnilingual-asr
 https://github.com/facebookresearch/fairseq2
 
-omnilingual-asr 基于 fairseq2 构筑，fairseq 又需要 libsndfile:
+omnilingual-asr Built on fairseq2，fairseq 又requires libsndfile:
 ```bash
 sudo apt install libsndfile1
 
 # Or download with conda:
-conda install libsndfile # 需要配置一下 conda 源
+conda install libsndfile # may need conda channel config
 ```
 
 然后选择与 pytorch 对应的 fairseq2 版本进行下载：
@@ -25,7 +25,7 @@ pip install omnilingual-asr
 ### Models
 https://github.com/facebookresearch/omnilingual-asr/blob/main/src/omnilingual_asr/models/inference/README.md
 
-简要来说，omniasr 模型分为 CTC / LLM 两种类型。CTC 模型解码快，但不能接受 language id 控制，解码会出现非目标语种出现。LLM 模型外接了一层 Llama decoder，解码慢，但可用 lang id 作为限制条件进行解码。
+简要来说，omniasr 模型分为 CTC / LLM 两种类型。CTC 模型解码快，但不能接受 language id 控制，解码会出现非目标language出现。LLM 模型外接了一层 Llama decoder，解码慢，但可用 lang id 作为限制条件进行解码。
 
 目前可用的模型种类详见 `omniasr.py` 中的 `transcribe_audio` 函数：
 ```python
@@ -42,7 +42,7 @@ https://github.com/facebookresearch/omnilingual-asr/blob/main/src/omnilingual_as
 
 ### lang id
 
-使用 LLM 模型解码时，可提供语种代号辅助解码，详细描述在其文章中的 appendix A 部分：https://ai.meta.com/research/publications/omnilingual-asr-open-source-multilingual-speech-recognition-for-1600-languages/
+使用 LLM 模型解码时，可提供language代号辅助解码，详细描述在其文章中的 appendix A 部分：https://ai.meta.com/research/publications/omnilingual-asr-open-source-multilingual-speech-recognition-for-1600-languages/
 
 模型提供的可用 lang id 比较复杂，目前筛选了一部分仅供参考，请在`omniasr.py` 的 `get_omniasr_lang` 函数中了解详细内容，并做出对应的改变
 
@@ -62,7 +62,7 @@ python third_party/omnilingual-asr/omniasr.py [--audio /some/audio/path] [--star
     - `start` (`float`) —— 音频文件开始时间戳
     - `end` (`float`) —— 音频文件结束时间戳
     - `model` (`str`) —— ASR 模型 card
-    - `language` (`str`) —— 语种的缩写代号
+    - `language` (`str`) —— language的缩写代号
  
 - 输出：`text` (`str`) —— 打印出识别的转录文本
 
@@ -74,7 +74,7 @@ export FAIRSEQ2_CACHE_DIR=/your/path
 
 
 ### batch process audio files:
-我们提供了一个 API 接口，用于批量处理大量音频标注，请使用 `--input` flag标识输入文件（与`--audio`互斥），函数期望的输入文件应包含如下信息：
+我们提供了一个 API 接口，used for批量处理大量音频标注，请使用 `--input` flag标识输入文件（与`--audio`互斥），函数期望的输入文件应包含如下信息：
 ```bash
 data/DZA/DZA_UC57OCoLoU6zAtBdJOmwg2vA_gBvqK28oBgo_raw.wav 280 300
 data/DZA/DZA_UC57OCoLoU6zAtBdJOmwg2vA_T7cGFKzKKaQ_raw.wav 150 180
@@ -93,7 +93,7 @@ python third_party/omnilingual-asr/omniasr.py [--input /input/metainfo/path] --m
 - 输入：
     - `input` (`str`) —— 输入文件的路径
     - `model` (`str`) —— ASR 模型 card (CTC解码快，LLM很慢，建议换着试试)
-    - `language` (`str`) —— 语种的缩写代号（请不要把不同语种的音频放在一起解码）
+    - `language` (`str`) —— language的缩写代号（请不要把不同language的音频放在一起解码）
     - `batch-decode` (`bool`) —— default True 为批量解码，如若碰到 ValueError，请设为 False
     - `batch-size` (`int`) —— 批量解码的 batch size 大小，batch-decode False 时，仅为1
  

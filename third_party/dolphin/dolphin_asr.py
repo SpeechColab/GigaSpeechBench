@@ -13,21 +13,21 @@ import numpy as np
 
 from utils import save_transcription
 
-# 语言映射：将国家代码映射到 (lang_sym, region_sym) 二元组
+# Language映射：将国家代码映射到 (lang_sym, region_sym) 二元组
 LANGUAGE_MAPPING = {
-    "AR": ("ar", ""),      # 阿拉伯语
-    "ARE": ("ar", "AE"),      # 阿拉伯语-阿联酋
-    "IRQ": ("ar", ""),     # 阿拉伯语-伊拉克
-    "DZA": ("ar", ""),      # 阿拉伯语-阿尔及利亚
-    "EGY": ("ar", "EG"),      # 阿拉伯语-埃及
-    "SAU": ("ar", "SA"),      # 阿拉伯语-沙特
-    "MAR": ("ar", "MA"),      # 阿拉伯语-摩洛哥
-    "IDN": ("id", "ID"),      # 印尼语
+    "AR": ("ar", ""),      # Arabic
+    "ARE": ("ar", "AE"),      # Arabic-阿联酋
+    "IRQ": ("ar", ""),     # Arabic-Iraq
+    "DZA": ("ar", ""),      # Arabic-阿尔及利亚
+    "EGY": ("ar", "EG"),      # Arabic-埃及
+    "SAU": ("ar", "SA"),      # Arabic-Saudi
+    "MAR": ("ar", "MA"),      # Arabic-Morocco
+    "IDN": ("id", "ID"),      # Indonesia语
     "JPN": ("ja", "JP"),      # 日语
     "KOR": ("ko", "KR"),      # 韩语
     "THA": ("th", "TH"),      # 泰语
-    "VNM": ("vi", "VN"),      # 越南语
-    "PHL": ("fil", "PH"),     # 菲律宾语
+    "VNM": ("vi", "VN"),      # Vietnam语
+    "PHL": ("fil", "PH"),     # Philippines语
     "MYS": ("ms", "MY"),      # 马来语
     "CHN": ("zh", "CN"),      # 中文(普通话)
     "XIANG": ("zh", "HUNAN"),      # 湘方言
@@ -36,7 +36,7 @@ LANGUAGE_MAPPING = {
 
 
 def _segment_key(entry: dict):
-    """从条目中提取 (path或audio_name, start, end) 作为唯一键，用于加载与去重。"""
+    """从条目中提取 (path或audio_name, start, end) 作为唯一键，used for加载与去重。"""
     path_or_name = entry.get("path") or entry.get("audio_name") or ""
     start = entry.get("start_time") if "start_time" in entry else entry.get("start", 0.0)
     end = entry.get("end_time") if "end_time" in entry else entry.get("end", 0.0)
@@ -49,11 +49,11 @@ def load_transcribed_segments(language: str, model: str, output_dir: str = "resu
     以 (path或audio_name, start, end) 为键
 
     返回:
-        - transcribed_segments (set): 用于快速检查是否存在某个 (path_or_audio_name, start, end)
+        - transcribed_segments (set): used for快速检查是否存在某个 (path_or_audio_name, start, end)
         - segment_texts (dict): 以该元组为 key，文本内容为 value
 
     Args:
-        language (str): 语种代码
+        language (str): language代码
         model (str): 模型名称
         output_dir (str): 结果目录，默认为 "results"
 
@@ -94,7 +94,7 @@ def fix_and_clean_results(language: str, model: str, text_file: str, output_dir:
     不进行 id 的补充或纠正。
 
     Args:
-        language (str): 语种代码
+        language (str): language代码
         model (str): 模型名称
         text_file (str): 参考文件路径（ref JSON）
         output_dir (str): 输出目录
@@ -106,7 +106,7 @@ def fix_and_clean_results(language: str, model: str, text_file: str, output_dir:
     if not os.path.exists(output_path):
         return
 
-    # 读取参考文件，构建 (audio_name, start, end) -> id 的映射
+    # Read参考文件，构建 (audio_name, start, end) -> id 的映射
     if not os.path.exists(text_file):
         print(f"  [WARN] 参考文件不存在，无法修复结果文件: {text_file}")
         return
@@ -131,7 +131,7 @@ def fix_and_clean_results(language: str, model: str, text_file: str, output_dir:
 
     print(f"  参考文件包含 {len(ref_keys)} 个片段")
 
-    # 读取结果文件
+    # Read结果文件
     try:
         with open(output_path, "r", encoding="utf-8") as f:
             content = f.read().strip()
@@ -204,7 +204,7 @@ def load_audio_segment(
     # 使用 torchaudio 加载音频，自动获取采样率
     wav, sr = torchaudio.load(audio_path, channels_first=False)
     
-    # 转换为单声道（如果是立体声）
+    # Convert为单声道（如果是立体声）
     if wav.dim() > 1 and wav.size(1) > 1:
         wav = wav.mean(dim=1, keepdim=True)
     
@@ -230,7 +230,7 @@ def load_audio_segment(
         if wav.size(0) == 1:
             wav = wav.squeeze(0)  # (1, n_samples) -> (n_samples,)
     
-    # 转换为 numpy array
+    # Convert为 numpy array
     waveform = wav.squeeze().numpy().astype(np.float32)
     
     return waveform
@@ -256,7 +256,7 @@ def is_segment_transcribed(
         audio_path (str): 音频文件路径
         start_time (float): 开始时间
         end_time (float): 结束时间
-        language_code (str): 语种代码
+        language_code (str): language代码
         transcribed_segments (set): 已转录segments的集合
         force (bool): 是否强制重新转录
         segment_texts (dict): 已转录segments的文本内容
@@ -356,7 +356,7 @@ def transcribe_audio(
     """
     转录音频文件的指定片段。
     
-    该函数支持转录单一音频片段，会自动处理语言映射、音频加载和模型调用。
+    该函数支持转录单一音频片段，会自动处理Language mapping、音频加载和模型调用。
 
     Args:
         audio_path (str): 音频文件的绝对路径
@@ -371,19 +371,19 @@ def transcribe_audio(
     # 获取语言和地区代码
     lang_region = LANGUAGE_MAPPING.get(language.upper(), None)
     if lang_region is None:
-        print(f"警告：未找到语种 {language} 的映射，将使用自动检测")
+        print(f"警告：未找到language {language} 的映射，将使用自动检测")
         lang_sym = None
         region_sym = None
     else:
         lang_sym, region_sym = lang_region
 
-    # 处理空字符串的情况（将空字符串视为 None）
+    # Process空字符串的情况（将空字符串视为 None）
     if lang_sym == "":
         lang_sym = None
     if region_sym == "":
         region_sym = None
 
-    # 加载并截取音频片段
+    # Load并截取音频片段
     waveform_segment = load_audio_segment(
         audio_path, 
         start_time=start_time, 
@@ -393,7 +393,7 @@ def transcribe_audio(
     # 根据 lang_sym 和 region_sym 的值决定如何调用模型
     try:
         if lang_sym is None:
-            # 如果 lang 为空，则不指定语种，使用自动检测
+            # 如果 lang 为空，则不指定language，使用自动检测
             result = model(speech=waveform_segment)
         elif region_sym is None:
             # 如果 lang 存在但 region 为空，则只指定语言
@@ -406,7 +406,7 @@ def transcribe_audio(
                 region_sym=region_sym
             )
         
-        # 返回不含特殊符号的文本
+        # Return不含特殊符号的文本
         return result.text_nospecial
     except Exception as e:
         print(f"转录失败: {e}")
@@ -423,7 +423,7 @@ def main():
         type=str,
         nargs="+",
         required=True,
-        help="要处理的语种代码列表（例如：--languages JPN ARE IDN）"
+        help="要处理的language代码列表（例如：--languages JPN ARE IDN）"
     )
     parser.add_argument(
         "--text_dir",
@@ -464,7 +464,7 @@ def main():
 
     args = parser.parse_args()
     
-    # 验证并规范化语种代码
+    # 验证并normalizationlanguage代码
     languages = [lang.upper() for lang in args.languages]
     
     # 设置默认路径
@@ -482,9 +482,9 @@ def main():
     print(f"模型目录: {args.model_dir}")
     print(f"文本目录: {text_dir}")
     print(f"音频目录: {audio_dir}")
-    print(f"处理语种: {', '.join(languages)}")
+    print(f"处理language: {', '.join(languages)}")
 
-    # 加载模型
+    # Load模型
     print("\n正在加载模型...")
     try:
         model = load_model(
@@ -502,10 +502,10 @@ def main():
     if not os.path.exists(audio_dir):
         raise ValueError(f"音频目录不存在: {audio_dir}")
 
-    # 遍历指定的语种
+    # Iterate指定的language
     total_languages = len(languages)
     for lang_idx, language in enumerate(languages, 1):
-        print(f"\n处理语种 [{lang_idx}/{total_languages}]: {language}")
+        print(f"\n处理language [{lang_idx}/{total_languages}]: {language}")
 
         # 构建文本文件路径：data/text/ref/{language}.json
         text_file = os.path.join(text_dir, f"{language}.json")
@@ -514,12 +514,12 @@ def main():
             print(f"  警告：文本文件不存在，跳过: {text_file}")
             continue
 
-        # 加载该语种已转录的segments
+        # Load该language已转录的segments
         model_name = f"dolphin_{args.model_name}"
         transcribed_segments, segment_texts = load_transcribed_segments(language, model_name, args.output_dir)
         print(f"  已加载 {len(transcribed_segments)} 个已转录的segments")
 
-        # 加载文本JSON文件
+        # Load文本JSON文件
         try:
             with open(text_file, 'r', encoding='utf-8') as f:
                 segments_data = json.load(f)
@@ -533,13 +533,13 @@ def main():
 
         print(f"  找到 {len(segments_data)} 个片段")
 
-        # 修复和清理结果文件（在正式转录之前）
+        # 修复和clean up结果文件（在正式转录之前）
         fix_and_clean_results(language, model_name, text_file, args.output_dir)
         # 修复后重新加载已转录的segments（因为可能更新了id或删除了不匹配的条目）
         transcribed_segments, segment_texts = load_transcribed_segments(language, model_name, args.output_dir)
         print(f"  修复后重新加载 {len(transcribed_segments)} 个已转录的segments")
 
-        # 按 audio_name 分组处理
+        # 按 audio_name 分组process
         segments_by_audio = defaultdict(list)
         for segment in segments_data:
             audio_name = segment.get("audio_name", "")
@@ -548,7 +548,7 @@ def main():
 
         print(f"  涉及 {len(segments_by_audio)} 个音频文件")
 
-        # 处理每个音频文件
+        # Process每个音频文件
         total_audios = len(segments_by_audio)
         for audio_idx, (audio_name, segments) in enumerate(segments_by_audio.items(), 1):
             print(f"  [{audio_idx}/{total_audios}] 处理音频: {audio_name}")
@@ -578,7 +578,7 @@ def main():
             print(f"    找到音频文件: {audio_path}")
             print(f"    该音频有 {len(segments)} 个片段")
 
-            # 处理该音频的每个片段
+            # Process该音频的每个片段
             for seg_idx, segment in enumerate(segments, 1):
                 start_time = segment.get("start", 0.0)
                 end_time = segment.get("end", 0.0)
@@ -590,7 +590,7 @@ def main():
                 audio_filename = os.path.basename(audio_path)
                 formatted_path = f"{language}/{audio_filename}"
 
-                # 检查该segment是否已经转录过
+                # Check该segment是否已经转录过
                 if is_segment_transcribed(
                     audio_path,
                     start_time,
@@ -656,7 +656,7 @@ def main():
                 except Exception as e:
                     print(f"      保存结果失败: {e}")
 
-        # 该语种所有音频与片段处理完毕后，对结果文件进行去重与排序
+        # 该language所有音频与片段process完毕后，对结果文件进行去重与排序
         deduplicate_and_sort_results(language, model_name, args.output_dir)
 
     print("\n所有文件处理完毕！")

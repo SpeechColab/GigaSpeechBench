@@ -5,14 +5,14 @@ from text_norm._common import remove_paralinguistic_tags
 
 def arabic_text_normalize(text):
     """
-    将其他阿拉伯方言的变体，统一为阿尔及利亚方言变体
+    Unify other Arabic dialect variants to Algerian dialect variants
     """
     stop_words = {
-        # ==== 犹豫 / 思考 ====
+        # ==== Hesitation / thinking ====
         'ااا', 'آآآ', 'اممم', 'إممم', 'ممم', 'أمم', 'هممم',
         'إيه', 'إي', 'إييه',
 
-        # ==== 感叹 / 反应 ====
+        # ==== Exclamation / reaction ====
         'آ', 'آه', 'آها', 'أوه', 'أوو', 'إيوا', 'إيوة',
         'هيه', 'ههه', 'هاه',
 
@@ -83,7 +83,7 @@ def normalize(text: str) -> str:
     2. Remove diacritics
     3. Eastern Arabic numerals to Western Arabic numerals
     """
-    # 移除副语言标签和填充词
+    # Remove paralinguistic tags and filler words
     text = remove_paralinguistic_tags(text)
 
     # Remove punctuation
@@ -166,7 +166,7 @@ if __name__ == "__main__":
         "لا والله، صافي كملنا، سمحلي ولكن ما بغيتش هادشي"
     ]
     
-    print("原始 → 标准化后\n")
+    print("Original → Normalized\n")
     for ex in examples:
         print(f"{ex}")
         print(f"{normalize(ex)}\n")

@@ -16,19 +16,19 @@ dashscope.base_http_api_url = "https://dashscope.aliyuncs.com/api/v1"
 
 
 language_mapping = {
-    "ARE": "ar",  # 阿联酋 -> 阿拉伯语
-    "DZA": "ar",  # 阿尔及利亚 -> 阿拉伯语
-    "EGY": "ar",  # 埃及 -> 阿拉伯语
-    "IRQ": "ar",  # 伊拉克 -> 阿拉伯语
-    "MAR": "ar",  # 摩洛哥 -> 阿拉伯语
-    "SAU": "ar",  # 沙特阿拉伯 -> 阿拉伯语
-    "SYR": "ar",  # 叙利亚 -> 阿拉伯语
-    "IDN": "id",  # 印度尼西亚 -> 印尼语
-    "JPN": "ja",  # 日本 -> 日语
-    "KOR": "ko",  # 韩国 -> 韩语
-    "THA": "th",  # 泰国 -> 泰语
-    "VNM": "vi",  # 越南 -> 越南语
-    "ZH": "zh",   # 中国 -> 中文（普通话、四川话、闽南语、吴语）
+    "ARE": "ar",  # UAE -> Arabic
+    "DZA": "ar",  # Algeria -> Arabic
+    "EGY": "ar",  # Egypt -> Arabic
+    "IRQ": "ar",  # Iraq -> 阿拉伯语
+    "MAR": "ar",  # Morocco -> 阿拉伯语
+    "SAU": "ar",  # Saudi阿拉伯 -> 阿拉伯语
+    "SYR": "ar",  # Syria -> 阿拉伯语
+    "IDN": "id",  # 印度尼西亚 -> Indonesia语
+    "JPN": "ja",  # Japan -> 日语
+    "KOR": "ko",  # Korea -> 韩语
+    "THA": "th",  # Thailand -> 泰语
+    "VNM": "vi",  # Vietnam -> Vietnam语
+    "ZH": "zh",   # 中国 -> 中文（普通话、四川话、闽南语、Wu dialect）
     "EN": "en",   # 英文
 }
 

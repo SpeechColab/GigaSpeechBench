@@ -33,15 +33,15 @@ MAX_SYNC_DURATION_SEC = 60
 TranscriptionSegment = namedtuple("TranscriptionSegment", ["audio_path", "start_time", "end_time", "text", "model", "language"])
 
 ALPHA3_TO_BCP47_MAP = {
-    # 英语口音
-    "CHN-EN": "en-US",  # 中国口音英语用美式英语模型
-    "IDN-EN": "en-US",  # 印尼口音英语
-    "JPN-EN": "en-US",  # 日本口音英语
-    "PHL-EN": "en-US",  # 菲律宾口音英语
+    # English accent
+    "CHN-EN": "en-US",  # Chinese-accented English, use US English model
+    "IDN-EN": "en-US",  # Indonesian-accented English
+    "JPN-EN": "en-US",  # Japan口音英语
+    "PHL-EN": "en-US",  # Philippines口音英语
     "SCT-EN": "en-GB",  # 苏格兰口音英语用英式英语模型
     "SGP-EN": "en-US",  # 新加坡口音英语
-    "JIN": "cmn-Hans-CN",  # 晋语(山西话)用普通话模型
-    "XIANG": "cmn-Hans-CN",# 湘语(湖南话)用普通话模型
+    "JIN": "cmn-Hans-CN",  # Jin dialect(山西话)用普通话模型
+    "XIANG": "cmn-Hans-CN",# Xiang dialect(湖南话)用普通话模型
 
     "ARE": "ar-AE",
     "DZA": "ar-DZ",

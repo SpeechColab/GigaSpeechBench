@@ -11,14 +11,14 @@ from utils import save_transcription
 
 class KoreanASRProcessor:
     def __init__(self, model_path: str):
-        """韩语ASR处理器（自动跳过无效片段）"""
+        """Korean ASR processor (auto-skip invalid segments)"""
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
-        print("⏳ 加载韩语模型...")
+        print("⏳ Loading Korean model...")
         
         self.model_path = os.path.expanduser(model_path)
         
         if not os.path.exists(self.model_path):
-            raise FileNotFoundError(f"模型文件未找到，请检查路径: {self.model_path}")
+            raise FileNotFoundError(f"Model file not found, check path: {self.model_path}")
         
         self.model = nemo_asr.models.ASRModel.restore_from(self.model_path).to(self.device)
         print(f"✅ 模型已加载 ({self.device})")
@@ -50,7 +50,7 @@ class KoreanASRProcessor:
         )
 
     def process_file(self, audio_path: str, label_path: str):
-        """处理音频文件（自动跳过无效片段）"""
+        """process音频文件（自动跳过无效片段）"""
         lang = Path(audio_path).parent.name.upper()[:3] if Path(audio_path).parent.name.isalpha() else "KOR"
         
         try:
@@ -66,7 +66,7 @@ class KoreanASRProcessor:
         processed_count = 0
         
         for seg in tqdm(segments, desc="分段处理"):
-            # 跳过静音/无效片段
+            # Skip静音/无效片段
             if self._is_silent_segment(seg):
                 silent_count += 1
                 continue

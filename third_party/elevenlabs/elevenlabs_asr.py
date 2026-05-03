@@ -9,7 +9,7 @@ from pydub import AudioSegment
 
 from utils import save_transcription
 
-# 支持的 model_id 列表
+# Supported model_id list
 SUPPORTED_MODEL_IDS = {
     "scribe_v1",
     "scribe_v1_experimental",
@@ -17,26 +17,26 @@ SUPPORTED_MODEL_IDS = {
 }
 
 LANGUAGE_MAPPING = {
-    "AR": "ara",  # 阿拉伯语
-    "ARE": "ara",  # 阿拉伯语-阿联酋
-    "IRQ": "ara",  # 阿拉伯语-伊拉克
-    "DZA": "ara",  # 阿拉伯语-阿尔及利亚
-    "EGY": "ara",  # 阿拉伯语-埃及
-    "SAU": "ara",  # 阿拉伯语-沙特
-    "MAR": "ara",  # 阿拉伯语-摩洛哥
-    "IDN": "ind",  # 印尼语
+    "AR": "ara",  # Arabic
+    "ARE": "ara",  # Arabic-阿联酋
+    "IRQ": "ara",  # Arabic-Iraq
+    "DZA": "ara",  # Arabic-阿尔及利亚
+    "EGY": "ara",  # Arabic-埃及
+    "SAU": "ara",  # Arabic-Saudi
+    "MAR": "ara",  # Arabic-Morocco
+    "IDN": "ind",  # Indonesia语
     "JPN": "jpn",  # 日语
     "KOR": "kor",  # 韩语
     "THA": "tha",  # 泰语
-    "VNM": "vie",  # 越南语
-    "PHL": "fil",  # 菲律宾语
+    "VNM": "vie",  # Vietnam语
+    "PHL": "fil",  # Philippines语
     "MYS": "msa",  # 马来语
     "USA": "eng",  # 英语
     "CHN": "zho",  # 中文(普通话)
-    "CHN-EN": "eng",  # 中式英语
+    "CHN-EN": "eng",  # Chinese English
     "IDN-EN": "eng",  # 印度口音英语
-    "JPN-EN": "eng",  # 日本口音英语
-    "PHL-EN": "eng",  # 菲律宾口音英语
+    "JPN-EN": "eng",  # Japan口音英语
+    "PHL-EN": "eng",  # Philippines口音英语
     "SCT-EN": "eng",  # 苏格兰口音英语
     "SGP-EN": "eng",  # 新加坡口音英语
     "XIANG": "zho",  # 湘方言
@@ -45,7 +45,7 @@ LANGUAGE_MAPPING = {
 
 
 def _segment_key(entry: dict):
-    """从条目中提取 (path或audio_name, start, end) 作为唯一键，用于加载与去重。"""
+    """从条目中提取 (path或audio_name, start, end) 作为唯一键，used for加载与去重。"""
     path_or_name = entry.get("path") or entry.get("audio_name") or ""
     start = entry.get("start_time") if "start_time" in entry else entry.get("start", 0.0)
     end = entry.get("end_time") if "end_time" in entry else entry.get("end", 0.0)
@@ -58,11 +58,11 @@ def load_transcribed_segments(language: str, model: str):
     以 (path或audio_name, start, end) 为键
 
     返回:
-        - transcribed_segments (set): 用于快速检查是否存在某个 (path_or_audio_name, start, end)
+        - transcribed_segments (set): used for快速检查是否存在某个 (path_or_audio_name, start, end)
         - segment_texts (dict): 以该元组为 key，文本内容为 value
 
     Args:
-        language (str): 语种代码
+        language (str): language代码
         model (str): 模型名称
 
     Returns:
@@ -102,7 +102,7 @@ def fix_and_clean_results(language: str, model: str, text_file: str, output_dir:
     不进行 id 的补充或纠正。
 
     Args:
-        language (str): 语种代码
+        language (str): language代码
         model (str): 模型名称
         text_file (str): 参考文件路径（ref JSON）
         output_dir (str): 输出目录
@@ -114,7 +114,7 @@ def fix_and_clean_results(language: str, model: str, text_file: str, output_dir:
     if not os.path.exists(output_path):
         return
 
-    # 读取参考文件，构建 (audio_name, start, end) -> id 的映射
+    # Read参考文件，构建 (audio_name, start, end) -> id 的映射
     if not os.path.exists(text_file):
         print(f"  [WARN] 参考文件不存在，无法修复结果文件: {text_file}")
         return
@@ -139,7 +139,7 @@ def fix_and_clean_results(language: str, model: str, text_file: str, output_dir:
 
     print(f"  参考文件包含 {len(ref_keys)} 个片段")
 
-    # 读取结果文件
+    # Read结果文件
     try:
         with open(output_path, "r", encoding="utf-8") as f:
             content = f.read().strip()
@@ -206,13 +206,13 @@ def is_quota_exceeded_error(error: Exception) -> bool:
     error_str = str(error).lower()
     error_repr = repr(error).lower()
     
-    # 检查错误信息中是否包含 quota_exceeded 相关关键词
+    # Check错误信息中是否包含 quota_exceeded 相关关键词
     quota_keywords = ["quota_exceeded", "quota exceeded", "credits remaining", "exceeds your quota"]
     for keyword in quota_keywords:
         if keyword in error_str or keyword in error_repr:
             return True
     
-    # 检查异常对象的属性（某些 API 库可能将错误信息存储在属性中）
+    # Check异常对象的属性（某些 API 库可能将错误信息存储在属性中）
     if hasattr(error, 'body'):
         try:
             if isinstance(error.body, dict):
@@ -252,7 +252,7 @@ def is_segment_transcribed(
         audio_path (str): 音频文件路径
         start_time (float): 开始时间
         end_time (float): 结束时间
-        language_code (str): 语种代码
+        language_code (str): language代码
         transcribed_segments (set): 已转录segments的集合
         force (bool): 是否强制重新转录
         segment_texts (dict): 已转录segments的文本内容
@@ -325,13 +325,13 @@ def transcribe_audio(
 
     api_language_code = LANGUAGE_MAPPING.get(language.upper(), None)
     if api_language_code is None:
-        print(f"警告：未找到语种 {language} 的映射，将使用自动检测")
+        print(f"警告：未找到language {language} 的映射，将使用自动检测")
         api_language_code = None
 
-    # 初始化客户端
+    # Initialize客户端
     client = ElevenLabs(api_key=api_key)
 
-    # 加载音频文件
+    # Load音频文件
     audio = AudioSegment.from_file(audio_path)
 
     # 截取音频片段（pydub 使用毫秒）
@@ -416,7 +416,7 @@ def main():
         type=str,
         nargs="+",
         required=True,
-        help="要处理的语种代码列表（例如：--languages JPN ARE IDN）"
+        help="要处理的language代码列表（例如：--languages JPN ARE IDN）"
     )
     parser.add_argument(
         "--text_dir",
@@ -462,7 +462,7 @@ def main():
     if model_id not in SUPPORTED_MODEL_IDS:
         raise ValueError(f"不支持的 model_id: {model_id}。支持的 model_id: {', '.join(SUPPORTED_MODEL_IDS)}")
     
-    # 验证并规范化语种代码
+    # 验证并normalizationlanguage代码
     languages = [lang.upper() for lang in args.languages]
     
     # 设置路径
@@ -472,7 +472,7 @@ def main():
     print(f"使用模型: {model_id}")
     print(f"文本目录: {text_dir}")
     print(f"音频目录: {audio_dir}")
-    print(f"处理语种: {', '.join(languages)}")
+    print(f"处理language: {', '.join(languages)}")
 
     # 设置 API key
     if args.api_key:
@@ -486,10 +486,10 @@ def main():
     if not os.path.exists(audio_dir):
         raise ValueError(f"音频目录不存在: {audio_dir}")
 
-    # 遍历指定的语种
+    # Iterate指定的language
     total_languages = len(languages)
     for lang_idx, language in enumerate(languages, 1):
-        print(f"\n处理语种 [{lang_idx}/{total_languages}]: {language}")
+        print(f"\n处理language [{lang_idx}/{total_languages}]: {language}")
 
         # 构建文本文件路径：data/text/testbatch/ref/{language}.json
         text_file = os.path.join(text_dir, f"{language}.json")
@@ -498,12 +498,12 @@ def main():
             print(f"  警告：文本文件不存在，跳过: {text_file}")
             continue
 
-        # 加载该语种已转录的segments
+        # Load该language已转录的segments
         model_name = f"elevenlabs_{model_id}"
         transcribed_segments, segment_texts = load_transcribed_segments(language, model_name)
         print(f"  已加载 {len(transcribed_segments)} 个已转录的segments")
 
-        # 加载文本JSON文件
+        # Load文本JSON文件
         try:
             with open(text_file, 'r', encoding='utf-8') as f:
                 segments_data = json.load(f)
@@ -517,13 +517,13 @@ def main():
 
         print(f"  找到 {len(segments_data)} 个片段")
 
-        # 修复和清理结果文件（在正式转录之前）
+        # 修复和clean up结果文件（在正式转录之前）
         fix_and_clean_results(language, model_name, text_file, args.output_dir)
         
         # 修复后重新加载已转录的segments（因为可能更新了id或删除了不匹配的条目）
         transcribed_segments, segment_texts = load_transcribed_segments(language, model_name)
         print(f"  修复后重新加载 {len(transcribed_segments)} 个已转录的segments")
-        # 按 audio_name 分组处理
+        # 按 audio_name 分组process
         segments_by_audio = defaultdict(list)
         for segment in segments_data:
             audio_name = segment.get("audio_name", "")
@@ -532,7 +532,7 @@ def main():
 
         print(f"  涉及 {len(segments_by_audio)} 个音频文件")
 
-        # 处理每个音频文件
+        # Process每个音频文件
         total_audios = len(segments_by_audio)
         for audio_idx, (audio_name, segments) in enumerate(segments_by_audio.items(), 1):
             print(f"  [{audio_idx}/{total_audios}] 处理音频: {audio_name}")
@@ -563,7 +563,7 @@ def main():
             print(f"    找到音频文件: {audio_path}")
             print(f"    该音频有 {len(segments)} 个片段")
 
-            # 处理该音频的每个片段
+            # Process该音频的每个片段
             for seg_idx, segment in enumerate(segments, 1):
                 start_time = segment.get("start", 0.0)
                 end_time = segment.get("end", 0.0)
@@ -575,7 +575,7 @@ def main():
                 audio_filename = os.path.basename(audio_path)
                 formatted_path = f"{language}/{audio_filename}"
                 
-                # 检查该segment是否已经转录过
+                # Check该segment是否已经转录过
                 if is_segment_transcribed(
                     audio_path,
                     start_time,
@@ -604,7 +604,7 @@ def main():
                         preview = transcription_text.strip()[:50]
                     print(f"      转录成功: {preview}...")
                 except Exception as e:
-                    # 检查是否为余额不足错误
+                    # Check是否为余额不足错误
                     if is_quota_exceeded_error(e):
                         print(f"      转录失败（余额不足）: {e}")
                         print(f"      跳过该片段（不保存）")
@@ -651,7 +651,7 @@ def main():
                 except Exception as e:
                     print(f"      保存结果失败: {e}")
 
-        # 该语种所有音频与片段处理完毕后，对结果文件进行去重与排序
+        # 该language所有音频与片段process完毕后，对结果文件进行去重与排序
         deduplicate_and_sort_results(language, model_name, args.output_dir)
 
     print("\n所有文件处理完毕！")

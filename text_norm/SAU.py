@@ -9,7 +9,7 @@ def normalize(text: str) -> str:
     if text is None:
         return ""
 
-    # 移除副语言标签和填充词
+    # Remove paralinguistic tags and filler words
     text = remove_paralinguistic_tags(text)
 
     # Remove punctuation
@@ -57,7 +57,7 @@ if __name__ == "__main__":
         "بيريرا من ويست بروميتش",
     ]
     
-    print("原始 → 标准化后\n")
+    print("Original → Normalized\n")
     for ex in examples:
         print(f"{ex}")
         print(f"{normalize(ex)}\n")

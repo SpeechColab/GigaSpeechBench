@@ -1,8 +1,8 @@
-# 🎙️ SeedASR (豆包语音识别) 转录脚本
+# 🎙️ SeedASR (ByteDance Doubao Speech Recognition) Transcription Script
 
-该模块封装了**字节跳动火山引擎**的录音文件识别大模型 API，支持对音频片段进行批量转录，并提供断点续传、失败记录等能力。
+This module wraps**字节跳动火山引擎**的录音文件识别大模型 API，Supports batch transcription of audio segments with resume and failure logging。
 
-- **豆包录音文件识别模型 2.0** (`volc.seedasr.auc`)
+- **Doubao Recording Recognition Model 2.0** (`volc.seedasr.auc`)
 - **豆包录音文件识别模型 1.0** (`volc.bigasr.auc`)
 
 > 🔗 [火山引擎控制台 - 录音文件识别大模型1.0](https://console.volcengine.com/speech/service/10012)
@@ -10,9 +10,9 @@
 
 ---
 
-## 1. 环境配置
+## 1. Environment Setup
 
-### 1.1 安装依赖
+### 1.1 Install dependencies
 
 ```bash
 pip install requests
@@ -31,9 +31,9 @@ pip install requests
 
 ### 2.1 数据准备
 
-#### 音频文件目录结构
+#### Audio文件目录结构
 
-音频文件应按语种目录组织，每个音频片段的文件名需遵循 `<audio_name>_<start>_<end>.wav` 格式：
+音频文件应按language目录组织，每个音频片段的文件名需遵循 `<audio_name>_<start>_<end>.wav` 格式：
 
 ```
 {audio_dir}/
@@ -48,7 +48,7 @@ pip install requests
 ```
 
 **说明**:
-- 每个语种对应一个子目录，目录名即为语种代码
+- 每个language对应一个子目录，目录名即为language代码
 - 文件名格式: `{audio_name}_{start_time}_{end_time}.{ext}`
 - 脚本通过解析文件名自动提取 `audio_name`、`start_time`、`end_time`
 
@@ -78,7 +78,7 @@ python third_party/SeedASR/seed_asr_infer_list.py
 
 ---
 
-### 2.3 参数说明
+### 2.3 Parameter description
 
 #### `SeedASR` 构造参数
 
@@ -89,14 +89,14 @@ python third_party/SeedASR/seed_asr_infer_list.py
 | `model_id` | `str` | ❌ | 模型标识符 | `"volc.seedasr.auc"`是2.0模型，`"volc.bigasr.auc"`是1.0模型 |
 | `requests_info` | `dict` | ❌ | 自定义请求参数（覆盖默认值） | 见下方 |
 
-#### 模型选择
+#### Model选择
 
 | model_id | 说明 |
 |----------|------|
-| `volc.seedasr.auc` | 豆包语音识别模型 **2.0**（默认，推荐） |
-| `volc.bigasr.auc` | 豆包语音识别模型 **1.0** |
+| `volc.seedasr.auc` | ByteDance Doubao Speech Recognition模型 **2.0**（默认，推荐） |
+| `volc.bigasr.auc` | ByteDance Doubao Speech Recognition模型 **1.0** |
 
-#### 默认请求参数 (`request_info`)
+#### Default请求参数 (`request_info`)
 请求参数可以参考：[大模型录音文件识别标准版API](https://www.volcengine.com/docs/6561/1354868?lang=zh)
 ```json
 {
@@ -118,7 +118,7 @@ python third_party/SeedASR/seed_asr_infer_list.py
 | `enable_ddc` | 语义顺滑 | `false` |
 | `enable_speaker_info` | 说话人信息输出 | `false` |
 | `enable_punc` | 标点符号 | `true` |
-| `enable_itn` | 文本规范化 (Inverse Text Normalization) | `true` |
+| `enable_itn` | 文本normalization (Inverse Text Normalization) | `true` |
 | `model_version` | 模型版本 | `"400"` |
 | `show_speech_rate` | 语速信息输出 | `true` |
 | `show_volume` | 音量信息输出 | `true` |
@@ -138,7 +138,7 @@ def recognize_lists(
 ) -> dict:
 ```
 
-**参数说明**:
+**Parameter description**:
 
 | 参数名 | 类型 | 必填 | 说明 |
 |--------|------|------|------|
@@ -172,7 +172,7 @@ def recognize_audio(
 ) -> dict:
 ```
 
-**参数说明**:
+**Parameter description**:
 
 | 参数名 | 类型 | 必填 | 说明 |
 |--------|------|------|------|
@@ -201,13 +201,13 @@ print(result.get("text", ""))
 
 ## 3. 输出结构
 
-批量转录结果按语种目录组织，每个语种目录下包含三个文件：
+批量转录结果按language目录组织，每个language目录下包含三个文件：
 
 ```
 {output_root}/
 ├── JPN/
 │   ├── results.jsonl        # 转录结果（逐行 JSON）
-│   ├── completed.json       # 已完成片段列表（用于断点续传）
+│   ├── completed.json       # 已完成片段列表（used for断点续传）
 │   └── failed.jsonl         # 失败记录
 ├── ARE/
 │   ├── results.jsonl
@@ -260,10 +260,10 @@ print(result.get("text", ""))
 
 ---
 
-## ⚠️ 注意事项
+## ⚠️ Notes
 
 1. **API 计费**: 该脚本调用火山引擎付费 API，请关注控制台的用量和计费情况
 2. **网络要求**: 运行环境需要能够访问 `openspeech-direct.zijieapi.com`
 3. **异步轮询**: 提交任务后，脚本会每秒轮询一次查询结果，直到任务完成或失败
 4. **音频格式**: 支持常见音频格式（wav, mp3 等），格式通过文件扩展名自动识别
-5. **文件名规范**: 音频文件名必须符合 `{audio_name}_{start}_{end}.{ext}` 格式，否则会解析失败
+5. **文件名normalize**: 音频文件名必须符合 `{audio_name}_{start}_{end}.{ext}` 格式，否则会解析失败

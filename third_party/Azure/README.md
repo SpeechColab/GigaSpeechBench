@@ -2,11 +2,11 @@
 #!/bin/bash
 
 # ==========================================
-# Azure ASR 评估脚本运行配置
+# Azure ASR Evaluation Script Configuration
 # ==========================================
 
-# 1. 设置你的 Azure API Key
-# 强烈建议通过环境变量导出，而不是直接写在 Python 脚本里，以防泄露
+# 1. Set your Azure API Key
+# Strongly recommend exporting via env var, not hardcoding in script
 export SPEECH_KEY="your_azure_speech_key_here"
 
 # 假设你的 Python 脚本命名为 evaluate_asr.py
@@ -40,7 +40,7 @@ python $SCRIPT_NAME \
 echo "运行结束！"
 ```
 
-### 参数详细说明（对照上述脚本）：
+### Parameters详细说明（对照上述脚本）：
 
 * **`--base_dir`**:
     * **作用**：设置整个数据集的**根目录**（基础路径）。
@@ -48,15 +48,15 @@ echo "运行结束！"
 
 * **`--speech_roots`**:
     * **作用**：存放待识别**音频文件**的目录路径。
-    * **说明**：可以传入一个或多个路径。脚本会去这些目录下寻找按语种（如 `PHL-EN`）分类的文件夹，并读取里面的 `.wav` 或 `.mp3` 音频文件。
+    * **说明**：可以传入一个或多个路径。脚本会去这些目录下寻找按language（如 `PHL-EN`）分类的文件夹，并读取里面的 `.wav` 或 `.mp3` 音频文件。
 
 * **`--ref_roots`**:
     * **作用**：存放**参考文本（Ground Truth）**和时间戳配置的 JSON 文件的目录路径。
-    * **说明**：脚本会读取这里的 JSON 文件，获取需要截取的音频片段的 `start` 和 `end` 时间，以及用于对比的标准答案（ref text）。
+    * **说明**：脚本会读取这里的 JSON 文件，获取需要截取的音频片段的 `start` 和 `end` 时间，以及used for对比的标准答案（ref text）。
 
 * **`--submission_root`**:
     * **作用**：当前脚本**输出识别结果**的目标文件夹。
-    * **说明**：脚本运行结束后，会将 Azure 返回的识别结果按语种保存为 JSON 文件并放到这个目录下。如果该目录不存在，代码会自动创建它。
+    * **说明**：脚本运行结束后，会将 Azure 返回的识别结果按language保存为 JSON 文件并放到这个目录下。如果该目录不存在，代码会自动创建它。
 
 * **`--pre_root`**:
     * **作用**：存放**历史缓存结果**的文件夹（类似断点续传的机制）。

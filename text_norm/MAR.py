@@ -12,7 +12,7 @@ def normalize(text: str) -> str:
     2. Remove diacritics
     3. Eastern Arabic numerals to Western Arabic numerals
     """
-    # 移除副语言标签和填充词
+    # Remove paralinguistic tags and filler words
     text = remove_paralinguistic_tags(text)
 
     # Remove punctuation
@@ -74,10 +74,10 @@ def normalize(text: str) -> str:
     \u0671: Alif Wasla (used in Quran)
     """    
 
-    #    摩洛哥方言常见变体统一（持续补充中，越常用越靠前）
-    #    这些替换顺序很重要，先处理长的再处理短的
+    #    Moroccan dialect variant normalization (frequently used first)
+    #    Replace order matters: process longer patterns first
     norm_map = {
-        # 经典阿拉伯语 → 摩洛哥口语常见变形
+        # 经典阿拉伯语 → Morocco口语常见变形
         "إن شاء الله": "انشاءالله",
         "إن شاءالله": "انشاءالله",
         "ما شاء الله": "ماشاءالله",
@@ -150,7 +150,7 @@ def normalize(text: str) -> str:
         "عافاك": "عافاك",
     }
     
-    # 按键长度倒序替换（避免短词先替换导致长词出错）
+    # 按键长度倒序replace（避免短词先replace导致长词出错）
     for arabic_word, normalized in sorted(norm_map.items(), key=lambda x: len(x[0]), reverse=True):
         text = text.replace(arabic_word, normalized)
 
@@ -169,7 +169,7 @@ if __name__ == "__main__":
         "لا والله، صافي كملنا، سمحلي ولكن ما بغيتش هادشي"
     ]
     
-    print("原始 → 标准化后\n")
+    print("Original → Normalized\n")
     for ex in examples:
         print(f"{ex}")
         print(f"{normalize(ex)}\n")

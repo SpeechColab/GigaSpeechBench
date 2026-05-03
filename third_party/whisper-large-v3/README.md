@@ -1,32 +1,32 @@
-# Whisper Large V3 多语言ASR完整使用指南
+# Whisper Large V3 Multilingual ASR Complete User Guide
 
-- 说明文档由 AI 根据当前目录的代码生成并人为 check
-- `--direct` 参数还没有验证
-## 项目概述
+- DocumentationAI-generated from code, manually reviewed
+- `--direct` parameter not yet verified
+## Project Overview
 
-这是一个基于Whisper Large V3模型的多语言自动语音识别(ASR)项目，支持从环境初始化到模型下载再到批量推理的完整流程。项目使用`uv`进行环境管理，使用`hfd`工具下载模型，并遵循项目统一的`utils.save_transcription`格式保存结果。
+这是一个基于Whisper Large V3模型的MultilingualAutomatic Speech Recognition(ASR)项目，支持从环境初始化到Model Download再到Batch Inference的Complete pipeline。项目使用`uv`进行Environment management，使用`hfd`tool download模型，并遵循项目unified`utils.save_transcription`format to save results。
 
-## 📁 项目结构
+## 📁 Project Structure
 
 ```
 whisper-large-v3/
-├── results/               # 固定，和utils里的save_transcription保持对齐
-├── auto_infer.py          # 整个音频文件批量推理脚本
-├── auto_infer_with_segments.py  # 基于时间戳的分段推理脚本（新功能）
-├── whisper_asr.py         # Whisper ASR封装类
-├── language_mapping.py    # 国家代码到语言映射
-├── timestamp/             # 时间戳标注数据目录（用于分段处理）
+├── results/               # Fixed, aligned withutils里的save_transcriptionkeep aligned
+├── auto_infer.py          # Full audio fileBatch Inference脚本
+├── auto_infer_with_segments.py  # Timestamp-based segmentedInference script（new feature）
+├── whisper_asr.py         # Whisper ASRwrapper class
+├── language_mapping.py    # 国家代码到Language mapping
+├── timestamp/             # Time戳标注数据目录（used for分段process）
 ├── pyproject.toml         # uv项目配置
 ├── uv.lock               # 依赖锁定文件
 ├── hfd.sh                # Hugging Face下载工具
-├── install_model.sh      # 模型安装脚本
+├── install_model.sh      # Model安装脚本
 ├── install_ffmpeg.sh     # FFmpeg安装脚本
-├── test.mp3              # 测试音频文件
-├── test_whisper.py       # 测试脚本
+├── test.mp3              # Test音频文件
+├── test_whisper.py       # Test脚本
 └── README.md             # 本文档
 ```
 
-## 🚀 快速开始
+## 🚀 Quick Start
 
 ### 1. 环境初始化
 `说明，遇到网络问题，推荐对  apt、uv、pip、hf 等进行换源，推荐工具 chsrc 和 镜像网站hf-mirror，本代码中 hf 下载已经换源`
@@ -48,8 +48,8 @@ uv sync
 ### 2. 安装系统依赖
 
 #### 系统工具
-- `ffmpeg`（音频处理），使用`install_ffmpeg.sh`
-- `aria2c`（模型下载，可选）,`install_model.sh`会自动下载 aria2c
+- `ffmpeg`（Audio processing），使用`install_ffmpeg.sh`
+- `aria2c`（Model Download，可选）,`install_model.sh`会自动下载 aria2c
 
 ### 3. 下载Whisper模型
 
@@ -66,10 +66,10 @@ bash install_model.sh
 
 并更换auto_infer_with_segments.py中相应为真实路经()
 
-#### 音频文件目录结构
+#### Audio文件目录结构
 ```
 data/testbatch_processed/testbatch_processed/
-├── IRQ/                  # 伊拉克音频文件
+├── IRQ/                  # Iraq音频文件
 │   ├── audio1.wav
 │   ├── audio2.mp3
 │   └── ...
@@ -81,14 +81,14 @@ data/testbatch_processed/testbatch_processed/
     └── ...
 ```
 
-#### 时间戳标注目录结构（用于分段处理）
+#### Time戳标注目录结构（used for分段process）
 ```
 timestamp/
-├── KOR/                  # 韩国时间戳标注
+├── KOR/                  # Korea时间戳标注
 │   ├── KOR_audio1.json
 │   ├── KOR_audio2.json
 │   └── ...
-├── JPN/                  # 日本时间戳标注
+├── JPN/                  # Japan时间戳标注
 │   ├── JPN_audio1.json
 │   └── ...
 └── ...                   # 其他国家标注
@@ -141,22 +141,22 @@ print(f'转录结果: {text}')
 "
 ```
 
-### 批量推理
+### Batch Inference
 
-#### 1. 整个音频文件推理（auto_infer.py）
+#### 1. Full audio file推理（auto_infer.py）
 
 **基本用法**
 ```bash
-# 处理新的国家（跳过已处理的）
+# Process新的国家（跳过已process的）
 python auto_infer.py
 
-# 强制重新处理所有国家
+# 强制重新process所有国家
 python auto_infer.py --force
 
 # 使用自动语言检测模式
 python auto_infer.py --direct
 
-# 强制重新处理并使用自动检测
+# 强制重新process并使用自动检测
 python auto_infer.py --force --direct
 ```
 
@@ -165,9 +165,9 @@ python auto_infer.py --force --direct
 |------|------|--------|
 | `--force` | 强制重新处理所有国家，清除现有结果 | False |
 | `--no-force` | 跳过已有结果的国家（默认行为） | False |
-| `--direct` | 使用Whisper自动语言检测，跳过语言映射 | False |
+| `--direct` | 使用Whisper自动语言检测，跳过Language mapping | False |
 
-#### 2. 基于时间戳的分段推理（auto_infer_with_segments.py）⭐ 新功能
+#### 2. Timestamp-based segmented推理（auto_infer_with_segments.py）⭐ new feature
 
 **适用场景：**
 - 有精确的时间戳标注数据
@@ -177,19 +177,19 @@ python auto_infer.py --force --direct
 
 **基本用法**
 ```bash
-# 处理指定国家的分段数据
+# Process指定国家的分段数据
 python auto_infer_with_segments.py --countries KOR
 
-# 处理多个国家
+# Process多个国家
 python auto_infer_with_segments.py --countries KOR JPN THA
 
-# 强制重新处理所有国家
+# 强制重新process所有国家
 python auto_infer_with_segments.py --force
 
 # 使用自动语言检测模式
 python auto_infer_with_segments.py --direct
 
-# 处理无效分段（默认跳过无效分段）
+# Process无效分段（默认跳过无效分段）
 python auto_infer_with_segments.py --countries KOR --no-skip-invalid
 
 # 自定义目录路径
@@ -203,7 +203,7 @@ python auto_infer_with_segments.py \
 |------|------|--------|
 | `--countries` | 指定要处理的国家代码列表（空格分隔） | 处理所有可用国家 |
 | `--force` | 强制重新处理所有国家，清除现有结果 | False |
-| `--direct` | 使用Whisper自动语言检测，跳过语言映射 | False |
+| `--direct` | 使用Whisper自动语言检测，跳过Language mapping | False |
 | `--no-skip-invalid` | 处理包括无效分段在内的所有分段 | False（默认跳过无效分段） |
 | `--timestamp-dir` | 时间戳JSON文件目录路径 | `./timestamp` |
 | `--audio-dir` | 音频文件目录路径 | 配置中的默认路径 |
@@ -211,13 +211,13 @@ python auto_infer_with_segments.py \
 **输出特点：**
 - 每个音频分段独立调用 `save_transcription()`
 - 无效分段保存空字符串 `""`
-- 输出格式与elevenlabs实现完全对齐
+- Output format与elevenlabs实现完全对齐
 - 支持WER计算系统
 
-#### 输出格式
+#### Output格式
 
-**统一输出格式**
-两种脚本都使用相同的输出格式，结果保存在 `./results/` 目录中，文件命名格式：
+**统一Output format**
+两种脚本都使用相同的Output format，Save results在 `./results/` 目录中，文件命名格式：
 - `{country_code}_whisper-large-v3.json`
 
 **标准JSON格式**
@@ -254,7 +254,7 @@ python auto_infer_with_segments.py \
 
 ## 🌍 语言支持
 
-项目的语言映射在`language_mapping.py`，未对所有映射关系进行严格验证，建议使用前 check。
+项目的Language mapping在`language_mapping.py`，未对所有映射关系进行严格验证，建议使用前 check。
 
 ### 主要支持的语言/地区
 
@@ -290,27 +290,27 @@ COUNTRY_CODE_TO_LANGUAGE = {
 ## 📊 工作模式
 
 ### 1. 标准模式（默认）
-- 使用 `language_mapping.py` 中的语言映射
+- 使用 `language_mapping.py` 中的Language mapping
 - 根据国家代码指定转录语言
 - 更准确的转录结果
 - 需要确保所有国家代码都有映射
 
 ### 2. 自动检测模式（--direct）
 - 让Whisper自动检测音频语言
-- 适用于语言未知或混合语言场景
-- 跳过语言映射检查
+- 适used for语言未知或混合语言场景
+- 跳过Language mapping检查
 - 可能准确性略低于指定语言模式
 
 ## 🔍 监控和调试
 
-### 查看处理进度
+### 查看process进度
 
-**整个音频文件推理**
+**Full audio file推理**
 ```bash
 # 运行时会显示详细进度
 python auto_infer.py
 
-# 输出示例：
+# Output示例：
 # === Whisper ASR Batch Inference ===
 # Found 15 countries: ARE, CHN, DEU, EGY, ESP, FRA, GBR, IND, IRQ, ITA, JPN, KOR, SAU, TUR, USA
 # Checking language mapping...
@@ -328,7 +328,7 @@ python auto_infer.py
 # 分段推理的进度显示
 python auto_infer_with_segments.py --countries KOR
 
-# 输出示例：
+# Output示例：
 # === Whisper ASR Segment-based Batch Inference ===
 # Found 1 countries: KOR
 # ✓ All countries have language mapping
@@ -345,7 +345,7 @@ python auto_infer_with_segments.py --countries KOR
 #   Summary: 10/12 segments processed successfully, 0 failed
 ```
 
-### 检查结果文件
+### Check结果文件
 ```bash
 # 查看结果目录
 ls -la results/
@@ -364,7 +364,7 @@ cat results/KOR_whisper-large-v3.json | jq '.[] | select(.text == "")'
 
 | 功能 | auto_infer.py | auto_infer_with_segments.py |
 |------|---------------|-----------------------------|
-| 处理单位 | 整个音频文件 | 音频分段 |
+| 处理单位 | Full audio file | 音频分段 |
 | 适用场景 | 快速批量处理 | 精确分段转录 |
 | 输出精度 | 文件级别 | 分段级别（精确到秒） |
 | 内存使用 | 较高 | 较低（分段处理） |
@@ -374,31 +374,31 @@ cat results/KOR_whisper-large-v3.json | jq '.[] | select(.text == "")'
 
 ## 🔄 持续集成
 
-### 重新运行处理
+### 重新运行process
 
-**整个音频文件推理**
+**Full audio file推理**
 ```bash
-# 检查哪些国家已处理
+# Check哪些国家已process
 ls results/ | sed 's/_whisper-large-v3.json//'
 
-# 重新处理特定国家（删除对应结果文件）
+# 重新process特定国家（删除对应结果文件）
 rm results/IRQ_whisper-large-v3.json
 python auto_infer.py
 ```
 
 **分段推理**
 ```bash
-# 检查哪些国家已处理
+# Check哪些国家已process
 ls results/ | sed 's/_whisper-large-v3.json//'
 
-# 重新处理特定国家
+# 重新process特定国家
 python auto_infer_with_segments.py --countries IRQ --force
 
-# 处理新增的时间戳文件
+# Process新增的时间戳文件
 # 只需将新的JSON文件放入 timestamp/对应国家/ 目录即可
 ```
 
-### 增量处理
+### 增量process
 
 **音频文件增量**
 - 当有新的音频文件时，只需将文件放入对应国家目录
@@ -406,7 +406,7 @@ python auto_infer_with_segments.py --countries IRQ --force
 
 **时间戳标注增量**
 - 将新的时间戳JSON文件放入 `timestamp/{country_code}/` 目录
-- 重新运行分段推理脚本即可处理新分段
+- 重新运行分段Inference script即可处理新分段
 
 ### 故障排除
 
@@ -424,14 +424,14 @@ python auto_infer_with_segments.py --countries IRQ --force
 
 3. **内存不足**
    - 分段推理通常比整个文件推理内存使用更低
-   - 可以考虑减少并发处理的文件数量
+   - 可以考虑减少Concurrency处理的文件数量
 
 **调试模式**
 ```bash
-# 处理单个国家进行调试
+# Process单个国家进行调试
 python auto_infer_with_segments.py --countries KOR
 
-# 使用自动语言检测排查语言映射问题
+# 使用自动语言检测排查Language mapping问题
 python auto_infer_with_segments.py --countries KOR --direct
 ```
 
@@ -452,7 +452,7 @@ python auto_infer_with_segments.py --countries KOR --direct
 1. **预处理阶段**
    - 确保时间戳标注质量
    - 验证音频文件与标注的对应关系
-   - 检查国家代码的语言映射
+   - 检查国家代码的Language mapping
 
 2. **处理阶段**
    - 先用小批量测试参数
@@ -460,7 +460,7 @@ python auto_infer_with_segments.py --countries KOR --direct
    - 定期检查输出质量
 
 3. **后处理阶段**
-   - 验证输出格式正确性
+   - 验证Output format正确性
    - 检查无效分段的处理情况
    - 进行WER计算评估质量
 
