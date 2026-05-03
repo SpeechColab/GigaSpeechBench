@@ -10,7 +10,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Languages-14+-blue" alt="Languages">
-  <img src="https://img.shields.io/badge/Duration-280%2Bh-green" alt="Duration">
+  <img src="https://img.shields.io/badge/Duration-600%2Bh-green" alt="Duration">
   <img src="https://img.shields.io/badge/Models-16+-red" alt="Models">
   <img src="https://img.shields.io/badge/License-Non--Commercial-lightgrey" alt="License">
 </p>

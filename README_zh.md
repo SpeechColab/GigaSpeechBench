@@ -10,7 +10,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/语言-14+-blue" alt="Languages">
-  <img src="https://img.shields.io/badge/时长-280%2Bh-green" alt="Duration">
+  <img src="https://img.shields.io/badge/时长-600%2Bh-green" alt="Duration">
   <img src="https://img.shields.io/badge/模型-16+-red" alt="Models">
   <img src="https://img.shields.io/badge/许可-非商业-lightgrey" alt="License">
 </p>
