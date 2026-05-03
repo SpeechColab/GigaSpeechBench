@@ -242,14 +242,3 @@ GigaSpeechBench/
 
 This project is for **non-commercial research purposes only**. The audio data is sourced from publicly available content and is subject to the original content creators' licenses.
 
----
-
-## 📖 Citation
-
-```bibtex
-@misc{gigaspeechbench,
-  title={GigaSpeechBench: A Large-Scale Multilingual ASR Benchmark for Low-Resource Languages},
-  year={2026},
-  url={https://github.com/AlexTYJ/GigaSpeechBench}
-}
-```
