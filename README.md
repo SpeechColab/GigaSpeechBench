@@ -79,7 +79,7 @@ We also welcome:
 
 ## 📦 Dataset
 
-### 📈 Overview
+### 📈 Low-Resource Languages Overview
 
 | Stat | Value |
 |:-----|:------|
