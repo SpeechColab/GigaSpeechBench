@@ -9,6 +9,10 @@
 </p>
 
 <p align="center">
+  ⭐ <b>欢迎先 Star 关注！</b>全量数据即将发布至 HuggingFace。
+</p>
+
+<p align="center">
   <img src="https://img.shields.io/badge/语言-14+-blue" alt="Languages">
   <img src="https://img.shields.io/badge/时长-600%2Bh-green" alt="Duration">
   <img src="https://img.shields.io/badge/模型-16+-red" alt="Models">

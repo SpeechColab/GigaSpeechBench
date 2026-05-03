@@ -9,6 +9,10 @@
 </p>
 
 <p align="center">
+  ⭐ <b>Star this repo to stay updated!</b> Full dataset release on HuggingFace coming soon.
+</p>
+
+<p align="center">
   <img src="https://img.shields.io/badge/Languages-14+-blue" alt="Languages">
   <img src="https://img.shields.io/badge/Duration-600%2Bh-green" alt="Duration">
   <img src="https://img.shields.io/badge/Models-16+-red" alt="Models">
