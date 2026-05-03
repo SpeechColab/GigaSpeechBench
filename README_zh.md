@@ -10,7 +10,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/语言-14+-blue" alt="Languages">
-  <img src="https://img.shields.io/badge/时长-308h-green" alt="Duration">
+  <img src="https://img.shields.io/badge/时长-280%2Bh-green" alt="Duration">
   <img src="https://img.shields.io/badge/片段-260K+-orange" alt="Segments">
   <img src="https://img.shields.io/badge/模型-16+-red" alt="Models">
   <img src="https://img.shields.io/badge/许可-非商业-lightgrey" alt="License">
@@ -42,13 +42,13 @@
 
 | 代码 | 语言 | 地区 |
 |:-----|:-----|:-----|
-| IRQ | 伊拉克阿拉伯语 | 中东 |
-| DZA | 阿尔及利亚阿拉伯语 | 北非 |
-| ARE | 阿联酋阿拉伯语 | 中东 |
-| EGY | 埃及阿拉伯语 | 北非 |
-| MAR | 摩洛哥阿拉伯语 | 北非 |
-| SAU | 沙特阿拉伯语 | 中东 |
-| SYR | 叙利亚阿拉伯语 | 中东 |
+| IRQ | 伊拉克阿拉伯语 | 阿拉伯地区 |
+| DZA | 阿尔及利亚阿拉伯语 | 阿拉伯地区 |
+| ARE | 阿联酋阿拉伯语 | 阿拉伯地区 |
+| EGY | 埃及阿拉伯语 | 阿拉伯地区 |
+| MAR | 摩洛哥阿拉伯语 | 阿拉伯地区 |
+| SAU | 沙特阿拉伯语 | 阿拉伯地区 |
+| SYR | 叙利亚阿拉伯语 | 阿拉伯地区 |
 | IDN | 印度尼西亚语 | 东南亚 |
 | MYS | 马来语 | 东南亚 |
 | PHL | 菲律宾语 | 东南亚 |
@@ -66,7 +66,7 @@
 | 统计项 | 数值 |
 |:-------|:-----|
 | 语言数 | 14（+ 2 个难度子集） |
-| 总时长 | ~308 小时 |
+| 总时长 | ~280+ 小时 |
 | 总片段数 | 26 万+ |
 | 音频格式 | WAV（16kHz 单声道） |
 | 标注方式 | 人工转写，含说话人元信息 |
@@ -89,9 +89,7 @@
           "end_time": 169.92,
           "text": "ياسيدي هذي مشكلة يعني طويلة، الواقع هو شوف احنا.",
           "speaker": "Speaker1",
-          "gender": "Male",
-          "text_en": "Sir, this is indeed a complex problem...",
-          "text_zh": "先生，这个问题确实很复杂..."
+          "gender": "Male"
         }
       ]
     }

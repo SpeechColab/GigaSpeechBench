@@ -10,7 +10,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Languages-14+-blue" alt="Languages">
-  <img src="https://img.shields.io/badge/Duration-308h-green" alt="Duration">
+  <img src="https://img.shields.io/badge/Duration-280%2Bh-green" alt="Duration">
   <img src="https://img.shields.io/badge/Segments-260K+-orange" alt="Segments">
   <img src="https://img.shields.io/badge/Models-16+-red" alt="Models">
   <img src="https://img.shields.io/badge/License-Non--Commercial-lightgrey" alt="License">
@@ -42,13 +42,13 @@
 
 | Code | Language | Region |
 |:-----|:---------|:-------|
-| IRQ | Iraqi Arabic | Middle East |
-| DZA | Algerian Arabic | North Africa |
-| ARE | Emirati Arabic | Middle East |
-| EGY | Egyptian Arabic | North Africa |
-| MAR | Moroccan Arabic | North Africa |
-| SAU | Saudi Arabic | Middle East |
-| SYR | Syrian Arabic | Middle East |
+| IRQ | Iraqi Arabic | Arab Region |
+| DZA | Algerian Arabic | Arab Region |
+| ARE | Emirati Arabic | Arab Region |
+| EGY | Egyptian Arabic | Arab Region |
+| MAR | Moroccan Arabic | Arab Region |
+| SAU | Saudi Arabic | Arab Region |
+| SYR | Syrian Arabic | Arab Region |
 | IDN | Indonesian | Southeast Asia |
 | MYS | Malay | Southeast Asia |
 | PHL | Filipino | Southeast Asia |
@@ -66,7 +66,7 @@
 | Stat | Value |
 |:-----|:------|
 | Languages | 14 (+ 2 hard subsets) |
-| Total Duration | ~308 hours |
+| Total Duration | ~280+ hours |
 | Total Segments | 260,000+ |
 | Audio Format | WAV (16kHz mono) |
 | Annotation | Human-annotated transcription with speaker metadata |
@@ -89,9 +89,7 @@ Each language has a `metadata.json` following the GigaSpeech format:
           "end_time": 169.92,
           "text": "ياسيدي هذي مشكلة يعني طويلة، الواقع هو شوف احنا.",
           "speaker": "Speaker1",
-          "gender": "Male",
-          "text_en": "Sir, this is indeed a complex problem...",
-          "text_zh": "先生，这个问题确实很复杂..."
+          "gender": "Male"
         }
       ]
     }
