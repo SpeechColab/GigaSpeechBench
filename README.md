@@ -58,7 +58,7 @@ We also welcome:
 
 <!--
 <p align="center">
-  <img src="assets/leaderboard_low_resource.png" alt="ASR Performance for Low Resource Languages" width="100%">
+  <img src="assets/low-resource-results.png" alt="ASR Performance for Low Resource Languages" width="100%">
 </p>
 -->
 
