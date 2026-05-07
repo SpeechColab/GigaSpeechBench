@@ -56,9 +56,11 @@
 
 > **低资源语言 ASR — 词/字错误率 (%) ↓**
 
+<!--
 <p align="center">
   <img src="assets/leaderboard_low_resource.png" alt="低资源语言 ASR 性能" width="100%">
 </p>
+-->
 
 ### 🗺 语言代码
 
