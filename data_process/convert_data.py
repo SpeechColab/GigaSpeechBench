@@ -23,14 +23,13 @@ def convert_refs(data_root: str, out_dir: str, skip_existing: bool):
     """Read data/{LANG}/metadata.json -> {out}/ref/{LANG}.json"""
     ref_out = os.path.join(out_dir, "ref")
     os.makedirs(ref_out, exist_ok=True)
+    changed_langs = []
 
     for lang in sorted(os.listdir(data_root)):
         meta_path = os.path.join(data_root, lang, "metadata.json")
         if not os.path.isfile(meta_path):
             continue
         out_path = os.path.join(ref_out, f"{lang}.json")
-        if skip_existing and os.path.exists(out_path):
-            continue
 
         meta = json.load(open(meta_path, encoding="utf-8"))
         segments = []
@@ -44,15 +43,26 @@ def convert_refs(data_root: str, out_dir: str, skip_existing: bool):
                     "text": seg.get("text", ""),
                 })
 
+        new_content = json.dumps(segments, ensure_ascii=False, indent=2)
+        if os.path.exists(out_path):
+            old_content = open(out_path, encoding="utf-8").read()
+            if old_content == new_content:
+                print(f"[REF] unchanged: {lang} ({len(segments)} segments)")
+                continue
+
         with open(out_path, "w", encoding="utf-8") as f:
-            json.dump(segments, f, ensure_ascii=False, indent=2)
+            f.write(new_content)
+        changed_langs.append(lang)
         print(f"[REF] {lang}: {len(segments)} segments")
+
+    return changed_langs
 
 
 def convert_hyps(results_root: str, out_dir: str, skip_existing: bool):
     """Read results/{model}.json -> {out}/hyp/{LANG}/{LANG}_{model}.json"""
     hyp_out = os.path.join(out_dir, "hyp")
     os.makedirs(hyp_out, exist_ok=True)
+    changed_models = []  # list of (lang, model)
 
     # Load ref indices for filtering
     ref_out = os.path.join(out_dir, "ref")
@@ -88,9 +98,6 @@ def convert_hyps(results_root: str, out_dir: str, skip_existing: bool):
             os.makedirs(country_dir, exist_ok=True)
             out_path = os.path.join(country_dir, f"{lang}_{model}.json")
 
-            if skip_existing and os.path.exists(out_path):
-                continue
-
             ref_idx = ref_indices.get(lang, set())
             matched = []
             for h in items:
@@ -104,11 +111,20 @@ def convert_hyps(results_root: str, out_dir: str, skip_existing: bool):
                         "model": model,
                     })
 
+            new_content = json.dumps(matched, ensure_ascii=False, indent=2)
+            if os.path.exists(out_path):
+                old_content = open(out_path, encoding="utf-8").read()
+                if old_content == new_content:
+                    continue
+
             with open(out_path, "w", encoding="utf-8") as f:
-                json.dump(matched, f, ensure_ascii=False, indent=2)
+                f.write(new_content)
 
             if matched:
+                changed_models.append((lang, model))
                 print(f"[HYP] {model}/{lang}: {len(matched)}/{len(ref_idx)}")
+
+    return changed_models
 
 
 if __name__ == "__main__":

@@ -13,6 +13,8 @@ import re
 import json
 import pandas as pd
 import argparse
+from openpyxl import Workbook
+from openpyxl.styles import PatternFill, Font
 
 # Model whitelist
 COVERAGE_MODELS = {
@@ -151,7 +153,10 @@ def scan_results(results_root: str, excel_countries, matched_only: bool = False)
 # Ref segment counts
 # =========================
 def load_ref_counts(ref_root: str):
+    """Load ref segment counts: total, valid (non-empty text), and duration (hours)."""
     ref_count = {}
+    ref_valid_count = {}
+    ref_duration = {}
     for fn in os.listdir(ref_root):
         if not fn.endswith(".json"):
             continue
@@ -162,9 +167,51 @@ def load_ref_counts(ref_root: str):
                 data = json.load(f)
             if isinstance(data, list):
                 ref_count[country] = len(data)
+                ref_valid_count[country] = sum(1 for d in data if d.get("text", "").strip())
+                total_dur = sum(
+                    float(d.get("end", 0)) - float(d.get("start", 0))
+                    for d in data if d.get("text", "").strip()
+                )
+                ref_duration[country] = round(total_dur / 3600, 2)
         except Exception:
             continue
-    return ref_count
+    return ref_count, ref_valid_count, ref_duration
+
+
+def scan_matched_counts(results_root: str, excel_countries):
+    """Build matched segment count table from segment_check.txt files."""
+    table = {}
+    for country in excel_countries:
+        c_dir = os.path.join(results_root, country)
+        if not os.path.isdir(c_dir):
+            continue
+        for model in os.listdir(c_dir):
+            m_dir = os.path.join(c_dir, model)
+            if not os.path.isdir(m_dir):
+                continue
+            model_clean = normalize_model_name(model)
+            if model_clean not in COVERAGE_MODELS:
+                continue
+            seg_path = os.path.join(m_dir, "segment_check.txt")
+            if not os.path.isfile(seg_path):
+                continue
+            vals = {}
+            try:
+                with open(seg_path, "r", encoding="utf8") as f:
+                    for line in f:
+                        if "=" in line:
+                            k, v = line.strip().split("=", 1)
+                            vals[k] = v
+                matched_n = int(vals.get("matched_segments", 0))
+            except Exception:
+                continue
+            display = _INT2DISP.get(model_clean, model_clean)
+            table.setdefault(display, {})[country] = matched_n
+    df = pd.DataFrame.from_dict(table, orient="index")
+    df = df.reindex(columns=excel_countries)
+    df = df.reindex(_DISP_ORDER)
+    return df.fillna(0).astype(int)
+
 
 # =========================
 # Main
@@ -173,17 +220,100 @@ def main(results_root: str, ref_root: str, excel_countries, skip_existing: bool 
     print(f"Scanning results: {results_root}")
     if matched_only:
         print("Mode: matched_only (only fully aligned results)")
-    ref_count = load_ref_counts(ref_root)
+    ref_count, ref_valid_count, ref_duration = load_ref_counts(ref_root)
     df = scan_results(results_root, excel_countries, matched_only=matched_only)
+
+    RED_FILL = PatternFill(start_color="FFC7CE", end_color="FFC7CE", fill_type="solid")
+    YELLOW_FILL = PatternFill(start_color="FFFF00", end_color="FFFF00", fill_type="solid")
+
+    # ========== WER/CER Excel ==========
     out_xlsx = os.path.join(results_root, "results.xlsx")
-    if skip_existing and os.path.exists(out_xlsx):
-        print(f"Skipping existing Excel: {out_xlsx}")
-        return
-    df.to_excel(out_xlsx)
-    print(f"Wrote Excel: {out_xlsx}")
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "WER_CER"
+
+    # Header row
+    ws.cell(row=1, column=1, value="")
+    for ci, c in enumerate(excel_countries, start=2):
+        ws.cell(row=1, column=ci, value=c)
+
+    # Row 2: Ref Valid Segments
+    ws.cell(row=2, column=1, value="Ref Valid Segments")
+    for ci, c in enumerate(excel_countries, start=2):
+        ws.cell(row=2, column=ci, value=ref_valid_count.get(c, 0))
+
+    # Row 3: Duration (hours)
+    ws.cell(row=3, column=1, value="Duration (hours)")
+    for ci, c in enumerate(excel_countries, start=2):
+        ws.cell(row=3, column=ci, value=ref_duration.get(c, 0))
+
+    # Model rows (row 4+)
+    model_start_row = 4
+    for ri, model_name in enumerate(df.index, start=model_start_row):
+        ws.cell(row=ri, column=1, value=model_name)
+        for ci, c in enumerate(excel_countries, start=2):
+            val = df.at[model_name, c] if c in df.columns else "-"
+            ws.cell(row=ri, column=ci, value=val)
+
+    # Min row at the bottom
+    min_row_idx = model_start_row + len(df)
+    ws.cell(row=min_row_idx, column=1, value="MIN")
+    for ci, c in enumerate(excel_countries, start=2):
+        col_vals = []
+        for ri in range(model_start_row, min_row_idx):
+            v = ws.cell(row=ri, column=ci).value
+            if isinstance(v, (int, float)):
+                col_vals.append((v, ri))
+        if col_vals:
+            min_val, min_ri = min(col_vals, key=lambda x: x[0])
+            ws.cell(row=min_row_idx, column=ci, value=min_val)
+            # Highlight the min cell in yellow
+            ws.cell(row=min_ri, column=ci).fill = YELLOW_FILL
+
+    wb.save(out_xlsx)
+    print(f"Wrote WER/CER Excel: {out_xlsx}")
+
+    # ========== Count Excel ==========
+    out_count_xlsx = os.path.join(results_root, "results_count.xlsx")
+    df_count = scan_matched_counts(results_root, excel_countries)
+
+    wb2 = Workbook()
+    ws2 = wb2.active
+    ws2.title = "Matched_Count"
+
+    # Header row
+    ws2.cell(row=1, column=1, value="")
+    for ci, c in enumerate(excel_countries, start=2):
+        ws2.cell(row=1, column=ci, value=c)
+
+    # Row 2: Ref Valid Segments
+    ws2.cell(row=2, column=1, value="Ref Valid Segments")
+    for ci, c in enumerate(excel_countries, start=2):
+        ws2.cell(row=2, column=ci, value=ref_valid_count.get(c, 0))
+
+    # Row 3: Duration (hours)
+    ws2.cell(row=3, column=1, value="Duration (hours)")
+    for ci, c in enumerate(excel_countries, start=2):
+        ws2.cell(row=3, column=ci, value=ref_duration.get(c, 0))
+
+    # Model rows (row 4+)
+    for ri, model_name in enumerate(df_count.index, start=4):
+        ws2.cell(row=ri, column=1, value=model_name)
+        for ci, c in enumerate(excel_countries, start=2):
+            val = int(df_count.at[model_name, c]) if c in df_count.columns else 0
+            cell = ws2.cell(row=ri, column=ci, value=val)
+            # Red if matched < ref valid
+            ref_v = ref_valid_count.get(c, 0)
+            if ref_v > 0 and val < ref_v:
+                cell.fill = RED_FILL
+
+    wb2.save(out_count_xlsx)
+    print(f"Wrote Count Excel: {out_count_xlsx}")
+
     print("\nRef segment counts:")
     for c, n in sorted(ref_count.items()):
-        print(f"  {c}: {n}")
+        valid = ref_valid_count.get(c, 0)
+        print(f"  {c}: total={n}, valid={valid}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Strict non-batch Excel generator")

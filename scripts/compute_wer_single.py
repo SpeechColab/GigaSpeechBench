@@ -30,6 +30,16 @@ ERR = "*"
 MATCH_TOL = 0.1
 
 
+def is_cer_lang(country):
+    """Check if country should use CER. Matches exact or prefix (e.g. JPN_0502 -> JPN)."""
+    if country in CER_LANGS:
+        return True
+    base = country.split("_")[0]
+    if base in CER_LANGS:
+        return True
+    return False
+
+
 def norm_audio_name(name: str) -> str:
     name = name.replace("\\", "/")
     base = os.path.basename(name)
@@ -55,7 +65,31 @@ def fmt_seg(seg):
     text = str(seg.get("text", "")).replace("\t", " ").replace("\n", " ").strip()
     return f"audio_name={audio}; start={start}; end={end}; text={text}"
 
-def process_one_ref_hyp(ref_items, hyp_items, compute_CER, recogs_f, stats):
+
+def make_seg_key(audio_name, start):
+    return f"{norm_audio_name(audio_name)}|{float(start):.3f}"
+
+
+def load_seg_cache(cache_path):
+    if not cache_path.exists():
+        return {}
+    try:
+        with open(cache_path, "r", encoding="utf-8") as f:
+            items = json.load(f)
+        return {it["key"]: it for it in items}
+    except Exception:
+        return {}
+
+
+def save_seg_cache(cache_path, cache_list):
+    with open(cache_path, "w", encoding="utf-8") as f:
+        json.dump(cache_list, f, ensure_ascii=False)
+
+
+def process_one_ref_hyp(ref_items, hyp_items, compute_CER, recogs_f, stats, seg_cache=None):
+    if seg_cache is None:
+        seg_cache = {}
+
     hyp_index = defaultdict(list)
     hyp_records = []
     for i, h in enumerate(hyp_items):
@@ -76,6 +110,9 @@ def process_one_ref_hyp(ref_items, hyp_items, compute_CER, recogs_f, stats):
     valid = 0
     dur_sec = 0.0
     first_unmatched_ref = None
+    new_cache_list = []
+    cache_hits = 0
+
     for r in ref_items:
         name = norm_audio_name(r["audio_name"])
         start_ref = float(r["start"])
@@ -117,10 +154,11 @@ def process_one_ref_hyp(ref_items, hyp_items, compute_CER, recogs_f, stats):
         valid += 1
         dur_sec += float(r["end"]) - float(r["start"])
 
-        ref_tok = r["text"].strip().split()
-        hyp_val = str(hyp_match.get("text", ""))
-        hyp_tok = hyp_val.strip().split() if hyp_val else []
+        ref_text = r["text"].strip()
+        hyp_val = str(hyp_match.get("text", "")).strip()
 
+        ref_tok = ref_text.split()
+        hyp_tok = hyp_val.split() if hyp_val else []
         if compute_CER:
             ref_tok = list("".join(ref_tok))
             hyp_tok = list("".join(hyp_tok))
@@ -129,19 +167,36 @@ def process_one_ref_hyp(ref_items, hyp_items, compute_CER, recogs_f, stats):
         print(f"{cut_id}:\tref={' '.join(ref_tok)}", file=recogs_f)
         print(f"{cut_id}:\thyp={' '.join(hyp_tok)}", file=recogs_f)
 
-        ali = kaldialign.align(ref_tok, hyp_tok, ERR)
-        for a, b in ali:
-            if a == ERR:
-                stats["I"] += 1
-            elif b == ERR:
-                stats["D"] += 1
-                stats["N"] += 1
-            elif a != b:
-                stats["S"] += 1
-                stats["N"] += 1
-            else:
-                stats["C"] += 1
-                stats["N"] += 1
+        seg_key = make_seg_key(r["audio_name"], r["start"])
+        cached = seg_cache.get(seg_key)
+        if cached and cached.get("ref_text") == ref_text and cached.get("hyp_text") == hyp_val:
+            seg_stats = cached["stats"]
+            cache_hits += 1
+        else:
+            ali = kaldialign.align(ref_tok, hyp_tok, ERR)
+            seg_stats = {"I": 0, "D": 0, "S": 0, "C": 0, "N": 0}
+            for a, b in ali:
+                if a == ERR:
+                    seg_stats["I"] += 1
+                elif b == ERR:
+                    seg_stats["D"] += 1
+                    seg_stats["N"] += 1
+                elif a != b:
+                    seg_stats["S"] += 1
+                    seg_stats["N"] += 1
+                else:
+                    seg_stats["C"] += 1
+                    seg_stats["N"] += 1
+
+        for k in ("I", "D", "S", "C", "N"):
+            stats[k] += seg_stats[k]
+
+        new_cache_list.append({
+            "key": seg_key,
+            "ref_text": ref_text,
+            "hyp_text": hyp_val,
+            "stats": seg_stats,
+        })
 
     first_unmatched_hyp = None
     for rec in hyp_records:
@@ -154,7 +209,7 @@ def process_one_ref_hyp(ref_items, hyp_items, compute_CER, recogs_f, stats):
             }
             break
 
-    return valid, dur_sec / 3600.0, first_unmatched_ref, first_unmatched_hyp
+    return valid, dur_sec / 3600.0, first_unmatched_ref, first_unmatched_hyp, new_cache_list, cache_hits
 
 def write_errs_and_summary(out_dir, country, model, stats, compute_CER):
     N = stats["N"]
@@ -178,7 +233,7 @@ def main(REF_ROOT, HYP_ROOT, OUT_ROOT, skip_existing=False):
         if not fn.endswith(".json"):
             continue
         country = fn[:-5]
-        compute_CER = country in CER_LANGS
+        compute_CER = is_cer_lang(country)
         with open(os.path.join(REF_ROOT, fn), "r", encoding="utf8") as f:
             ref_items = json.load(f)
 
@@ -200,15 +255,18 @@ def main(REF_ROOT, HYP_ROOT, OUT_ROOT, skip_existing=False):
             stats = defaultdict(int)
             out_dir = Path(OUT_ROOT) / country / model
             seg_path = out_dir / "segment_check.txt"
-            if skip_existing and seg_path.exists():
-                logging.info(f"[SKIP] {country}/{model}: existing {seg_path}")
-                continue
+            cache_path = out_dir / "seg_cache.json"
+
+            seg_cache = load_seg_cache(cache_path)
+
             out_dir.mkdir(parents=True, exist_ok=True)
             with open(out_dir / f"recogs-{country}-{model}.txt", "w", encoding="utf8") as rec_f:
-                valid, dur_h, first_unmatched_ref, first_unmatched_hyp = process_one_ref_hyp(
-                    ref_items, hyp_items, compute_CER, rec_f, stats
+                valid, dur_h, first_unmatched_ref, first_unmatched_hyp, new_cache_list, cache_hits = process_one_ref_hyp(
+                    ref_items, hyp_items, compute_CER, rec_f, stats, seg_cache
                 )
             write_errs_and_summary(out_dir, country, model, stats, compute_CER)
+
+            save_seg_cache(cache_path, new_cache_list)
 
             ref_n = len(ref_items)
             hyp_n = len(hyp_items)
@@ -218,7 +276,8 @@ def main(REF_ROOT, HYP_ROOT, OUT_ROOT, skip_existing=False):
                 f.write(f"matched_segments={valid}\n")
                 f.write(f"first_unmatched_in_hyp={fmt_seg(first_unmatched_ref)}\n")
                 f.write(f"first_unmatched_in_ref={fmt_seg(first_unmatched_hyp)}\n")
-            logging.info(f"[CHECK] {country}/{model}: ref={ref_n} hyp={hyp_n} matched={valid}")
+            recomputed = valid - cache_hits
+            logging.info(f"[CHECK] {country}/{model}: ref={ref_n} hyp={hyp_n} matched={valid} (cached={cache_hits}, recomputed={recomputed})")
 
     logging.info("Evaluation complete.")
 

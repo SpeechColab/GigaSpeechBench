@@ -98,9 +98,6 @@ def normalize_all(text_root: str, out_root: str, workers: int, skip_existing: bo
         out_ref.mkdir(parents=True, exist_ok=True)
         for rf in sorted(ref_dir.glob("*.json")):
             out_path = out_ref / rf.name
-            if skip_existing and out_path.exists():
-                # Still check for incremental updates (empty text that got filled)
-                pass
             tasks.append((str(rf), out_path, rf.stem, False))
 
     # HYP files: text_root/hyp/{LANG}/*.json -> out_root/hyp/{LANG}/*.json
@@ -114,8 +111,6 @@ def normalize_all(text_root: str, out_root: str, workers: int, skip_existing: bo
             out_country.mkdir(parents=True, exist_ok=True)
             for hf in sorted(country_dir.glob("*.json")):
                 out_path = out_country / hf.name
-                if skip_existing and out_path.exists():
-                    pass
                 tasks.append((str(hf), out_path, country, True))
 
     if not tasks:
