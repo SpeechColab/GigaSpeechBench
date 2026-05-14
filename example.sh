@@ -49,7 +49,7 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-ALL_MODULES=(Low-Resource-Languages CH-EN-Dialects Vertical-Domain fleurs common-voice)
+ALL_MODULES=(Low-Resource-Languages CH-EN-Dialects Vertical-Domain fleurs common-voice Older-Children)
 LOG_DIR="$BASE_DIR/data/log"
 mkdir -p "$LOG_DIR"
 LOG_FILE="$LOG_DIR/$(date +%Y%m%d_%H%M%S).log"
@@ -122,15 +122,24 @@ run_one_module() {
         "Low-Resource-Languages")
             COUNTRIES=(IRQ DZA ARE EGY MAR SAU SYR IDN MYS PHL PHL_EN PHL_noEN VNM THA JPN JPN_hard JPN_0502 KOR KOR_hard KOR_0502)
             ;;
+        "Older-Children")
+            COUNTRIES=(CHILD-EN)
+            ;;
+        "Vertical-Domain")
+            COUNTRIES=(AGR-CH AGR-EN AIT-CH AIT-EN ART-CH ART-EN BIO-CH BIO-EN ECM-CH ECM-EN ENG-CH ENG-EN ENT-CH ENT-EN FIN-CH FIN-EN HUM-CH HUM-EN LAW-CH LAW-EN MED-CH MED-EN MIL-CH MIL-EN)
+            ;;
+        "CH-EN-Dialects")
+            COUNTRIES=(CHN-EN IDN-EN JPN-EN PHL-EN SCT-EN SGP-EN JIN MIN WU XIANG YUE)
+            ;;
         *)
             mapfile -t COUNTRIES < <(find "$NORM_DIR/ref" -maxdepth 1 -name '*.json' -printf '%f\n' | sed 's/\.json$//' | sort)
             ;;
     esac
 
-    # Filter to only countries that have ref files
+    # Filter to only countries that have ref files, and exclude EDU
     local -a VALID_COUNTRIES=()
     for c in "${COUNTRIES[@]}"; do
-        if [[ -f "$NORM_DIR/ref/${c}.json" ]]; then
+        if [[ -f "$NORM_DIR/ref/${c}.json" && ! "$c" =~ ^EDU ]]; then
             VALID_COUNTRIES+=("$c")
         fi
     done
@@ -141,12 +150,46 @@ run_one_module() {
         return
     fi
 
-    "$PYTHON_BIN" "$BASE_DIR/scripts/excel_single.py" \
-        --results_root "$RESULTS_DIR" \
-        --ref_root "$NORM_DIR/ref" \
-        --excel_countries "${COUNTRIES[@]}" \
-        --skip_existing 0 \
-        --matched_only 0
+    # Vertical-Domain: split into CH and EN Excel files
+    if [[ "$mod" == "Vertical-Domain" ]]; then
+        local -a CH_COUNTRIES=()
+        local -a EN_COUNTRIES=()
+        for c in "${COUNTRIES[@]}"; do
+            if [[ "$c" == *-CH ]]; then
+                CH_COUNTRIES+=("$c")
+            elif [[ "$c" == *-EN ]]; then
+                EN_COUNTRIES+=("$c")
+            fi
+        done
+
+        if [[ ${#CH_COUNTRIES[@]} -gt 0 ]]; then
+            "$PYTHON_BIN" "$BASE_DIR/scripts/excel_single.py" \
+                --results_root "$RESULTS_DIR" \
+                --ref_root "$NORM_DIR/ref" \
+                --excel_countries "${CH_COUNTRIES[@]}" \
+                --module_name "${mod}-CH" \
+                --skip_existing 0 \
+                --matched_only 0
+        fi
+
+        if [[ ${#EN_COUNTRIES[@]} -gt 0 ]]; then
+            "$PYTHON_BIN" "$BASE_DIR/scripts/excel_single.py" \
+                --results_root "$RESULTS_DIR" \
+                --ref_root "$NORM_DIR/ref" \
+                --excel_countries "${EN_COUNTRIES[@]}" \
+                --module_name "${mod}-EN" \
+                --skip_existing 0 \
+                --matched_only 0
+        fi
+    else
+        "$PYTHON_BIN" "$BASE_DIR/scripts/excel_single.py" \
+            --results_root "$RESULTS_DIR" \
+            --ref_root "$NORM_DIR/ref" \
+            --excel_countries "${COUNTRIES[@]}" \
+            --module_name "$mod" \
+            --skip_existing 0 \
+            --matched_only 0
+    fi
 
     echo ""
     echo "Pipeline finished for $mod"
@@ -154,7 +197,7 @@ run_one_module() {
 }
 
 case "$MODULE" in
-    "Low-Resource-Languages"|"CH-EN-Dialects"|"Vertical-Domain"|"fleurs"|"common-voice")
+    "Low-Resource-Languages"|"CH-EN-Dialects"|"Vertical-Domain"|"fleurs"|"common-voice"|"Older-Children")
         run_one_module "$MODULE"
         ;;
     "all")

@@ -35,7 +35,7 @@ def _normalize_items(items, normalizer, existing_items=None):
             continue
         # Cache hit: reuse existing non-empty normalized text
         if existing_items and i < len(existing_items):
-            old = existing_items[i].get("text", "")
+            old = existing_items[i].get("text") or ""
             if old.strip():
                 item["text"] = old
                 continue

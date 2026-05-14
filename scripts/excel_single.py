@@ -24,7 +24,9 @@ COVERAGE_MODELS = {
     "WHISPER","STT_KR_CONFORMER_TRANSDUCER_LARGE","PARAKEET-TDT_CTC-0.6B-JA",
     "NVIDIA-NEMO","WHISPER-LARGE-V3","GEMINI","GEMINI_3_0_FLASH","SEEDASR_2.0",
     "GEMINI-3-FLASH-PREVIEW","QWEN3-ASR-1.7B","FUN-ASR-NANO","SEEDASR2","SEEDASR",
-    "FUN-ASR","QWEN3.5-OMNI-FLASH","FUNASR_V1.5"
+    "FUN-ASR","QWEN3.5-OMNI-FLASH","FUNASR_V1.5",
+    "SEEDASR_1","SEEDASR_2","BIGASR_LANGID_NULL","SEEDASR_LANGID_NULL","SEED",
+    "VOLC.BIGASR.AUC","VOLC.SEEDASR.AUC"
 }
 
 # Model display order: (display_name, {internal_names...})
@@ -44,8 +46,8 @@ MODEL_ORDER = [
     ("fun-asr-mlt-nano",        {"FUN-ASR-MLT-NANO", "FUN-ASR-NANO"}),
     ("funasr1.5",               {"FUN-ASR", "FUNASR_V1.5"}),
     ("qwen3.5-omni-flash",      {"QWEN3.5-OMNI-FLASH"}),
-    ("seedasr-1-BIGASR_V400",   {"BIGASR_V400", "SEEDASR"}),
-    ("SEEDASR_2.0",             {"SEEDASR_2.0", "SEEDASR2"}),
+    ("bigasr",                  {"BIGASR_V400", "SEEDASR", "SEEDASR_1", "BIGASR_LANGID_NULL", "VOLC.BIGASR.AUC"}),
+    ("seedasr",                 {"SEEDASR_2.0", "SEEDASR2", "SEEDASR_2", "SEEDASR_LANGID_NULL", "VOLC.SEEDASR.AUC", "SEED"}),
 ]
 
 def _build_internal_to_display():
@@ -167,10 +169,10 @@ def load_ref_counts(ref_root: str):
                 data = json.load(f)
             if isinstance(data, list):
                 ref_count[country] = len(data)
-                ref_valid_count[country] = sum(1 for d in data if d.get("text", "").strip())
+                ref_valid_count[country] = len(data)
                 total_dur = sum(
                     float(d.get("end", 0)) - float(d.get("start", 0))
-                    for d in data if d.get("text", "").strip()
+                    for d in data
                 )
                 ref_duration[country] = round(total_dur / 3600, 2)
         except Exception:
@@ -216,7 +218,7 @@ def scan_matched_counts(results_root: str, excel_countries):
 # =========================
 # Main
 # =========================
-def main(results_root: str, ref_root: str, excel_countries, skip_existing: bool = False, matched_only: bool = False):
+def main(results_root: str, ref_root: str, excel_countries, skip_existing: bool = False, matched_only: bool = False, module_name: str = ""):
     print(f"Scanning results: {results_root}")
     if matched_only:
         print("Mode: matched_only (only fully aligned results)")
@@ -226,8 +228,10 @@ def main(results_root: str, ref_root: str, excel_countries, skip_existing: bool 
     RED_FILL = PatternFill(start_color="FFC7CE", end_color="FFC7CE", fill_type="solid")
     YELLOW_FILL = PatternFill(start_color="FFFF00", end_color="FFFF00", fill_type="solid")
 
+    suffix = f"_{module_name}" if module_name else ""
+
     # ========== WER/CER Excel ==========
-    out_xlsx = os.path.join(results_root, "results.xlsx")
+    out_xlsx = os.path.join(results_root, f"results{suffix}.xlsx")
     wb = Workbook()
     ws = wb.active
     ws.title = "WER_CER"
@@ -274,7 +278,7 @@ def main(results_root: str, ref_root: str, excel_countries, skip_existing: bool 
     print(f"Wrote WER/CER Excel: {out_xlsx}")
 
     # ========== Count Excel ==========
-    out_count_xlsx = os.path.join(results_root, "results_count.xlsx")
+    out_count_xlsx = os.path.join(results_root, f"results_count{suffix}.xlsx")
     df_count = scan_matched_counts(results_root, excel_countries)
 
     wb2 = Workbook()
@@ -321,9 +325,11 @@ if __name__ == "__main__":
     parser.add_argument("--ref_root", type=str, required=True)
     parser.add_argument("--excel_countries", type=str, nargs="+", required=True,
                         help="Countries/regions for Excel, e.g. AGR-CH AIT-CH ...")
+    parser.add_argument("--module_name", type=str, default="",
+                        help="Module name for Excel filename suffix")
     parser.add_argument("--skip_existing", type=int, choices=[0, 1], default=0,
                         help="1: skip existing Excel; 0: overwrite")
     parser.add_argument("--matched_only", type=int, choices=[0, 1], default=0,
                         help="1: only include fully matched (ref==matched) results; 0: include all")
     args = parser.parse_args()
-    main(args.results_root, args.ref_root, args.excel_countries, bool(args.skip_existing), bool(args.matched_only))
+    main(args.results_root, args.ref_root, args.excel_countries, bool(args.skip_existing), bool(args.matched_only), args.module_name)

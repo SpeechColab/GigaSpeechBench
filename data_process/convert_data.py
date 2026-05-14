@@ -19,6 +19,21 @@ import glob
 from collections import defaultdict
 
 
+def _norm_aid(name: str) -> str:
+    """Normalize audio ID: strip path and extensions for consistent matching."""
+    name = name.replace("\\", "/")
+    base = os.path.basename(name)
+    changed = True
+    while changed:
+        changed = False
+        for ext in (".wav", ".mp3", ".mp4", ".webm"):
+            if base.lower().endswith(ext):
+                base = base[:-len(ext)]
+                changed = True
+                break
+    return base
+
+
 def convert_refs(data_root: str, out_dir: str, skip_existing: bool):
     """Read data/{LANG}/metadata.json -> {out}/ref/{LANG}.json"""
     ref_out = os.path.join(out_dir, "ref")
@@ -31,19 +46,30 @@ def convert_refs(data_root: str, out_dir: str, skip_existing: bool):
             continue
         out_path = os.path.join(ref_out, f"{lang}.json")
 
+        # Fast skip: if output exists and input hasn't changed since, skip entirely
+        if skip_existing and os.path.exists(out_path):
+            if os.path.getmtime(meta_path) <= os.path.getmtime(out_path):
+                continue
+
         meta = json.load(open(meta_path, encoding="utf-8"))
         segments = []
         for audio in meta.get("audios", []):
             aid = audio.get("aid", "")
             for seg in audio.get("segments", []):
+                # Skip invalid segments (empty text or status=invalid)
+                text = seg.get("text", "")
+                status = seg.get("status", "")
+                if not text.strip() and status != "valid":
+                    continue
                 segments.append({
                     "audio_name": aid,
                     "start": seg.get("begin_time", 0),
                     "end": seg.get("end_time", 0),
-                    "text": seg.get("text", ""),
+                    "text": text,
                 })
 
         new_content = json.dumps(segments, ensure_ascii=False, indent=2)
+        # Content comparison to avoid redundant writes
         if os.path.exists(out_path):
             old_content = open(out_path, encoding="utf-8").read()
             if old_content == new_content:
@@ -71,40 +97,50 @@ def convert_hyps(results_root: str, out_dir: str, skip_existing: bool):
         lang = os.path.basename(rf).replace(".json", "")
         data = json.load(open(rf, encoding="utf-8"))
         ref_indices[lang] = {
-            (s["audio_name"], round(s["start"], 3), round(s["end"], 3))
+            (_norm_aid(s["audio_name"]), round(s["start"], 3), round(s["end"], 3))
             for s in data
         }
 
     for model_file in sorted(glob.glob(os.path.join(results_root, "*.json"))):
         model = os.path.basename(model_file).replace(".json", "")
-        hyp_data = json.load(open(model_file, encoding="utf-8"))
+        model_mtime = os.path.getmtime(model_file)
+        hyp_data = None  # lazy load
 
-        # Group segments by lang
-        by_lang = defaultdict(list)
-        for audio in hyp_data.get("audios", []):
-            aid = audio.get("aid", "")
-            for seg in audio.get("segments", []):
-                lang = seg.get("lang", "")
-                if lang:
-                    by_lang[lang].append({
-                        "audio_name": aid,
-                        "start": seg.get("begin_time", 0),
-                        "end": seg.get("end_time", 0),
-                        "text": seg.get("text", ""),
-                    })
-
-        for lang, items in sorted(by_lang.items()):
+        for lang in sorted(ref_indices.keys()):
             country_dir = os.path.join(hyp_out, lang)
             os.makedirs(country_dir, exist_ok=True)
             out_path = os.path.join(country_dir, f"{lang}_{model}.json")
 
+            # Fast skip: if output exists and input model file hasn't changed since, skip
+            if skip_existing and os.path.exists(out_path):
+                if model_mtime <= os.path.getmtime(out_path):
+                    continue
+
+            # Lazy load and group by lang on first need
+            if hyp_data is None:
+                hyp_data = json.load(open(model_file, encoding="utf-8"))
+                by_lang = defaultdict(list)
+                for audio in hyp_data.get("audios", []):
+                    aid = audio.get("aid", "")
+                    for seg in audio.get("segments", []):
+                        seg_lang = seg.get("lang", "")
+                        if seg_lang:
+                            by_lang[seg_lang].append({
+                                "audio_name": aid,
+                                "start": seg.get("begin_time", 0),
+                                "end": seg.get("end_time", 0),
+                                "text": seg.get("text", ""),
+                            })
+
             ref_idx = ref_indices.get(lang, set())
+            items = by_lang.get(lang, [])
+
             matched = []
             for h in items:
-                key = (h["audio_name"], round(h["start"], 3), round(h["end"], 3))
+                key = (_norm_aid(h["audio_name"]), round(h["start"], 3), round(h["end"], 3))
                 if key in ref_idx:
                     matched.append({
-                        "audio_name": h["audio_name"],
+                        "audio_name": _norm_aid(h["audio_name"]),
                         "start": h["start"],
                         "end": h["end"],
                         "text": h["text"],
