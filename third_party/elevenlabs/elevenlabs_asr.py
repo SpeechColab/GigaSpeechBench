@@ -18,34 +18,34 @@ SUPPORTED_MODEL_IDS = {
 
 LANGUAGE_MAPPING = {
     "AR": "ara",  # Arabic
-    "ARE": "ara",  # Arabic-阿联酋
+    "ARE": "ara",  # Arabic-UAE
     "IRQ": "ara",  # Arabic-Iraq
-    "DZA": "ara",  # Arabic-阿尔及利亚
-    "EGY": "ara",  # Arabic-埃及
+    "DZA": "ara",  # Arabic-Algeria
+    "EGY": "ara",  # Arabic-Egypt
     "SAU": "ara",  # Arabic-Saudi
     "MAR": "ara",  # Arabic-Morocco
-    "IDN": "ind",  # Indonesia语
-    "JPN": "jpn",  # 日语
-    "KOR": "kor",  # 韩语
-    "THA": "tha",  # 泰语
-    "VNM": "vie",  # Vietnam语
-    "PHL": "fil",  # Philippines语
-    "MYS": "msa",  # 马来语
-    "USA": "eng",  # 英语
-    "CHN": "zho",  # 中文(普通话)
+    "IDN": "ind",  # Indonesian
+    "JPN": "jpn",  # Japanese
+    "KOR": "kor",  # Korean
+    "THA": "tha",  # Thai
+    "VNM": "vie",  # Vietnamese
+    "PHL": "fil",  # Filipino
+    "MYS": "msa",  # Malay
+    "USA": "eng",  # English
+    "CHN": "zho",  # Chinese (Mandarin)
     "CHN-EN": "eng",  # Chinese English
-    "IDN-EN": "eng",  # 印度口音英语
-    "JPN-EN": "eng",  # Japan口音英语
-    "PHL-EN": "eng",  # Philippines口音英语
-    "SCT-EN": "eng",  # 苏格兰口音英语
-    "SGP-EN": "eng",  # 新加坡口音英语
-    "XIANG": "zho",  # 湘方言
-    "JIN": "zho",  # 晋方言
+    "IDN-EN": "eng",  # Indonesian-accented English
+    "JPN-EN": "eng",  # Japanese-accented English
+    "PHL-EN": "eng",  # Filipino-accented English
+    "SCT-EN": "eng",  # Scottish-accented English
+    "SGP-EN": "eng",  # Singapore-accented English
+    "XIANG": "zho",  # Xiang dialect
+    "JIN": "zho",  # Jin dialect
 }
 
 
 def _segment_key(entry: dict):
-    """从条目中提取 (path或audio_name, start, end) 作为唯一键，used for加载与去重。"""
+    """Extract (path or audio_name, start, end) as a unique key from the entry, used for loading and deduplication."""
     path_or_name = entry.get("path") or entry.get("audio_name") or ""
     start = entry.get("start_time") if "start_time" in entry else entry.get("start", 0.0)
     end = entry.get("end_time") if "end_time" in entry else entry.get("end", 0.0)
@@ -54,21 +54,21 @@ def _segment_key(entry: dict):
 
 def load_transcribed_segments(language: str, model: str):
     """
-    加载已转录的segments。
-    以 (path或audio_name, start, end) 为键
-
-    返回:
-        - transcribed_segments (set): used for快速检查是否存在某个 (path_or_audio_name, start, end)
-        - segment_texts (dict): 以该元组为 key，文本内容为 value
-
-    Args:
-        language (str): language代码
-        model (str): 模型名称
+    Load previously transcribed segments.
+    Keyed by (path or audio_name, start, end)
 
     Returns:
-        (set, dict): 
-            set: 已转录 segment 的键集合
-            dict: key 同上，value 为该片段的文本内容（字符串）
+        - transcribed_segments (set): used for quick check of whether a (path_or_audio_name, start, end) exists
+        - segment_texts (dict): keyed by the same tuple, with text content as value
+
+    Args:
+        language (str): language code
+        model (str): model name
+
+    Returns:
+        (set, dict):
+            set: set of keys for transcribed segments
+            dict: same keys as above, values are text content of each segment (string)
     """
     results_dir = os.path.join(os.getcwd(), "results")
     filename = f"{language}_{model}.json"
@@ -89,23 +89,23 @@ def load_transcribed_segments(language: str, model: str):
                             transcribed_segments.add(key)
                             segment_texts[key] = (entry.get("text") or "").strip()
         except Exception as e:
-            print(f"[WARN] 无法加载已转录结果文件 {output_path}: {e}")
+            print(f"[WARN] Unable to load transcribed results file {output_path}: {e}")
 
     return transcribed_segments, segment_texts
 
 
 def fix_and_clean_results(language: str, model: str, text_file: str, output_dir: str) -> None:
     """
-    修复和清理结果文件：
-    1. 读取 ref 文件，构建 (audio_name, start, end) 的键集合
-    2. 在 result 文件中逐个检查：若 (path/audio_name, start, end) 与 ref 中某键匹配（允许时间误差 0.001 秒）则保留，否则删除。
-    不进行 id 的补充或纠正。
+    Fix and clean up results file:
+    1. Read the ref file, build a key set of (audio_name, start, end)
+    2. Check each entry in the result file: if (path/audio_name, start, end) matches a key in ref (allowing time tolerance of 0.001 seconds), keep it; otherwise, delete it.
+    No id supplementation or correction is performed.
 
     Args:
-        language (str): language代码
-        model (str): 模型名称
-        text_file (str): 参考文件路径（ref JSON）
-        output_dir (str): 输出目录
+        language (str): language code
+        model (str): model name
+        text_file (str): reference file path (ref JSON)
+        output_dir (str): output directory
     """
     results_dir = os.path.join(os.getcwd(), output_dir)
     filename = f"{language}_{model}.json"
@@ -114,22 +114,22 @@ def fix_and_clean_results(language: str, model: str, text_file: str, output_dir:
     if not os.path.exists(output_path):
         return
 
-    # Read参考文件，构建 (audio_name, start, end) -> id 的映射
+    # Read reference file, build (audio_name, start, end) -> id mapping
     if not os.path.exists(text_file):
-        print(f"  [WARN] 参考文件不存在，无法修复结果文件: {text_file}")
+        print(f"  [WARN] Reference file does not exist, cannot fix results file: {text_file}")
         return
 
     try:
         with open(text_file, "r", encoding="utf-8") as f:
             ref_data = json.load(f)
             if not isinstance(ref_data, list):
-                print(f"  [WARN] 参考文件格式错误，应为列表格式: {text_file}")
+                print(f"  [WARN] Reference file format error, should be a list: {text_file}")
                 return
     except Exception as e:
-        print(f"  [WARN] 无法读取参考文件 {text_file}: {e}")
+        print(f"  [WARN] Unable to read reference file {text_file}: {e}")
         return
 
-    # 构建参考文件的键集合：(audio_name, start, end)
+    # Build key set from reference file: (audio_name, start, end)
     ref_keys = set()
     for segment in ref_data:
         audio_name = segment.get("audio_name", "")
@@ -137,9 +137,9 @@ def fix_and_clean_results(language: str, model: str, text_file: str, output_dir:
         end = segment.get("end", 0.0)
         ref_keys.add((audio_name, float(start), float(end)))
 
-    print(f"  参考文件包含 {len(ref_keys)} 个片段")
+    print(f"  Reference file contains {len(ref_keys)} segments")
 
-    # Read结果文件
+    # Read results file
     try:
         with open(output_path, "r", encoding="utf-8") as f:
             content = f.read().strip()
@@ -149,13 +149,13 @@ def fix_and_clean_results(language: str, model: str, text_file: str, output_dir:
             if not isinstance(result_data, list):
                 return
     except Exception as e:
-        print(f"  [WARN] 无法读取结果文件 {output_path}: {e}")
+        print(f"  [WARN] Unable to read results file {output_path}: {e}")
         return
 
     original_count = len(result_data)
-    print(f"  结果文件包含 {original_count} 个条目")
+    print(f"  Results file contains {original_count} entries")
 
-    # 按 (path/audio_name, start, end) 与 ref 键匹配检查，通过则保留
+    # Check each entry against ref keys by (path/audio_name, start, end), keep if matched
     fixed_entries = []
     deleted_count = 0
 
@@ -163,7 +163,7 @@ def fix_and_clean_results(language: str, model: str, text_file: str, output_dir:
         path_or_name = entry.get("path") or entry.get("audio_name") or ""
         start_time = entry.get("start_time") if "start_time" in entry else entry.get("start", 0.0)
         end_time = entry.get("end_time") if "end_time" in entry else entry.get("end", 0.0)
-        # path 格式可能为 {language}/{audio_filename}，需得到 audio_name 与 ref 比较
+        # Path format may be {language}/{audio_filename}, need to get audio_name for comparison with ref
         if path_or_name and "/" in path_or_name:
             audio_name = os.path.basename(path_or_name)
             
@@ -171,7 +171,7 @@ def fix_and_clean_results(language: str, model: str, text_file: str, output_dir:
             audio_name = path_or_name
         audio_name = os.path.splitext(audio_name)[0]
 
-        # 是否与 ref 中某键匹配（允许时间误差 0.001 秒）
+        # Whether it matches a key in ref (allowing time tolerance of 0.001 seconds)
         matched = False
         for (ref_audio_name, ref_start, ref_end) in ref_keys:
             if (ref_audio_name == audio_name and
@@ -188,31 +188,31 @@ def fix_and_clean_results(language: str, model: str, text_file: str, output_dir:
         try:
             with open(output_path, "w", encoding="utf-8") as f:
                 json.dump(fixed_entries, f, ensure_ascii=False, indent=4)
-            print(f"  结果文件清理完成: 原有 {original_count} 条, 删除不匹配 {deleted_count} 条, 保留 {len(fixed_entries)} 条")
+            print(f"  Results file cleanup complete: originally {original_count} entries, deleted {deleted_count} unmatched, kept {len(fixed_entries)} entries")
         except Exception as e:
-            print(f"  [WARN] 无法写回结果文件 {output_path}: {e}")
+            print(f"  [WARN] Unable to write back results file {output_path}: {e}")
 
 
 def is_quota_exceeded_error(error: Exception) -> bool:
     """
-    检查异常是否为余额不足错误。
+    Check if the exception is a quota exceeded error.
 
     Args:
-        error (Exception): 异常对象
+        error (Exception): exception object
 
     Returns:
-        bool: 如果是余额不足错误返回True，否则返回False
+        bool: True if quota exceeded error, False otherwise
     """
     error_str = str(error).lower()
     error_repr = repr(error).lower()
     
-    # Check错误信息中是否包含 quota_exceeded 相关关键词
+    # Check if error message contains quota_exceeded related keywords
     quota_keywords = ["quota_exceeded", "quota exceeded", "credits remaining", "exceeds your quota"]
     for keyword in quota_keywords:
         if keyword in error_str or keyword in error_repr:
             return True
     
-    # Check异常对象的属性（某些 API 库可能将错误信息存储在属性中）
+    # Check exception object attributes (some API libraries may store error messages in attributes)
     if hasattr(error, 'body'):
         try:
             if isinstance(error.body, dict):
@@ -244,30 +244,30 @@ def is_segment_transcribed(
     segment_texts: dict = None,
 ) -> bool:
     """
-    检查segment是否已经转录过。
-    匹配时尝试多种 path 格式：{language_code}/{wav_filename}、wav_filename、wav_filename 无扩展名，
-    以兼容已有 JSON 中可能存在的不同 path/audio_name 写法。
+    Check if a segment has already been transcribed.
+    When matching, try multiple path formats: {language_code}/{wav_filename}, wav_filename, wav_filename without extension,
+    to accommodate different path/audio_name formats that may exist in existing JSON files.
 
     Args:
-        audio_path (str): 音频文件路径
-        start_time (float): 开始时间
-        end_time (float): 结束时间
-        language_code (str): language代码
-        transcribed_segments (set): 已转录segments的集合
-        force (bool): 是否强制重新转录
-        segment_texts (dict): 已转录segments的文本内容
+        audio_path (str): audio file path
+        start_time (float): start time
+        end_time (float): end time
+        language_code (str): language code
+        transcribed_segments (set): set of already transcribed segments
+        force (bool): whether to force re-transcription
+        segment_texts (dict): text content of already transcribed segments
 
     Returns:
-        bool: 如果已转录返回True，否则返回False
+        bool: True if already transcribed, False otherwise
     """
     wav_filename = os.path.basename(audio_path)
     wav_filename_without_ext = os.path.splitext(wav_filename)[0]
     start_f = float(start_time)
     end_f = float(end_time)
 
-    # 尝试多种 path 格式与 transcribed_segments 中的 key 匹配
+    # Try multiple path formats to match keys in transcribed_segments
     path_variants = [
-        f"{language_code}/{wav_filename}",  # 标准格式
+        f"{language_code}/{wav_filename}",  # standard format
         wav_filename,
         wav_filename_without_ext,
     ]
@@ -281,11 +281,11 @@ def is_segment_transcribed(
     if matched_key is None:
         return False
 
-    # 未开启 force 时，只要存在记录就认为已转录，跳过
+    # When force is not enabled, consider it transcribed if a record exists, skip it
     if not force:
         return True
 
-    # force 模式下，没有文本缓存则无法判断是否为空，视为需重跑；有缓存则根据文本是否为空决定
+    # In force mode: if no text cache, cannot determine if empty, treat as needing re-run; if cache exists, decide based on whether text is empty
     if segment_texts is None:
         return False
     text = segment_texts.get(matched_key, "")
@@ -303,48 +303,48 @@ def transcribe_audio(
     model_id: str = "scribe_v1"
 ) -> str:
     """
-    转录音频文件的指定片段。
+    Transcribe a specified segment of an audio file.
 
     Args:
-        audio_path (str): 音频文件的绝对路径
-        start_time (float): 起始时间（秒）
-        end_time (float): 结束时间（秒）
-        language (str): 国家代码（如 "ARE", "IRQ"），将自动映射到 ElevenLabs API 支持的语言代码
-        model_id (str): ElevenLabs 模型 ID，默认为 "scribe_v1"
+        audio_path (str): absolute path to the audio file
+        start_time (float): start time (seconds)
+        end_time (float): end time (seconds)
+        language (str): country code (e.g., "ARE", "IRQ"), will be automatically mapped to an ElevenLabs API-supported language code
+        model_id (str): ElevenLabs model ID, default is "scribe_v1"
 
     Returns:
-        str: 转录文本
+        str: transcribed text
     """
     api_key = os.getenv("ELEVENLABS_API_KEY", "")
     if not api_key:
-        raise ValueError("ELEVENLABS_API_KEY 环境变量未设置")
+        raise ValueError("ELEVENLABS_API_KEY environment variable not set")
 
-    # 验证 model_id
+    # Validate model_id
     if model_id not in SUPPORTED_MODEL_IDS:
-        raise ValueError(f"不支持的 model_id: {model_id}。支持的 model_id: {', '.join(SUPPORTED_MODEL_IDS)}")
+        raise ValueError(f"Unsupported model_id: {model_id}. Supported model_ids: {', '.join(SUPPORTED_MODEL_IDS)}")
 
     api_language_code = LANGUAGE_MAPPING.get(language.upper(), None)
     if api_language_code is None:
-        print(f"警告：未找到language {language} 的映射，将使用自动检测")
+        print(f"Warning: No mapping found for language {language}, will use auto-detection")
         api_language_code = None
 
-    # Initialize客户端
+    # Initialize client
     client = ElevenLabs(api_key=api_key)
 
-    # Load音频文件
+    # Load audio file
     audio = AudioSegment.from_file(audio_path)
 
-    # 截取音频片段（pydub 使用毫秒）
+    # Extract audio segment (pydub uses milliseconds)
     start_ms = int(start_time * 1000)
     end_ms = int(end_time * 1000)
     audio_segment = audio[start_ms:end_ms]
 
-    # 将音频片段导出为字节流
+    # Export audio segment as byte stream
     buffer = BytesIO()
     audio_segment.export(buffer, format="wav")
     buffer.seek(0)
 
-    # 调用 ElevenLabs API 进行转录
+    # Call ElevenLabs API for transcription
     try:
         transcription_result = client.speech_to_text.convert(
             file=buffer,
@@ -355,15 +355,15 @@ def transcribe_audio(
         )
         return transcription_result.text
     except Exception as e:
-        print(f"转录失败: {e}")
+        print(f"Transcription failed: {e}")
         raise
 
 
 def deduplicate_and_sort_results(language: str, model: str, output_dir: str) -> None:
     """
-    对指定语言和模型的结果文件进行去重与排序：
-      1. 以 (path或audio_name, start, end) 为唯一键，保留“最后出现”的一条记录；
-      2. 按 path/audio_name、start、end 排序后回写。
+    Deduplicate and sort the results file for the specified language and model:
+      1. Use (path or audio_name, start, end) as the unique key, keeping the last occurrence;
+      2. Sort by path/audio_name, start, end and write back.
     """
     results_dir = os.path.join(os.getcwd(), output_dir)
     filename = f"{language}_{model}.json"
@@ -379,15 +379,15 @@ def deduplicate_and_sort_results(language: str, model: str, output_dir: str) -> 
                 return
             data = json.loads(content)
             if not isinstance(data, list):
-                print(f"[WARN] 结果文件格式异常（非列表），跳过去重: {output_path}")
+                print(f"[WARN] Results file format error (not a list), skipping deduplication: {output_path}")
                 return
     except Exception as e:
-        print(f"[WARN] 无法读取结果文件以进行去重: {output_path}, 原因: {e}")
+        print(f"[WARN] Unable to read results file for deduplication: {output_path}, reason: {e}")
         return
 
     original_len = len(data)
 
-    # 以 (path或audio_name, start, end) 为 key，后出现的覆盖前面的
+    # Use (path or audio_name, start, end) as key, later entries override earlier ones
     unique_map = {}
     for entry in data:
         key = _segment_key(entry)
@@ -395,150 +395,150 @@ def deduplicate_and_sort_results(language: str, model: str, output_dir: str) -> 
 
     deduped = list(unique_map.values())
 
-    # 按 path/audio_name、start、end 排序
+    # Sort by path/audio_name, start, end
     deduped.sort(key=lambda e: _segment_key(e))
 
     try:
         with open(output_path, "w", encoding="utf-8") as f:
             json.dump(deduped, f, ensure_ascii=False, indent=4)
-        print(f"[INFO] 结果去重与排序完成: {output_path} (原有 {original_len} 条, 去重后 {len(deduped)} 条)")
+        print(f"[INFO] Results deduplication and sorting complete: {output_path} (originally {original_len} entries, {len(deduped)} after deduplication)")
     except Exception as e:
-        print(f"[WARN] 写回去重结果失败: {output_path}, 原因: {e}")
+        print(f"[WARN] Failed to write deduplication results: {output_path}, reason: {e}")
 
 
 def main():
     """
-    主函数：根据标准格式的JSON文件转录音频文件。
+    Main function: Transcribe audio files based on standard-format JSON files.
     """
-    parser = argparse.ArgumentParser(description="批量转录音频文件并保存结果")
+    parser = argparse.ArgumentParser(description="Batch transcribe audio files and save results")
     parser.add_argument(
         "--languages",
         type=str,
         nargs="+",
         required=True,
-        help="要处理的language代码列表（例如：--languages JPN ARE IDN）"
+        help="Language codes to process (e.g., --languages JPN ARE IDN)"
     )
     parser.add_argument(
         "--text_dir",
         type=str,
         default="data/text/testbatch/ref",
-        help="文本文件目录（默认：data/text/testbatch/ref）"
+        help="Text file directory (default: data/text/testbatch/ref)"
     )
     parser.add_argument(
         "--audio_dir",
         type=str,
         default="data/audio/testbatch",
-        help="音频文件目录（默认：data/audio/testbatch）"
+        help="Audio file directory (default: data/audio/testbatch)"
     )
     parser.add_argument(
         "--output_dir",
         type=str,
         default="results",
-        help="输出目录路径（保存转录结果）"
+        help="Output directory path (save transcription results)"
     )
     parser.add_argument(
         "--api_key",
         type=str,
         default=None,
-        help="ElevenLabs API key（如果不提供，将从环境变量 ELEVENLABS_API_KEY 读取）"
+        help="ElevenLabs API key (if not provided, reads from ELEVENLABS_API_KEY environment variable)"
     )
     parser.add_argument(
         "--model_id",
         type=str,
         default="scribe_v1",
         choices=list(SUPPORTED_MODEL_IDS),
-        help="ElevenLabs 模型 ID（可选值：scribe_v1, scribe_v1_experimental, scribe_v2）"
+        help="ElevenLabs model ID (options: scribe_v1, scribe_v1_experimental, scribe_v2)"
     )
     parser.add_argument(
         "--force",
         action="store_true",
-        help="如果为 true，则对于已存在但文本为空的片段重新进行识别"
+        help="If true, re-transcribe segments that already exist but have empty text"
     )
 
     args = parser.parse_args()
     
-    # 验证 model_id
+    # Validate model_id
     model_id = args.model_id
     if model_id not in SUPPORTED_MODEL_IDS:
-        raise ValueError(f"不支持的 model_id: {model_id}。支持的 model_id: {', '.join(SUPPORTED_MODEL_IDS)}")
+        raise ValueError(f"Unsupported model_id: {model_id}. Supported model_ids: {', '.join(SUPPORTED_MODEL_IDS)}")
     
-    # 验证并normalizationlanguage代码
+    # Validate and normalize language codes
     languages = [lang.upper() for lang in args.languages]
     
-    # 设置路径
+    # Set paths
     text_dir = os.path.abspath(args.text_dir)
     audio_dir = os.path.abspath(args.audio_dir)
     
-    print(f"使用模型: {model_id}")
-    print(f"文本目录: {text_dir}")
-    print(f"音频目录: {audio_dir}")
-    print(f"处理language: {', '.join(languages)}")
+    print(f"Using model: {model_id}")
+    print(f"Text directory: {text_dir}")
+    print(f"Audio directory: {audio_dir}")
+    print(f"Processing languages: {', '.join(languages)}")
 
-    # 设置 API key
+    # Set API key
     if args.api_key:
         os.environ["ELEVENLABS_API_KEY"] = args.api_key
     elif not os.getenv("ELEVENLABS_API_KEY"):
-        raise ValueError("请提供 API key（通过 --api_key 参数或设置 ELEVENLABS_API_KEY 环境变量）")
+        raise ValueError("Please provide an API key (via --api_key argument or set ELEVENLABS_API_KEY environment variable)")
 
-    # 验证目录是否存在
+    # Validate directories exist
     if not os.path.exists(text_dir):
-        raise ValueError(f"文本目录不存在: {text_dir}")
+        raise ValueError(f"Text directory does not exist: {text_dir}")
     if not os.path.exists(audio_dir):
-        raise ValueError(f"音频目录不存在: {audio_dir}")
+        raise ValueError(f"Audio directory does not exist: {audio_dir}")
 
-    # Iterate指定的language
+    # Iterate over specified languages
     total_languages = len(languages)
     for lang_idx, language in enumerate(languages, 1):
-        print(f"\n处理language [{lang_idx}/{total_languages}]: {language}")
+        print(f"\nProcessing language [{lang_idx}/{total_languages}]: {language}")
 
-        # 构建文本文件路径：data/text/testbatch/ref/{language}.json
+        # Build text file path: data/text/testbatch/ref/{language}.json
         text_file = os.path.join(text_dir, f"{language}.json")
         
         if not os.path.exists(text_file):
-            print(f"  警告：文本文件不存在，跳过: {text_file}")
+            print(f"  Warning: Text file does not exist, skipping: {text_file}")
             continue
 
-        # Load该language已转录的segments
+        # Load transcribed segments for this language
         model_name = f"elevenlabs_{model_id}"
         transcribed_segments, segment_texts = load_transcribed_segments(language, model_name)
-        print(f"  已加载 {len(transcribed_segments)} 个已转录的segments")
+        print(f"  Loaded {len(transcribed_segments)} transcribed segments")
 
-        # Load文本JSON文件
+        # Load text JSON file
         try:
             with open(text_file, 'r', encoding='utf-8') as f:
                 segments_data = json.load(f)
         except Exception as e:
-            print(f"  错误：无法加载文本文件 {text_file}: {e}")
+            print(f"  Error: Unable to load text file {text_file}: {e}")
             continue
 
         if not isinstance(segments_data, list):
-            print(f"  错误：文本文件格式错误，应为列表格式: {text_file}")
+            print(f"  Error: Text file format error, expected list format: {text_file}")
             continue
 
-        print(f"  找到 {len(segments_data)} 个片段")
+        print(f"  Found {len(segments_data)} segments")
 
-        # 修复和clean up结果文件（在正式转录之前）
+        # Fix and clean up results file (before formal transcription)
         fix_and_clean_results(language, model_name, text_file, args.output_dir)
         
-        # 修复后重新加载已转录的segments（因为可能更新了id或删除了不匹配的条目）
+        # Reload transcribed segments after fix (since IDs may have been updated or mismatched entries removed)
         transcribed_segments, segment_texts = load_transcribed_segments(language, model_name)
-        print(f"  修复后重新加载 {len(transcribed_segments)} 个已转录的segments")
-        # 按 audio_name 分组process
+        print(f"  Reloaded {len(transcribed_segments)} transcribed segments after fix")
+        # Group by audio_name for processing
         segments_by_audio = defaultdict(list)
         for segment in segments_data:
             audio_name = segment.get("audio_name", "")
             if audio_name:
                 segments_by_audio[audio_name].append(segment)
 
-        print(f"  涉及 {len(segments_by_audio)} 个音频文件")
+        print(f"  Involving {len(segments_by_audio)} audio files")
 
-        # Process每个音频文件
+        # Process each audio file
         total_audios = len(segments_by_audio)
         for audio_idx, (audio_name, segments) in enumerate(segments_by_audio.items(), 1):
-            print(f"  [{audio_idx}/{total_audios}] 处理音频: {audio_name}")
+            print(f"  [{audio_idx}/{total_audios}] Processing audio: {audio_name}")
 
-            # 构建音频文件路径：data/audio/testbatch/{language}/{audio_name}.wav
-            # 尝试多种可能的扩展名
+            # Build audio file path: data/audio/testbatch/{language}/{audio_name}.wav
+            # Try multiple possible extensions
             audio_extensions = ['.wav', '.mp3', '.flac', '.m4a']
             audio_path = None
             
@@ -557,25 +557,25 @@ def main():
                         break
             
             if audio_path is None:
-                print(f"    警告：音频文件不存在，跳过。尝试路径: {lang_audio_dir}/{audio_name}[.wav|.mp3|.flac|.m4a]")
+                print(f"    Warning: Audio file does not exist, skipping. Tried path: {lang_audio_dir}/{audio_name}[.wav|.mp3|.flac|.m4a]")
                 continue
 
-            print(f"    找到音频文件: {audio_path}")
-            print(f"    该音频有 {len(segments)} 个片段")
+            print(f"    Found audio file: {audio_path}")
+            print(f"    This audio has {len(segments)} segments")
 
-            # Process该音频的每个片段
+            # Process each segment of this audio
             for seg_idx, segment in enumerate(segments, 1):
                 start_time = segment.get("start", 0.0)
                 end_time = segment.get("end", 0.0)
                 segment_id = segment.get("id", seg_idx)
 
-                print(f"    片段 {seg_idx}/{len(segments)} (id={segment_id}): {start_time:.2f}s - {end_time:.2f}s")
+                print(f"    Segment {seg_idx}/{len(segments)} (id={segment_id}): {start_time:.2f}s - {end_time:.2f}s")
 
-                # 构造格式化的路径：{language}/{audio_filename}
+                # Construct formatted path: {language}/{audio_filename}
                 audio_filename = os.path.basename(audio_path)
                 formatted_path = f"{language}/{audio_filename}"
                 
-                # Check该segment是否已经转录过
+                # Check if this segment has already been transcribed
                 if is_segment_transcribed(
                     audio_path,
                     start_time,
@@ -585,10 +585,10 @@ def main():
                     force=args.force,
                     segment_texts=segment_texts,
                 ):
-                    print(f"      该segment已转录，跳过")
+                    print(f"      Segment already transcribed, skipping")
                     continue
 
-                # 调用 transcribe_audio 进行转录
+                # Call transcribe_audio for transcription
                 try:
                     transcription_text = transcribe_audio(
                         audio_path=audio_path,
@@ -598,25 +598,25 @@ def main():
                         model_id=model_id
                     )
 
-                    # 即使返回为空文本也进行保存
+                    # Save even if the returned text is empty
                     preview = ""
                     if isinstance(transcription_text, str):
                         preview = transcription_text.strip()[:50]
-                    print(f"      转录成功: {preview}...")
+                    print(f"      Transcription successful: {preview}...")
                 except Exception as e:
-                    # Check是否为余额不足错误
+                    # Check if quota exceeded error
                     if is_quota_exceeded_error(e):
-                        print(f"      转录失败（余额不足）: {e}")
-                        print(f"      跳过该片段（不保存）")
+                        print(f"      Transcription failed (quota exceeded): {e}")
+                        print(f"      Skipping this segment (not saving)")
                         continue
                     else:
-                        # 其他错误情况，保存结果为空字符串
-                        print(f"      转录失败（其他错误）: {e}")
-                        print(f"      保存结果为空字符串")
+                        # Other error: save result as empty string
+                        print(f"      Transcription failed (other error): {e}")
+                        print(f"      Saving result as empty string")
                         transcription_text = ""
 
 
-                # 调用 save_transcription 保存结果
+                # Call save_transcription to save results
                 try:
                     save_transcription(
                         audio_path=formatted_path,
@@ -628,7 +628,7 @@ def main():
                         index=segment_id
                     )
                     
-                    # 修正保存的路径格式，确保使用 Linux 风格的路径分隔符
+                    # Fix saved path format, ensuring Linux-style path separators
                     results_dir = os.path.join(os.getcwd(), args.output_dir)
                     os.makedirs(results_dir, exist_ok=True)
                     filename = f"{language}_{model_name}.json"
@@ -637,24 +637,24 @@ def main():
                     if os.path.exists(output_path):
                         with open(output_path, "r", encoding="utf-8") as f:
                             data = json.load(f)
-                        # 修正最后一个条目的路径格式
+                        # Fix the path format of the last entry
                         if data and len(data) > 0:
                             last_entry = data[-1]
-                            # 将路径标准化为 Linux 风格：{language}/{audio_filename}
+                            # Normalize path to Linux style: {language}/{audio_filename}
                             last_entry["path"] = formatted_path
-                            # 写回文件
+                            # Write back to file
                             with open(output_path, "w", encoding="utf-8") as f:
                                 json.dump(data, f, ensure_ascii=False, indent=4)
                     
-                    # 将新转录的segment添加到集合中，避免重复检查
+                    # Add newly transcribed segment to the set to avoid duplicate checks
                     transcribed_segments.add((formatted_path, float(start_time), float(end_time)))
                 except Exception as e:
-                    print(f"      保存结果失败: {e}")
+                    print(f"      Failed to save results: {e}")
 
-        # 该language所有音频与片段process完毕后，对结果文件进行去重与排序
+        # After all audio and segments for this language are processed, deduplicate and sort the results file
         deduplicate_and_sort_results(language, model_name, args.output_dir)
 
-    print("\n所有文件处理完毕！")
+    print("\nAll files processed!")
 
 
 if __name__ == "__main__":
