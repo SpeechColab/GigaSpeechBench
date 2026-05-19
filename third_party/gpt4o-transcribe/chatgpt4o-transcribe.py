@@ -13,7 +13,7 @@ from pydub.utils import mediainfo
 # Import OpenAI client
 from openai import OpenAI
 
-# Import from utils save_transcription（if not available, fallback implementation below）
+# Import from utils save_transcription (if not available, fallback implementation below)
 try:
     from utils import save_transcription
 except ImportError:
@@ -22,47 +22,46 @@ except ImportError:
         pass 
 
 ########################################  Parameter config  ########################################
-# 注意：replace为你的 OpenAI API Key
-    
+# Note: Set your OpenAI API Key via environment variable OPENAI_API_KEY
 
 API_KEY      = os.getenv("OPENAI_API_KEY")  # set via environment variable
-ROOT_DIR     = r"/Users/wangpeng/Desktop/data4test_v2"  # <--- 修改为您的数据目录
-TESTMARK_DIR = r"/Users/wangpeng/Desktop/data4test_v2"  # <--- 修改为您的数据目录
-OUTPUT_DIR   = r"/Users/wangpeng/Desktop/data4test_v2/asr_results_output" # <--- 修改为您希望保存结果的目录
+ROOT_DIR     = "/path/to/dataset_root"                      # <--- Modify to your dataset directory
+TESTMARK_DIR = "/path/to/dataset_root"                      # <--- Modify to your dataset directory
+OUTPUT_DIR   = "/path/to/results_root"                      # <--- Modify to your desired output directory
 MODEL_NAME   = "gpt-4o-transcribe"                         
-TEMP_DIR     = r"/Users/wangpeng/Desktop/data4test_v2/temp_segments_openai" # <--- 临时切割音频目录，可选修改
-FINAL_OUTPUT_DIR = r"/Users/wangpeng/Desktop/data4test_v2/asr_results_all" # <--- 新增：最终合并结果目录
+TEMP_DIR     = "/path/to/temp_segments"                     # <--- Temporary audio segment directory, optional to modify
+FINAL_OUTPUT_DIR = "/path/to/results_all"                   # <--- Final merged results directory
 
 MAX_WORKERS  = 16                                          
 ########################################  Parameter config  ########################################
 
-# 定义Language mapping表：目录名 -> ISO-639-1 语言代码 (供 OpenAI API 使用)
+# Language mapping table: directory name -> ISO-639-1 language code (for OpenAI API usage)
 LANG_MAP = {
     "ARE": "ar", "DZA": "ar", "EGY": "ar", "IRQ": "ar", "MAR": "ar", "SAU": "ar",
     "MYS": "ms", "IDN": "id", "PHL": "tl", "THA": "th", "VNM": "vi",
     "JPN": "ja", "KOR": "ko",
 }
 
-# Initialize OpenAI 客户端（Thread安全，无需每个Thread创建）
+# Initialize OpenAI client (thread-safe, no need to create per thread)
 client = OpenAI(api_key=API_KEY)
 
-# 创建必要目录
+# Create necessary directories
 Path(TEMP_DIR).mkdir(exist_ok=True, parents=True)
 Path(OUTPUT_DIR).mkdir(exist_ok=True, parents=True)
-Path(FINAL_OUTPUT_DIR).mkdir(exist_ok=True, parents=True) # <--- 创建最终输出目录
+Path(FINAL_OUTPUT_DIR).mkdir(exist_ok=True, parents=True) # <--- Create final output directory
 
-# Thread锁：避免多Thread同时打印导致输出混乱
+# Thread lock: prevents interleaved output from concurrent threads
 print_lock = threading.Lock()
 
 def get_audio_segment(wav_path: str, start_sec: float, end_sec: float) -> AudioSegment:
-    """按时间切割音频片段（单位：秒）"""
+    """Cut an audio segment by time (unit: seconds)"""
     audio = AudioSegment.from_wav(str(wav_path))
     start_ms = int(start_sec * 1000)
     end_ms = int(end_sec * 1000)
     return audio[start_ms:end_ms]
 
 def transcribe_segment_worker(segment_idx: int, segment_audio: AudioSegment, lang_code: str) -> tuple[int, str]:
-    """转录单个音频片段（Thread工作函数）：返回 (分段索引, 转录文本)"""
+    """Transcribe a single audio segment (thread worker function): returns (segment index, transcription text)"""
     temp_file = Path(TEMP_DIR) / f"temp_segment_{segment_idx}_{threading.get_ident()}.wav"
     
     segment_audio.export(str(temp_file), format="wav")
@@ -80,67 +79,69 @@ def transcribe_segment_worker(segment_idx: int, segment_audio: AudioSegment, lan
         temp_file.unlink(missing_ok=True) 
         
         with print_lock:
-            print(f"[Thread完成] 分段 {segment_idx} 转录成功 (语言: {lang_code})")
+            print(f"[Thread Done] Segment {segment_idx} transcribed successfully (language: {lang_code})")
         return (segment_idx, transcribed_text)
     
     except Exception as e:
         with print_lock:
             temp_file.unlink(missing_ok=True) 
-            print(f"[Thread警告] 分段 {segment_idx} 转录失败：{e}")
+            print(f"[Thread Warning] Segment {segment_idx} transcription failed: {e}")
         return (segment_idx, "")
 
 # ==============================================================================
-# 新增Features:汇总和格式convert
+# Additional features: aggregation and format conversion
 # ==============================================================================
 
 # ==============================================================================
-# 新增Features:按语言汇总和格式convert
+# Additional features: aggregation by language and format conversion
 # ==============================================================================
 
 def aggregate_results(output_dir: Path, root_dir: Path, lang_map: Dict[str, str], model_name: str, final_output_dir_path: Path):
     """
-    遍历 OUTPUT_DIR 下的所有 JSON 文件，按语言分组，并将它们的内容转换为unified列表格式，
-    然后为每种语言生成一个独立的 JSON 文件，命名为 {language}_{model_name}.json。
+    Iterate through all JSON files under OUTPUT_DIR, group by language, and convert their contents
+    to a unified list format. Then generate a separate JSON file for each language,
+    named {language}_{model_name}.json.
     
     Args:
-        output_dir (Path): 存放每个长音频 JSON 结果的根目录。
-        root_dir (Path): 长音频文件 ROOT_DIR，used for获取完整的 WAV 路径。
-        lang_map (Dict[str, str]): 语言目录名到 ISO 代码的映射（虽然在此函数中主要使用目录名）。
-        model_name (str): used for结果文件命名的模型名。
-        final_output_dir_path (Path): 最终汇总结果的输出目录。
+        output_dir (Path): Root directory containing per-audio JSON results.
+        root_dir (Path): Root directory for audio files, used to construct full WAV paths.
+        lang_map (Dict[str, str]): Mapping from language directory names to ISO codes
+            (though this function primarily uses directory names).
+        model_name (str): Model name used for result file naming.
+        final_output_dir_path (Path): Output directory for the final aggregated results.
     """
-    # 存储按语言分组的转录数据：{ "JPN": [ {entry1}, {entry2}, ... ], "MYS": [ ... ] }
+    # Store transcription data grouped by language: { "JPN": [ {entry1}, {entry2}, ... ], "MYS": [ ... ] }
     results_by_language: Dict[str, list[Dict[str, str | float]]] = {}
     
-    # 找到所有生成的 JSON 文件
+    # Find all generated JSON files
     result_files = list(output_dir.rglob("*.json"))
     
     if not result_files:
-        print("\n[INFO] 未找到任何 JSON 结果文件，跳过汇总。")
+        print("\n[INFO] No JSON result files found, skipping aggregation.")
         return
 
-    print(f"\n===== 开始分组汇总 {len(result_files)} 个 JSON 文件 =====")
+    print(f"\n===== Starting grouped aggregation of {len(result_files)} JSON files =====")
 
-    for json_path in tqdm(result_files, desc="分组汇总 JSON"):
+    for json_path in tqdm(result_files, desc="Grouping JSON files"):
         try:
             with open(json_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
             
-            # 1. 提取信息
+            # 1. Extract information
             audio_name = data.get("audio_name")
             segments = data.get("segments", [])
             
-            # 2. 确定语言目录名 (例如 JPN, MYS) - 这是分组的关键
-            lang_dir_name = json_path.parent.name # 例如 JPN
+            # 2. Determine the language directory name (e.g., JPN, MYS) - this is the grouping key
+            lang_dir_name = json_path.parent.name # e.g., JPN
             
-            # Initialize该语言的列表
+            # Initialize the list for this language
             if lang_dir_name not in results_by_language:
                 results_by_language[lang_dir_name] = []
             
-            # 3. 确定原始 WAV 文件的完整路径
+            # 3. Determine the full path to the original WAV file
             original_wav_path = root_dir / lang_dir_name / f"{audio_name}.wav"
             
-            # 4. convert分段格式并添加到对应语言组
+            # 4. Convert segment format and add to the corresponding language group
             for seg in segments:
                 transcribed_text = seg.get("text", "").strip()
                 if not transcribed_text:
@@ -149,7 +150,7 @@ def aggregate_results(output_dir: Path, root_dir: Path, lang_map: Dict[str, str]
                 entry: Dict[str, str | float] = {
                     "path": str(original_wav_path.resolve()),
                     "text": transcribed_text,
-                    "language": lang_dir_name, # 使用 JPN/MYS 这种目录名
+                    "language": lang_dir_name, # Use directory name like JPN/MYS
                     "model": model_name,
                     "start_time": seg.get("start", 0.0),
                     "end_time": seg.get("end", 0.0)
@@ -157,41 +158,41 @@ def aggregate_results(output_dir: Path, root_dir: Path, lang_map: Dict[str, str]
                 results_by_language[lang_dir_name].append(entry)
 
         except Exception as e:
-            print(f"\n[WARNING] 处理文件 {json_path} 时出错: {e}")
+            print(f"\n[WARNING] Error processing file {json_path}: {e}")
             continue
 
-    # 5. 写入最终的汇总文件 (按语言循环)
+    # 5. Write the final aggregated files (loop by language)
     final_output_dir = final_output_dir_path
     final_output_dir.mkdir(exist_ok=True, parents=True)
     
-    print("\n===== 开始写入按语言分组的汇总文件 =====")
+    print("\n===== Writing language-grouped aggregated files =====")
 
     for lang_dir_name, data_list in results_by_language.items():
         if not data_list:
             continue
             
-        # 文件名格式: {language}_{model_name}.json (例如: JPN_gpt4o-transcribe.json)
+        # File name format: {language}_{model_name}.json (e.g., JPN_gpt4o-transcribe.json)
         final_filename = f"{lang_dir_name}_{model_name}.json" 
         final_output_path = final_output_dir / final_filename
 
         with open(final_output_path, "w", encoding="utf-8") as f:
             json.dump(data_list, f, ensure_ascii=False, indent=2)
 
-        print(f"[SUCCESS] 语言 {lang_dir_name} 汇总文件保存至：{final_output_path} (共 {len(data_list)} 条记录)")
+        print(f"[SUCCESS] Language {lang_dir_name} aggregated file saved to: {final_output_path} ({len(data_list)} records)")
 
-# ... (main 函数保持不变，只需确保调用 aggregate_results 即可)
+# ... (main function remains unchanged, just make sure to call aggregate_results)
 
 
 
 def main():
-    # ... (前面的代码保持不变，process音频和转录)
+    # ... (previous code remains unchanged, process audio and transcribe)
     wav_list = list(Path(ROOT_DIR).rglob("*.wav"))
     if not wav_list:
-        print("未找到任何 wav 文件，请检查目录设置！")
+        print("No WAV files found, please check your directory settings!")
         return
 
-    # 逐个process长音频（串行）
-    for wav_path in tqdm(wav_list, desc="ChatGPT-4o ASR 主进程"):
+    # Process each long audio file (serial)
+    for wav_path in tqdm(wav_list, desc="ChatGPT-4o ASR main process"):
         wav_path = wav_path.resolve()
         audio_name = wav_path.stem
         lang_dir = wav_path.parent.name.upper()
@@ -199,13 +200,13 @@ def main():
         lang_code = LANG_MAP.get(lang_dir)
         if not lang_code:
             with print_lock:
-                print(f"\n[ERROR] 无法识别的语言目录：{lang_dir}，跳过该音频 {audio_name}。请检查 LANG_MAP 配置！")
+                print(f"\n[ERROR] Unrecognized language directory: {lang_dir}, skipping audio {audio_name}. Please check LANG_MAP configuration!")
             continue
 
         ref_json_path = Path(TESTMARK_DIR) / lang_dir / f"{audio_name}.json"
         if not ref_json_path.exists():
             with print_lock:
-                print(f"\n[ERROR] 未找到参考文件：{ref_json_path}，跳过该音频")
+                print(f"\n[ERROR] Reference file not found: {ref_json_path}, skipping this audio")
             continue
         
         with open(ref_json_path, "r", encoding="utf-8") as f:
@@ -224,12 +225,12 @@ def main():
                 valid_tasks.append((seg_idx, segment_audio, seg))
             except Exception as e:
                  with print_lock:
-                     print(f"[WARNING] 音频 {audio_name} 分段 {seg_idx} 切割失败：{e}。跳过。")
+                     print(f"[WARNING] Audio {audio_name} segment {seg_idx} cut failed: {e}. Skipping.")
 
 
         if not valid_tasks:
             with print_lock:
-                print(f"\n[INFO] 音频 {audio_name} 无有效分段，直接复制参考文件")
+                print(f"\n[INFO] Audio {audio_name} has no valid segments, copying reference file directly")
             output_dir = Path(OUTPUT_DIR) / lang_dir
             output_dir.mkdir(exist_ok=True, parents=True)
             output_json_path = output_dir / f"{audio_name}.json"
@@ -238,7 +239,7 @@ def main():
             continue
         
         with print_lock:
-            print(f"\n[INFO] 开始处理音频 {audio_name} (语言: {lang_code})，共 {len(valid_tasks)} 个有效分段，使用 {MAX_WORKERS} Thread")
+            print(f"\n[INFO] Processing audio {audio_name} (language: {lang_code}), {len(valid_tasks)} valid segments, using {MAX_WORKERS} threads")
         
         transcribed_results = {}
         
@@ -248,14 +249,14 @@ def main():
                 for seg_idx, seg_audio, seg_data in valid_tasks
             }
             
-            for future in tqdm(as_completed(future_to_seg), total=len(future_to_seg), desc=f"{audio_name} 分段转录"):
+            for future in tqdm(as_completed(future_to_seg), total=len(future_to_seg), desc=f"{audio_name} segment transcription"):
                 seg_idx, _ = future_to_seg[future]
                 try:
                     result_idx, result_text = future.result()
                     transcribed_results[result_idx] = result_text
                 except Exception as e:
                     with print_lock:
-                        print(f"[ERROR] 分段 {seg_idx} 结果获取失败：{e}")
+                        print(f"[ERROR] Segment {seg_idx} result retrieval failed: {e}")
                     transcribed_results[seg_idx] = ""
         
         output_segments = []
@@ -278,11 +279,11 @@ def main():
             }, f, ensure_ascii=False, indent=2)
         
         with print_lock:
-            print(f"\n[SUCCESS] 音频 {audio_name} 处理完成，Save results至：{output_json_path}")
+            print(f"\n[SUCCESS] Audio {audio_name} processing complete, results saved to: {output_json_path}")
 
-    print(f"\n===== 所有长Audio processing完成！分文件结果在 {OUTPUT_DIR} =====")
+    print(f"\n===== All audio processing complete! Per-file results saved in {OUTPUT_DIR} =====")
     
-    # <--- 新增：调用 JSON 合并功能 --->
+    # <--- Call JSON aggregation function --->
     aggregate_results(Path(OUTPUT_DIR), Path(ROOT_DIR), LANG_MAP, MODEL_NAME, Path(FINAL_OUTPUT_DIR))
 
 
