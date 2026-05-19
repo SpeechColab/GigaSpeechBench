@@ -21,10 +21,10 @@ class KoreanASRProcessor:
             raise FileNotFoundError(f"Model file not found, check path: {self.model_path}")
         
         self.model = nemo_asr.models.ASRModel.restore_from(self.model_path).to(self.device)
-        print(f"✅ 模型已加载 ({self.device})")
+        print(f"✅ Model loaded ({self.device})")
 
     def _process_audio_segment(self, audio_path: str, start: float, end: float) -> str:
-        """生成临时音频片段"""
+        """Generate a temporary audio segment"""
         temp_dir = "temp_kor_segments"
         os.makedirs(temp_dir, exist_ok=True)
         temp_path = os.path.join(temp_dir, f"{Path(audio_path).stem}_{start:.2f}-{end:.2f}.wav")
@@ -34,39 +34,39 @@ class KoreanASRProcessor:
         return temp_path
 
     def _transcribe_korean(self, audio_path: str) -> str:
-        """转录韩语片段"""
+        """Transcribe a Korean segment"""
         try:
             with torch.inference_mode():
                 results: List[List[str]] = self.model.transcribe([audio_path])
             return results[0][0].strip()
         except Exception as e:
-            print(f"⚠️ 转录异常: {str(e)}")
+            print(f"⚠️ Transcription error: {str(e)}")
             return ""
 
     def _is_silent_segment(self, segment: Dict[str, Any]) -> bool:
-        """判断是否为无效片段"""
+        """Check whether a segment is invalid"""
         return (
             segment.get("status", "") == "invalid" 
         )
 
     def process_file(self, audio_path: str, label_path: str):
-        """process音频文件（自动跳过无效片段）"""
+        """Process audio file (auto-skip invalid segments)"""
         lang = Path(audio_path).parent.name.upper()[:3] if Path(audio_path).parent.name.isalpha() else "KOR"
         
         try:
             with open(label_path, 'r', encoding='utf-8') as f:
                 segments = json.load(f).get("segments", [])
         except Exception as e:
-            print(f"⚠️ 标签读取失败: {label_path} - {str(e)}")
+            print(f"⚠️ Label read failed: {label_path} - {str(e)}")
             return
         
-        print(f"\n🔊 处理 {Path(audio_path).name} [{lang}]")
+        print(f"\n🔊 Processing {Path(audio_path).name} [{lang}]")
         
         silent_count = 0
         processed_count = 0
         
-        for seg in tqdm(segments, desc="分段处理"):
-            # Skip静音/无效片段
+        for seg in tqdm(segments, desc="Processing segments"):
+            # Skip silent/invalid segments
             if self._is_silent_segment(seg):
                 silent_count += 1
                 continue
@@ -87,8 +87,8 @@ class KoreanASRProcessor:
                 if os.path.exists(tmp_audio):
                     os.remove(tmp_audio)
             except Exception as e:
-                print(f"⚠️ 分段异常 [{seg['start']}-{seg['end']}s]: {str(e)}")
-                # 保存失败的转录（空文本）
+                print(f"⚠️ Segment error [{seg['start']}-{seg['end']}s]: {str(e)}")
+                # Save failed transcription (empty text)
                 save_transcription(
                     audio_path=audio_path,
                     text="",
@@ -99,7 +99,7 @@ class KoreanASRProcessor:
                 )
                 processed_count += 1
         
-        print(f"  已跳过 {silent_count} 个静音片段，处理了 {processed_count} 个有效片段")
+        print(f"  Skipped {silent_count} silent segments, processed {processed_count} valid segments")
 
 def main():
     CONFIG = {
@@ -111,7 +111,7 @@ def main():
     try:
         asr = KoreanASRProcessor(CONFIG["model_path"])
     except Exception as e:
-        print(f"❌ 初始化失败: {str(e)}")
+        print(f"❌ Initialization failed: {str(e)}")
         return
     
     processed_files = 0
@@ -129,7 +129,7 @@ def main():
                 asr.process_file(audio_file, label_file)
                 processed_files += 1
     
-    print(f"\n🎉 完成! 共处理 {processed_files} 个文件")
+    print(f"\n🎉 Completed! Processed {processed_files} files")
 
 if __name__ == "__main__":
     main()

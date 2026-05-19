@@ -20,16 +20,16 @@ class ArabicASRProcessor:
         
         self.model = EncDecHybridRNNTCTCModel.restore_from(model_path).to(self.device)
         self.model.eval()
-        print(f"✅ 模型已加载 ({self.device})")
+        print(f"✅ Model loaded ({self.device})")
         
     def _is_silent_segment(self, segment: Dict[str, Any]) -> bool:
-        """判断是否为无效片段"""
+        """Check whether a segment is invalid"""
         return (
             segment.get("status", "") == "invalid" 
         )
 
     def _clean_text(self, text) -> str:
-        """clean up转录文本为纯字符串"""
+        """Clean up transcription text to a pure string"""
         if isinstance(text, (list, tuple)):
             if len(text) > 0:
                 if isinstance(text[0], (list, tuple)):
@@ -39,7 +39,7 @@ class ArabicASRProcessor:
         return str(text)
 
     def _process_segment(self, audio_path: str, start: float, end: float) -> str:
-        """创建临时音频片段"""
+        """Create a temporary audio segment"""
         temp_dir = "temp_ara_segments"
         os.makedirs(temp_dir, exist_ok=True)
         temp_path = os.path.join(temp_dir, f"{Path(audio_path).stem}_{start:.2f}-{end:.2f}.wav")
@@ -48,31 +48,31 @@ class ArabicASRProcessor:
         return temp_path
 
     def _transcribe_segment(self, audio_path: str) -> Optional[str]:
-        """转录单个音频片段"""
+        """Transcribe a single audio segment"""
         try:
             transcription = self.model.transcribe([audio_path], batch_size=1)
             return self._clean_text(transcription)
         except Exception as e:
-            print(f"⚠️ 转录异常: {str(e)}")
+            print(f"⚠️ Transcription error: {str(e)}")
             return None
 
     def process_file(self, audio_path: str, label_path: str):
-        """process单个音频文件"""
+        """Process a single audio file"""
         try:
             with open(label_path, 'r', encoding='utf-8') as f:
                 segments = json.load(f).get("segments", [])
         except Exception as e:
-            print(f"⚠️ 标签读取失败: {label_path} - {str(e)}")
+            print(f"⚠️ Label read failed: {label_path} - {str(e)}")
             return
         
         country_code = Path(audio_path).parent.name.upper()
         silent_count = 0
         processed_count = 0
         
-        print(f"\n🔊 处理 {Path(audio_path).name} [{country_code}]")
+        print(f"\n🔊 Processing {Path(audio_path).name} [{country_code}]")
         
-        for seg in tqdm(segments, desc="分段处理"):
-            # Skip静音/无效片段
+        for seg in tqdm(segments, desc="Processing segments"):
+            # Skip silent/invalid segments
             if self._is_silent_segment(seg):
                 silent_count += 1
                 continue
@@ -93,7 +93,7 @@ class ArabicASRProcessor:
                 if os.path.exists(tmp_audio):
                     os.remove(tmp_audio)
             except Exception as e:
-                print(f"⚠️ 分段异常 [{seg['start']}-{seg['end']}s]: {str(e)}")
+                print(f"⚠️ Segment error [{seg['start']}-{seg['end']}s]: {str(e)}")
                 save_transcription(
                     audio_path=audio_path,
                     text="",
@@ -104,14 +104,14 @@ class ArabicASRProcessor:
                 )
                 processed_count += 1
         
-        print(f"  已跳过 {silent_count} 个静音片段，处理了 {processed_count} 个有效片段")
+        print(f"  Skipped {silent_count} silent segments, processed {processed_count} valid segments")
 
 def process_dataset(audio_dir: str, label_dir: str, model_path: str):
-    """process整个数据集"""
+    """Process entire dataset"""
     try:
         asr = ArabicASRProcessor(model_path)
     except Exception as e:
-        print(f"❌ 初始化失败: {str(e)}")
+        print(f"❌ Initialization failed: {str(e)}")
         return
     
     processed_files = 0
@@ -128,9 +128,9 @@ def process_dataset(audio_dir: str, label_dir: str, model_path: str):
                 asr.process_file(audio_file, label_file)
                 processed_files += 1
             else:
-                print(f"⚠️ 标签文件not found: {label_file}")
+                print(f"⚠️ Label file not found: {label_file}")
     
-    print(f"\n🎉 完成! 共处理 {processed_files} 个文件")
+    print(f"\n🎉 Completed! Processed {processed_files} files in total")
 
 if __name__ == "__main__":
     CONFIG = {

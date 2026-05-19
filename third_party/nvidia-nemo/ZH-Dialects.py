@@ -20,7 +20,7 @@ def save_transcription(
     end_time: float
 ) -> None:
     """
-    Save transcription results to/results/{language}_{model}.json文件
+    Save transcription results to /results/{language}_{model}.json file
     Adjust fields to audio_name format, keep others unchanged
     """
     results_dir = os.path.join(os.getcwd(), "results")
@@ -29,11 +29,11 @@ def save_transcription(
     filename = f"{language}_{model}.json"
     output_path = os.path.join(results_dir, filename)
 
-    # Generate audio_name format：ARE#UC_p5qypAZQAUkgtjoJk5_Bg#fLqRbOYZsHY#raw.wav
+    # Generate audio_name format: ARE#UC_p5qypAZQAUkgtjoJk5_Bg#fLqRbOYZsHY#raw.wav
     audio_name = f"{Path(audio_path).stem}#raw.wav"
 
     entry = {
-        "audio_name": audio_name,  # 使用简化音频名格式
+        "audio_name": audio_name,  # Use simplified audio name format
         "text": text.strip(),
         "language": language.strip(),
         "model": model.strip(),
@@ -60,19 +60,19 @@ def save_transcription(
 
 class DialectChineseASRProcessor:
     def __init__(self, model_path: str):
-        """中文方言ASRprocess器（仅processvalid片段，纯ASR结果）"""
+        """Chinese dialect ASR processor (process only valid segments, pure ASR results)"""
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        print("⏳ 加载中文方言ASR模型...")
+        print("⏳ Loading Chinese dialect ASR model...")
         
         if not os.path.exists(model_path):
-            raise FileNotFoundError(f"模型not found: {model_path}")
+            raise FileNotFoundError(f"Model not found: {model_path}")
         
         self.model = ASRModel.restore_from(model_path).to(self.device)
         self.model.eval()
-        print(f"✅ 模型加载完成 ({self.device})")
+        print(f"✅ Model loaded ({self.device})")
 
     def _clean_text(self, text) -> str:
-        """clean up转录文本为纯字符串"""
+        """Clean up transcription text to a pure string"""
         if isinstance(text, (list, tuple)):
             if len(text) > 0:
                 if isinstance(text[0], (list, tuple)):
@@ -82,7 +82,7 @@ class DialectChineseASRProcessor:
         return str(text)
 
     def _process_segment(self, audio_path: str, start: float, end: float) -> str:
-        """创建临时音频片段"""
+        """Create a temporary audio segment"""
         temp_dir = "temp_chinese_segments"
         os.makedirs(temp_dir, exist_ok=True)
         temp_path = os.path.join(temp_dir, f"{Path(audio_path).stem}_{start:.2f}-{end:.2f}.wav")
@@ -91,37 +91,37 @@ class DialectChineseASRProcessor:
         return temp_path
 
     def _transcribe_segment(self, audio_path: str) -> str:
-        """转录单个音频片段，只返回ASR结果"""
+        """Transcribe a single audio segment, returning only the ASR result"""
         try:
             transcription = self.model.transcribe([audio_path], batch_size=1)
             return self._clean_text(transcription)
         except Exception as e:
-            print(f"⚠️ 转录Error: {str(e)}")
+            print(f"⚠️ Transcription error: {str(e)}")
             return ""
 
     def process_file(self, audio_path: str, label_path: str):
-        """process单个音频文件（仅processstatus=valid的片段）"""
-        # 从路径提取方言标识
+        """Process a single audio file (process only segments with status=valid)"""
+        # Extract dialect identifier from path
         dialect = Path(audio_path).parent.name.upper()
         valid_dialects = {"JIN", "XIANG"}
         
         if dialect not in valid_dialects:
-            dialect = "ZH"  # Default标记为中文
+            dialect = "ZH"  # Default to Chinese
             
         try:
             with open(label_path, 'r', encoding='utf-8') as f:
                 label_data = json.load(f)
                 segments = label_data.get("segments", [])
         except Exception as e:
-            print(f"⚠️ 标签加载失败: {label_path} - {str(e)}")
+            print(f"⚠️ Label load failed: {label_path} - {str(e)}")
             return
         
-        print(f"\n🔊 处理文件: {Path(audio_path).name} [{dialect}]")
+        print(f"\n🔊 Processing file: {Path(audio_path).name} [{dialect}]")
         
         valid_count = 0
         processed_count = 0
         
-        for seg in tqdm(segments, desc="处理有效片段"):
+        for seg in tqdm(segments, desc="Processing valid segments"):
             if seg.get("status") != "valid":
                 continue
                 
@@ -141,7 +141,7 @@ class DialectChineseASRProcessor:
                 processed_count += 1
                 os.remove(tmp_audio) if os.path.exists(tmp_audio) else None
             except Exception as e:
-                print(f"⚠️ 片段处理错误 [{seg['start']}-{seg['end']}s]: {str(e)}")
+                print(f"⚠️ Segment processing error [{seg['start']}-{seg['end']}s]: {str(e)}")
                 save_transcription(
                     audio_path=audio_path,
                     text="",
@@ -152,27 +152,27 @@ class DialectChineseASRProcessor:
                 )
                 processed_count += 1
         
-        print(f"  有效片段: {valid_count}, 成功处理: {processed_count}")
+        print(f"  Valid segments: {valid_count}, successfully processed: {processed_count}")
 
 def main():
-    parser = argparse.ArgumentParser(description='中文方言语音识别')
+    parser = argparse.ArgumentParser(description='Chinese Dialect Speech Recognition')
     parser.add_argument("--audio_dir", type=str, required=True,
-                      help="包含WAV文件的输入目录")
+                      help="Input directory containing WAV files")
     parser.add_argument("--label_dir", type=str, required=True,
-                      help="包含JSON标签的目录")
+                      help="Directory containing JSON labels")
     args = parser.parse_args()
 
-    # 中文ASR模型路径
+    # Chinese ASR model path
     MODEL_PATH = "/path/to/nemo_asr/model/stt_zh_conformer_transducer_large.nemo"
 
     try:
         processor = DialectChineseASRProcessor(MODEL_PATH)
     except Exception as e:
-        print(f"❌ 初始化失败: {str(e)}")
+        print(f"❌ Initialization failed: {str(e)}")
         return
 
     wav_files = glob.glob(os.path.join(args.audio_dir, "**/*.wav"), recursive=True)
-    print(f"找到 {len(wav_files)} 个音频文件")
+    print(f"Found {len(wav_files)} audio files")
 
     success_count = 0
     for wav_path in wav_files:
@@ -180,17 +180,17 @@ def main():
         label_path = os.path.join(args.label_dir, rel_path.replace('.wav', '.json'))
         
         if not os.path.exists(label_path):
-            print(f"⚠️ 标签缺失: {label_path}")
+            print(f"⚠️ Label missing: {label_path}")
             continue
             
         try:
             processor.process_file(wav_path, label_path)
             success_count += 1
         except Exception as e:
-            print(f"⚠️ 处理失败 {wav_path}: {str(e)}")
+            print(f"⚠️ Failed to process {wav_path}: {str(e)}")
 
-    print(f"\n🎉 处理完成. 成功处理 {success_count}/{len(wav_files)} 个文件.")
-    print("结果已保存到 ./results/ 目录")
+    print(f"\n🎉 Processing complete. Successfully processed {success_count}/{len(wav_files)} files.")
+    print("Results saved to ./results/ directory")
 
 if __name__ == "__main__":
     main()

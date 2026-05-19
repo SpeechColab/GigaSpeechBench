@@ -20,7 +20,7 @@ def save_transcription(
     end_time: float
 ) -> None:
     """
-    Save transcription results to/results/{language}_{model}.json文件
+    Save transcription results to /results/{language}_{model}.json file
     Adjust fields to audio_name format, keep others unchanged
     """
     results_dir = os.path.join(os.getcwd(), "results")
@@ -29,11 +29,11 @@ def save_transcription(
     filename = f"{language}_{model}.json"
     output_path = os.path.join(results_dir, filename)
 
-    # Generate audio_name format：ARE#UC_p5qypAZQAUkgtjoJk5_Bg#fLqRbOYZsHY#raw.wav
+    # Generate audio_name format: ARE#UC_p5qypAZQAUkgtjoJk5_Bg#fLqRbOYZsHY#raw.wav
     audio_name = f"{Path(audio_path).stem}#raw.wav"
 
     entry = {
-        "audio_name": audio_name,  # 使用简化音频名格式
+        "audio_name": audio_name,  # Use simplified audio name format
         "text": text.strip(),
         "language": language.strip(),
         "model": model.strip(),
@@ -60,7 +60,7 @@ def save_transcription(
 
 class DialectEnglishASRProcessor:
     def __init__(self, model_path: str):
-        """英语方言ASRprocess器（仅processvalid片段，纯ASR结果）"""
+        """English dialect ASR processor (process only valid segments, pure ASR results)"""
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         print("⏳ Loading English Dialect ASR Model...")
         
@@ -72,7 +72,7 @@ class DialectEnglishASRProcessor:
         print(f"✅ Model loaded ({self.device})")
 
     def _clean_text(self, text) -> str:
-        """clean up转录文本为纯字符串"""
+        """Clean up transcription text to a pure string"""
         if isinstance(text, (list, tuple)):
             if len(text) > 0:
                 if isinstance(text[0], (list, tuple)):
@@ -82,7 +82,7 @@ class DialectEnglishASRProcessor:
         return str(text)
 
     def _process_segment(self, audio_path: str, start: float, end: float) -> str:
-        """创建临时音频片段"""
+        """Create a temporary audio segment"""
         temp_dir = "temp_dialect_segments"
         os.makedirs(temp_dir, exist_ok=True)
         temp_path = os.path.join(temp_dir, f"{Path(audio_path).stem}_{start:.2f}-{end:.2f}.wav")
@@ -91,7 +91,7 @@ class DialectEnglishASRProcessor:
         return temp_path
 
     def _transcribe_segment(self, audio_path: str) -> str:
-        """转录单个音频片段，只返回ASR结果"""
+        """Transcribe a single audio segment, returning only the ASR result"""
         try:
             transcription = self.model.transcribe([audio_path], batch_size=1)
             return self._clean_text(transcription)
@@ -100,8 +100,8 @@ class DialectEnglishASRProcessor:
             return ""
 
     def process_file(self, audio_path: str, label_path: str):
-        """process单个音频文件（仅processstatus=valid的片段）"""
-        # 从路径提取方言标识
+        """Process a single audio file (process only segments with status=valid)"""
+        # Extract dialect identifier from path
         dialect = Path(audio_path).parent.name.upper()
         valid_dialects = {"CHN-EN", "IDN-EN", "JPN-EN", "PHL-EN", "SCT-EN", "SGP-EN"}
         
@@ -152,7 +152,7 @@ class DialectEnglishASRProcessor:
                 )
                 processed_count += 1
         
-        print(f"  有效片段: {valid_count}, 成功处理: {processed_count}")
+        print(f"  Valid segments: {valid_count}, successfully processed: {processed_count}")
 
 def main():
     parser = argparse.ArgumentParser(description='English Dialect Speech Recognition')
