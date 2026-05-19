@@ -19,17 +19,17 @@ language_mapping = {
     "ARE": "ar",  # UAE -> Arabic
     "DZA": "ar",  # Algeria -> Arabic
     "EGY": "ar",  # Egypt -> Arabic
-    "IRQ": "ar",  # Iraq -> 阿拉伯语
-    "MAR": "ar",  # Morocco -> 阿拉伯语
-    "SAU": "ar",  # Saudi阿拉伯 -> 阿拉伯语
-    "SYR": "ar",  # Syria -> 阿拉伯语
-    "IDN": "id",  # 印度尼西亚 -> Indonesia语
-    "JPN": "ja",  # Japan -> 日语
-    "KOR": "ko",  # Korea -> 韩语
-    "THA": "th",  # Thailand -> 泰语
-    "VNM": "vi",  # Vietnam -> Vietnam语
-    "ZH": "zh",   # 中国 -> 中文（普通话、四川话、闽南语、Wu dialect）
-    "EN": "en",   # 英文
+    "IRQ": "ar",  # Iraq -> Arabic
+    "MAR": "ar",  # Morocco -> Arabic
+    "SAU": "ar",  # Saudi Arabia -> Arabic
+    "SYR": "ar",  # Syria -> Arabic
+    "IDN": "id",  # Indonesia -> Indonesian
+    "JPN": "ja",  # Japan -> Japanese
+    "KOR": "ko",  # Korea -> Korean
+    "THA": "th",  # Thailand -> Thai
+    "VNM": "vi",  # Vietnam -> Vietnamese
+    "ZH": "zh",   # China -> Chinese (Mandarin, Sichuan, Minnan, Wu dialect)
+    "EN": "en",   # English
 }
 
 
@@ -85,10 +85,10 @@ def process_one_json(json_path: str, lang: str, skip_uids: set):
     )
 
     if wav_path is None or not os.path.exists(wav_path):
-        print(f"[WARN] 找不到对应的 wav: {base}.wav")
-        raise FileNotFoundError(f"找不到对应的 wav 文件: {base}.wav")
+        print(f"[WARN] Cannot find matching wav: {base}.wav")
+        raise FileNotFoundError(f"Cannot find matching wav file: {base}.wav")
 
-    print(f"\n[INFO] 处理: {json_path}")
+    print(f"\n[INFO] Processing: {json_path}")
 
     with open(json_path, "r", encoding="utf-8") as f:
         data = json.load(f)
@@ -106,7 +106,7 @@ def process_one_json(json_path: str, lang: str, skip_uids: set):
 
         cut_audio(wav_path, start_sec, end_sec, TMP_WAV)
 
-        print(f"  [SEG] {start_sec:.3f}~{end_sec:.3f} 秒，写入 {TMP_WAV}，调用 ASR...")
+        print(f"  [SEG] {start_sec:.3f}~{end_sec:.3f}s, wrote {TMP_WAV}, calling ASR...")
 
         try:
             resp = call_asr(TMP_WAV, lang)
@@ -119,7 +119,7 @@ def process_one_json(json_path: str, lang: str, skip_uids: set):
                 end_time=end_sec,
             )
         except Exception as e:
-            print(f"    [ERROR] 调用 ASR 失败: {e}")
+            print(f"    [ERROR] ASR call failed: {e}")
             save_transcription(
                 audio_path=wav_path,
                 text="",

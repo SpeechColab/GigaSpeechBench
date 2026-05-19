@@ -11,6 +11,7 @@ Batch ASR transcription using Alibaba Qwen3 ASR models via DashScope API. Suppor
 | `qwen3asr.py` | Main transcription script |
 | `run_qwen35_cv_threaded.py` | Threaded qwen3.5-omni-flash inference |
 | `run_qwen35_omni_fleurs.py` | qwen3.5-omni-flash on FLEURS |
+| `run_cv_vnm_missing.py` | qwen3-asr-flash on missing VNM segments |
 
 ## Setup
 
