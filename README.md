@@ -121,22 +121,77 @@ We also welcome:
 
 ### 🗺 Language Key
 
-| Code | Language | Region |
-|:-----|:---------|:-------|
-| IRQ | Iraqi Arabic | Arab Region |
-| DZA | Algerian Arabic | Arab Region |
-| ARE | Emirati Arabic | Arab Region |
-| EGY | Egyptian Arabic | Arab Region |
-| MAR | Moroccan Arabic | Arab Region |
-| SAU | Saudi Arabic | Arab Region |
-| SYR | Syrian Arabic | Arab Region |
-| IDN | Indonesian | Southeast Asia |
-| MYS | Malay | Southeast Asia |
-| PHL | Filipino (Tagalog) | Southeast Asia |
-| VNM | Vietnamese | Southeast Asia |
-| THA | Thai | Southeast Asia |
-| JPN | Japanese | East Asia |
-| KOR | Korean | East Asia |
+| Code | Language | Region | Duration |
+|:-----|:---------|:-------|:---------|
+| IRQ | Iraqi Arabic | Arab Region | 20.37h |
+| DZA | Algerian Arabic | Arab Region | 19.96h |
+| ARE | Emirati Arabic | Arab Region | 19.33h |
+| EGY | Egyptian Arabic | Arab Region | 20.16h |
+| MAR | Moroccan Arabic | Arab Region | 19.96h |
+| SAU | Saudi Arabic | Arab Region | 20.30h |
+| SYR | Syrian Arabic | Arab Region | 20.23h |
+| IDN | Indonesian | Southeast Asia | 21.18h |
+| MYS | Malay | Southeast Asia | 18.90h |
+| PHL | Filipino (Tagalog) | Southeast Asia | 21.46h |
+| VNM | Vietnamese | Southeast Asia | 21.27h |
+| THA | Thai | Southeast Asia | 20.89h |
+| JPN | Japanese | East Asia | 20.00h |
+| KOR | Korean | East Asia | 20.00h |
+
+### 🗣 English Accents
+
+| Code | Language | Duration |
+|:-----|:---------|:---------|
+| CHN-EN | Chinese-accented English | 9.43h |
+| IDN-EN | Indonesian-accented English | 10.41h |
+| JPN-EN | Japanese-accented English | 3.77h |
+| PHL-EN | Filipino-accented English | 10.75h |
+| SCT-EN | Scottish-accented English | 4.44h |
+| SGP-EN | Singaporean English | 10.63h |
+
+### 🀄 Chinese Dialects
+
+| Code | Language | Duration |
+|:-----|:---------|:---------|
+| XIANG | Xiang (湘语) | 10.63h |
+| JIN | Jin (晋语) | 7.38h |
+| MIN | Min (闽语) | 10.75h |
+| YUE | Yue (粤语) | 11.34h |
+| WU | Wu (吴语) | 9.75h |
+
+### 🏭 Chinese Vertical Domains
+
+| Code | Domain | Duration |
+|:-----|:-------|:---------|
+| AGR-CH | Agriculture | 7.03h |
+| AIT-CH | AI & Technology | 12.77h |
+| ART-CH | Art | 12.25h |
+| BIO-CH | Biology | 8.35h |
+| ECM-CH | E-Commerce | 9.33h |
+| ENG-CH | Engineering | 16.17h |
+| ENT-CH | Entertainment | 9.68h |
+| FIN-CH | Finance | 3.83h |
+| HUM-CH | Humanities | 12.86h |
+| LAW-CH | Law | 3.98h |
+| MED-CH | Medicine | 4.41h |
+| MIL-CH | Military | 4.41h |
+
+### 🏭 English Vertical Domains
+
+| Code | Domain | Duration |
+|:-----|:-------|:---------|
+| AGR-EN | Agriculture | 10.74h |
+| AIT-EN | AI & Technology | 23.14h |
+| ART-EN | Art | 16.01h |
+| BIO-EN | Biology | 19.39h |
+| ECM-EN | E-Commerce | 26.68h |
+| ENG-EN | Engineering | 14.94h |
+| ENT-EN | Entertainment | 23.57h |
+| FIN-EN | Finance | 18.64h |
+| HUM-EN | Humanities | 14.02h |
+| LAW-EN | Law | 23.58h |
+| MED-EN | Medicine | 19.18h |
+| MIL-EN | Military | 27.47h |
 
 ---
 
