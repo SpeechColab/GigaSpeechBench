@@ -79,7 +79,7 @@ def get_parser():
 def get_omniasr_lang(language: str):
     """
     transform language code to omniasr lang id
-    Only LLM-series decoding requires lang id，CTC series does not support this
+    Only LLM-series decoding requires lang id; CTC series does not support this
     """
     language = language.upper()
 
@@ -98,10 +98,10 @@ def get_omniasr_lang(language: str):
 
     elif language == 'IRQ':
         """
-        omnilingual-asr中相关Iraq的lang有三种，可以都试一下效果：
-            Mesopotamian dialect（Palmyra oasis and settlements along the Euphrates）、
-            北Mesopotamian dialect、（北部使用）
-            内志阿拉伯语（南部使用）
+        omnilingual-asr has three relevant lang ids for Iraq; you can try each to see which works best:
+            Mesopotamian Arabic (Palmyra oasis and settlements along the Euphrates),
+            North Mesopotamian Arabic (used in the north),
+            Najdi Arabic (used in the south)
         """
         return 'acm_Arab'       # Mesopotamian Arabic
         # return 'ayp_Arab'       # North Mesopotamian Arabic
@@ -109,8 +109,8 @@ def get_omniasr_lang(language: str):
 
     elif language == 'SAU':
         """
-        omnilingual-asr中没有专门针对Saudi的lang id
-        相关的有三种：Najdi、Hijazi（红海沿岸）、Gulf Arabic（东部海湾沿岸）
+        omnilingual-asr does not have a lang id specifically for Saudi Arabia.
+        Three relevant options exist: Najdi, Hijazi (Red Sea coast), Gulf Arabic (Eastern Gulf coast)
         """
         return 'ars_Arab'       # Najdi Arabic 
         # return 'acw_Arab'       # Hijazi Arabic
@@ -130,33 +130,33 @@ def get_omniasr_lang(language: str):
 
     elif language == 'THA':
         """
-        omniasr 中以 thai 结尾的 lang id 有很多，
-        这里取 Thai 单独命名的
+        omnilingual-asr has many lang ids ending with "thai",
+        here we use the standalone Thai lang id
         """
         return 'tha_Thai'       # Thai
 
     elif language == 'IDN':
         """
-        Indonesia语相当复杂，几个相关的 lang id:
+        Indonesian is quite complex; several relevant lang ids are listed below:
         """
         return 'ind_Latn'       # Indonesian
         # return 'bhz_Latn'       # Bada (Indonesia)
         # return 'twe_Latn'       # Tewa (Indonesia)
-        # return 'xmm_Latn'       # Manado Malay 万鸦老马来语
-        # return 'abs_Latn'       # Ambonese Malay 安汶语
-        # return 'jax_Latn'       # Jambi Malay 占碑马来语
+        # return 'xmm_Latn'       # Manado Malay
+        # return 'abs_Latn'       # Ambonese Malay
+        # return 'jax_Latn'       # Jambi Malay
         # return 'max_Latn'       # North Moluccan Malay 
         # return 'mkn_Latn'       # Kupang Malay
         # return 'pmy_Latn'       # Papuan Malay
-        # return 'pse_Latn'       # Central Malay, AKA South Barisan Malay  南巴里桑马来
-        # return 'xdy_Latn'       # Malayic Dayak 马来语系达雅克语
+        # return 'pse_Latn'       # Central Malay, AKA South Barisan Malay
+        # return 'xdy_Latn'       # Malayic Dayak
 
     elif language == 'MYS':
         """
-        马来语也有好几个对应的 lang id，我不太了解，仅列举在下面
+        Malay also has several corresponding lang ids; listed below for reference
         """
         return 'zsm_Latn'       # standard malay
-        # return 'msi_Latn'       # Sabah Malay 沙巴
+        # return 'msi_Latn'       # Sabah Malay
 
     else:
         raise
@@ -170,7 +170,7 @@ def transcribe_audio(
     language: str = 'IRQ',
 ):
     """
-    转录一个音频文件的函数，建议先从该函数开始进行测试，同时下载模型
+    Transcribe a single audio file. Recommended for initial testing and model downloading.
 
     Args:
         audio: Audio input path (str)
@@ -234,7 +234,7 @@ def transcribe_audio(
 
 def process_audio_files(input_file: str = None):
     """
-    处理 metainfo 文件 input_file，汇总成 audio_files：一个包含输入音频信息的 list
+    Process the metainfo file input_file and aggregate into audio_files: a list containing input audio information
     Args:
         input_file: str (line format belike: {wav_path}\t{start}\t{end})
             if no start / end is provided, whole audio will be processed
@@ -337,7 +337,7 @@ def batch_transcribe_audios(
     batch_decode: bool = True,
 ):
     """
-    批量转录大量音频，请指定一个包含音频信息的文件
+    Batch transcribe a large number of audios. Please specify a file containing audio information.
     Args:
         input_file: str (line format belike: {wav_path}\t{start}\t{end})
             if no start / end is provided, whole audio will be processed
