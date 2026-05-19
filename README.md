@@ -180,18 +180,18 @@ We also welcome:
 
 | Code | Domain | Duration |
 |:-----|:-------|:---------|
-| AGR-EN | Agriculture | 10.74h |
-| AIT-EN | AI & Technology | 23.14h |
-| ART-EN | Art | 16.01h |
-| BIO-EN | Biology | 19.39h |
-| ECM-EN | E-Commerce | 26.68h |
-| ENG-EN | Engineering | 14.94h |
-| ENT-EN | Entertainment | 23.57h |
-| FIN-EN | Finance | 18.64h |
-| HUM-EN | Humanities | 14.02h |
-| LAW-EN | Law | 23.58h |
-| MED-EN | Medicine | 19.18h |
-| MIL-EN | Military | 27.47h |
+| AGR-EN | Agriculture | 8.82h |
+| AIT-EN | AI & Technology | 3.71h |
+| ART-EN | Art | 7.78h |
+| BIO-EN | Biology | 10.50h |
+| ECM-EN | E-Commerce | 10.57h |
+| ENG-EN | Engineering | 8.60h |
+| ENT-EN | Entertainment | 9.53h |
+| FIN-EN | Finance | 10.20h |
+| HUM-EN | Humanities | 2.96h |
+| LAW-EN | Law | 2.08h |
+| MED-EN | Medicine | 8.40h |
+| MIL-EN | Military | 9.97h |
 
 ---
 
