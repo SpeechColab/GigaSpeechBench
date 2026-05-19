@@ -12,7 +12,7 @@ import requests
 
 """
 Using ByteDance Doubao recording recognition model2.0
-Link：https://console.volcengine.com/speech/service/10012
+Link: https://console.volcengine.com/speech/service/10012
 """
 
 

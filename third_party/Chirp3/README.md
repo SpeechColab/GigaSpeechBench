@@ -20,7 +20,10 @@ export GOOGLE_APPLICATION_CREDENTIALS=/path/to/credentials.json
 ## Usage
 
 ```bash
-python Chirp3.py --input_dir /path/to/audio --output_dir /path/to/results
+python Chirp3.py \
+  --json_dir /path/to/reference_json \
+  --audio_dir /path/to/audio \
+  --project_id YOUR_PROJECT_ID
 ```
 
 ## Output Format

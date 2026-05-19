@@ -10,7 +10,7 @@ from pydub.utils import mediainfo
 
 from google import genai
 
-# Import from utils save_transcription（if not available, fallback implementation below）
+# Import from utils save_transcription (if not available, fallback implementation below)
 try:
     from utils import save_transcription
 except ImportError:

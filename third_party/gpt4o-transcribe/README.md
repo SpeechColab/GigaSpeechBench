@@ -19,8 +19,16 @@ export OPENAI_API_KEY=your_key
 
 ## Usage
 
+Edit the configuration constants at the top of `chatgpt4o-transcribe.py` before running:
+
+```python
+ROOT_DIR     = "/path/to/dataset_root"   # Dataset directory
+TESTMARK_DIR = "/path/to/dataset_root"   # Reference format directory
+OUTPUT_DIR   = "/path/to/results_root"   # Output results directory
+```
+
 ```bash
-python chatgpt4o-transcribe.py --input_dir /path/to/audio --output_dir /path/to/results
+python chatgpt4o-transcribe.py
 ```
 
 ## Output Format

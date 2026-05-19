@@ -22,8 +22,18 @@ uv sync
 
 ## Usage
 
+Edit the configuration constants at the top of `auto_infer.py` before running:
+
+```python
+DATA_DIR    = '/path/to/audio_root'    # Audio dataset directory
+RESULTS_DIR = './results'              # Output results directory
+MODEL_DIR   = '/path/to/model'         # Model directory
+```
+
 ```bash
-python auto_infer.py --input_dir /path/to/audio --output_dir /path/to/results
+python auto_infer.py              # Full-audio batch inference
+python auto_infer.py --force      # Force reprocessing
+python auto_infer_with_segments.py  # Segment-based inference
 ```
 
 ## Output Format

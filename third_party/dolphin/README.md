@@ -19,7 +19,12 @@ Batch ASR transcription using the Dolphin multilingual speech recognition model.
 ## Usage
 
 ```bash
-python dolphin_asr.py --input_dir /path/to/audio --output_dir /path/to/results
+python dolphin_asr.py \
+  --languages JPN ARE IDN \
+  --audio_dir /path/to/audio \
+  --text_dir /path/to/ref \
+  --output_dir /path/to/results \
+  --model_dir /path/to/model
 ```
 
 ## Output Format

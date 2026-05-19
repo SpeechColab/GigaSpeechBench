@@ -19,7 +19,12 @@ export ELEVENLABS_API_KEY=your_key
 ## Usage
 
 ```bash
-python elevenlabs_asr.py --input_dir /path/to/audio --output_dir /path/to/results
+python elevenlabs_asr.py \
+  --languages JPN ARE IDN \
+  --audio_dir /path/to/audio \
+  --text_dir /path/to/ref \
+  --output_dir /path/to/results \
+  --model_id scribe_v2
 ```
 
 ## Output Format

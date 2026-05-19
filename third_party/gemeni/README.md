@@ -20,8 +20,16 @@ export GOOGLE_API_KEY=your_key
 
 ## Usage
 
+Edit the configuration constants at the top of `gemini.py` before running:
+
+```python
+ROOT_DIR     = "/path/to/audio_root"    # Root directory for audio to transcribe
+TESTMARK_DIR = "/path/to/testmark"       # Root directory for reference format
+OUTPUT_DIR   = "/path/to/results_root"   # Root directory for output results
+```
+
 ```bash
-python gemini.py --input_dir /path/to/audio --output_dir /path/to/results
+python gemini.py
 ```
 
 ## Output Format

@@ -22,7 +22,12 @@ pip install fairseq2
 ## Usage
 
 ```bash
-python omniasr.py --input_dir /path/to/audio --output_dir /path/to/results
+python omniasr.py \
+  --input /path/to/meta_file \
+  --output /path/to/results \
+  --language DZA \
+  --model omniASR_CTC_3B \
+  --batch-size 2
 ```
 
 ## Output Format

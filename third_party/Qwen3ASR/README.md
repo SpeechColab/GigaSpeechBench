@@ -21,8 +21,15 @@ export DASHSCOPE_API_KEY=your_key
 
 ## Usage
 
+Edit the configuration constants at the top of `qwen3asr.py` before running:
+
+```python
+REF_ROOT_DIR = "/path/to/ref_root"    # Reference text directory
+AUDIO_ROOT_DIR = "/path/to/audio_root"  # Audio directory
+```
+
 ```bash
-python qwen3asr.py --input_dir /path/to/audio --output_dir /path/to/results
+python qwen3asr.py
 ```
 
 ## Output Format

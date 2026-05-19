@@ -20,7 +20,13 @@ export AZURE_SPEECH_REGION=your_region
 ## Usage
 
 ```bash
-python Azure.py --input_dir /path/to/audio --output_dir /path/to/results
+python Azure.py \
+  --base_dir /path/to/dataset_root \
+  --speech_roots /path/to/audio \
+  --ref_roots /path/to/ref \
+  --submission_root /path/to/results \
+  --speech_key YOUR_KEY \
+  --speech_region eastasia
 ```
 
 ## Output Format
