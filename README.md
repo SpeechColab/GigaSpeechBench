@@ -163,18 +163,18 @@ We also welcome:
 
 | Code | Domain | Duration |
 |:-----|:-------|:---------|
-| AGR-CH | Agriculture | 7.03h |
-| AIT-CH | AI & Technology | 12.77h |
-| ART-CH | Art | 12.25h |
-| BIO-CH | Biology | 8.35h |
-| ECM-CH | E-Commerce | 9.33h |
-| ENG-CH | Engineering | 16.17h |
-| ENT-CH | Entertainment | 9.68h |
-| FIN-CH | Finance | 3.83h |
-| HUM-CH | Humanities | 12.86h |
-| LAW-CH | Law | 3.98h |
-| MED-CH | Medicine | 4.41h |
-| MIL-CH | Military | 4.41h |
+| AGR-CH | Agriculture | 6.69h |
+| AIT-CH | AI & Technology | 10.32h |
+| ART-CH | Art | 9.85h |
+| BIO-CH | Biology | 9.68h |
+| ECM-CH | E-Commerce | 8.88h |
+| ENG-CH | Engineering | 10.76h |
+| ENT-CH | Entertainment | 8.14h |
+| FIN-CH | Finance | 10.64h |
+| HUM-CH | Humanities | 10.28h |
+| LAW-CH | Law | 9.83h |
+| MED-CH | Medicine | 9.68h |
+| MIL-CH | Military | 10.33h |
 
 ### 🏭 English Vertical Domains
 
