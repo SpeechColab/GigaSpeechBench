@@ -47,27 +47,27 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Azure ASR Evaluation Script")
 
     # Base path config
-    parser.add_argument("--base_dir", type=str, default="/workdir/Multilingual-ASR-Benchmark/CH-EN-Dialects",
-                        help="基础数据集目录路径")
+    parser.add_argument("--base_dir", type=str, default="/path/to/dataset_root",
+                        help="Base dataset directory path")
     
     parser.add_argument("--speech_roots", type=str, nargs="+", default=None,
-                        help="音频目录列表。若不指定，默认使用 base_dir/audio/testbatch")
+                        help="Audio directory list. If not specified, defaults to base_dir/audio/testbatch")
     
     parser.add_argument("--ref_roots", type=str, nargs="+", default=None,
-                        help="参考文本目录列表。若不指定，默认使用 base_dir/text/ref")
+                        help="Reference text directory list. If not specified, defaults to base_dir/text/ref")
     
     parser.add_argument("--submission_root", type=str, default=None,
-                        help="输出结果的保存目录。若不指定，默认使用 base_dir/submission_azure")
+                        help="Output results directory. If not specified, defaults to base_dir/submission_azure")
     
     parser.add_argument("--pre_root", type=str, default=None,
-                        help="先前结果(缓存)的目录。若不指定，默认使用 base_dir/submission_azure2")
+                        help="Previous results (cache) directory. If not specified, defaults to base_dir/submission_azure2")
 
-    # Azure 与模型配置
+    # Azure and model configuration
     parser.add_argument("--model_name", type=str, default="azure",
-                        help="used for写入 JSON 结果的模型名称")
+                        help="Model name used for writing JSON results")
     
     parser.add_argument("--speech_key", type=str, default=os.environ.get("SPEECH_KEY"),
-                        help="Azure Speech API Key (默认从环境变量 SPEECH_KEY 中读取)")
+                        help="Azure Speech API Key (defaults to environment variable SPEECH_KEY)")
     
     parser.add_argument("--speech_region", type=str, default="eastasia",
                         help="Azure Speech API Region")
@@ -75,7 +75,7 @@ def parse_args():
     return parser.parse_args()
 
 
-# ===================== 3. 工具函数 =====================
+# ===================== 3. Utility functions =====================
 
 def build_audio_index(roots):
     """
@@ -91,18 +91,18 @@ def build_audio_index(roots):
                 continue
             for f in os.listdir(lang_dir):
                 if f.lower().endswith(".wav") or f.lower().endswith(".mp3"):
-                    # 存入时不带后缀，方便和 json 文件名直接匹配
+                    # Store without extension for direct matching with JSON filenames
                     name_no_ext = os.path.splitext(f)[0]
                     idx[(lang, name_no_ext)] = os.path.join(lang_dir, f)
     
-    print(f"[DEBUG] 索引采样: {list(idx.keys())[:5]}")
+    print(f"[DEBUG] Index sample: {list(idx.keys())[:5]}")
     return idx
 
 
 def extract_audio_segment(file_path, start_time, end_time, output_path):
     """
-    从音频中截取指定时间段，支持 wav/mp3/flac 等
-    输出为 wav（给 Azure 用最稳）
+    Extract a specified time segment from audio, supports wav/mp3/flac etc.
+    Output as wav (most stable for Azure)
     """
     try:
         ext = os.path.splitext(file_path)[1].lower().lstrip(".") 
@@ -111,7 +111,7 @@ def extract_audio_segment(file_path, start_time, end_time, output_path):
 
         audio = AudioSegment.from_file(file_path, format=ext)
 
-        # 防止越界
+        # Prevent out-of-bounds
         start_ms = max(0, int(start_time * 1000))
         end_ms = max(start_ms, int(end_time * 1000))
         if end_ms > len(audio):
@@ -121,14 +121,14 @@ def extract_audio_segment(file_path, start_time, end_time, output_path):
         segment.export(output_path, format="wav")
         return True
     except Exception as e:
-        print(f"[ERROR] 提取音频失败 {file_path}: {e}")
+        print(f"[ERROR] Failed to extract audio segment {file_path}: {e}")
         return False
 
 
 def recognize_chunk(file_path, lang, speech_key, speech_region):
-    """调用 Azure API 识别切片音频"""
+    """Call Azure API to recognize audio chunk"""
     if not speech_key:
-        raise ValueError("Azure SPEECH_KEY 未配置，请通过环境变量或 --speech_key 参数提供。")
+        raise ValueError("Azure SPEECH_KEY not configured. Please provide via environment variable or --speech_key argument.")
 
     speech_config = speechsdk.SpeechConfig(
         subscription=speech_key, region=speech_region
@@ -193,13 +193,13 @@ def load_pre_root_results(pre_root):
             except Exception as e:
                 print(f"[PRE_ROOT LOAD FAIL] {f} | {e}")
 
-    print(f"[INFO] PRE_ROOT 缓存已加载条目数: {len(cache)}")
+    print(f"[INFO] PRE_ROOT cache loaded entries: {len(cache)}")
     return cache
 
 
 def build_tasks(ref_roots, audio_index):
     """
-    从所有 ref_root 构建待识别任务
+    Build recognition tasks from all ref_roots
     """
     tasks = []
     for ref_root in ref_roots:
@@ -219,7 +219,7 @@ def build_tasks(ref_roots, audio_index):
                 audio_path = audio_index.get((lang, audio_name))
 
                 if audio_path is None:
-                    print(f"[MISS AUDIO] 在 audio 中找不到 {lang}/{audio_name}.wav")
+                    print(f"[MISS AUDIO] Cannot find {lang}/{audio_name}.wav in audio directory")
                     continue
 
                 with open(os.path.join(lang_dir, ref_file), "r", encoding="utf-8") as f:
@@ -239,12 +239,12 @@ def build_tasks(ref_roots, audio_index):
     return tasks
 
 
-# ===================== 4. 主逻辑 =====================
+# ===================== 4. Main logic =====================
 
 if __name__ == "__main__":
     args = parse_args()
 
-    # 动态构建路径变量
+    # Dynamically build path variables
     SPEECH_ROOTS = args.speech_roots if args.speech_roots else [os.path.join(args.base_dir, "audio", "testbatch")]
     REF_ROOTS = args.ref_roots if args.ref_roots else [os.path.join(args.base_dir, "text", "ref")]
     SUBMISSION_ROOT = args.submission_root if args.submission_root else os.path.join(args.base_dir, "submission_azure")
@@ -262,16 +262,16 @@ if __name__ == "__main__":
     print(f"Azure Region     : {args.speech_region}")
     print("=====================================================\n")
 
-    print("[INFO] 构建音频索引...")
+    print("[INFO] Building audio index...")
     audio_index = build_audio_index(SPEECH_ROOTS)
-    print(f"[INFO] 音频索引总数: {len(audio_index)}")
+    print(f"[INFO] Audio index total: {len(audio_index)}")
 
-    print("[INFO] 加载 PRE_ROOT 缓存...")
+    print("[INFO] Loading PRE_ROOT cache...")
     pre_cache = load_pre_root_results(PRE_ROOT)
 
-    print("[INFO] 构建待识别任务...")
+    print("[INFO] Building recognition tasks...")
     tasks = build_tasks(REF_ROOTS, audio_index)
-    print(f"[INFO] 待处理文件数: {len(tasks)}")
+    print(f"[INFO] Files to process: {len(tasks)}")
 
     total_valid = 0
     total_found = 0
@@ -288,10 +288,10 @@ if __name__ == "__main__":
 
         lang_code = LANG_MAP.get(lang)
         if not lang_code:
-            print(f"[WARNING] 未在 LANG_MAP 中找到 {lang} 的映射，跳过此文件。")
+            print(f"[WARNING] No LANG_MAP mapping found for {lang}, skipping this file.")
             continue
 
-        # Iterate该音频文件下的所有切片
+        # Iterate all segments for this audio file
         for seg in tqdm(task["segments"], desc=f"{lang}/{audio_name}"):
             if seg.get("status") == "invalid":
                 continue
@@ -312,13 +312,13 @@ if __name__ == "__main__":
 
             total_valid += 1
 
-            # 如果命中缓存，直接取值
+            # If cache hit, use cached value directly
             if key in pre_cache:
                 item["text"] = pre_cache[key]
                 total_found += 1
                 per_lang_results[lang].append(item)
             else:
-                # 截取音频并调用 API
+                # Extract audio segment and call API
                 with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tf:
                     tmp_wav = tf.name
 
@@ -327,27 +327,27 @@ if __name__ == "__main__":
                     if not ok:
                         continue
 
-                    # 传入外部配置的 speech_key 和 region
+                    # Pass externally configured speech_key and region
                     hyp = recognize_chunk(tmp_wav, lang_code, args.speech_key, args.speech_region)
                     print(f"\n{audio_path}:{start}-{end} | EST: {hyp} | REF: {ref_text}")
                     item["text"] = hyp
                     total_found += 1
                     per_lang_results[lang].append(item)
                 except Exception as e:
-                    print(f"[ERROR] Azure API 调用或音频截取错误 {audio_path}:{start}-{end} | {e}")
+                    print(f"[ERROR] Azure API call or audio extraction error {audio_path}:{start}-{end} | {e}")
                     continue
                 finally:
                     if os.path.exists(tmp_wav):
                         os.unlink(tmp_wav)
 
-    # ===================== 5. 输出结果 =====================
+    # ===================== 5. Output results =====================
     for lang, results in per_lang_results.items():
         if not results:
             continue
         out_file = os.path.join(SUBMISSION_ROOT, f"{lang}.json")
         with open(out_file, "w", encoding="utf-8") as f:
             json.dump(results, f, indent=2, ensure_ascii=False)
-        print(f"[OK] 写出 {out_file} | {len(results)} 条")
+        print(f"[OK] Written {out_file} | {len(results)} entries")
 
     print("\n============== Overall Statistics ==============")
     print(f"Valid total : {total_valid}")
@@ -357,4 +357,4 @@ if __name__ == "__main__":
         print(f"Coverage    : {(total_found / total_valid * 100):.2f}%")
     print("==============================================")
 
-    print(f"\n[完成] Save results在：{SUBMISSION_ROOT}")
+    print(f"\n[DONE] Results saved to: {SUBMISSION_ROOT}")
