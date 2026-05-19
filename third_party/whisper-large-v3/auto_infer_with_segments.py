@@ -21,8 +21,8 @@ from language_mapping import get_supported_country_codes, COUNTRY_CODE_TO_LANGUA
 
 # Configuration
 TIMESTAMP_DIR = './timestamp'
-AUDIO_DIR = '/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/third_party/whisper-large-v3/data/testbatch_processed/testbatch_processed'
-MODEL_DIR = '/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/examples/whisper-large-v3/whisper_model'
+AUDIO_DIR = '/path/to/audio_root'
+MODEL_DIR = '/path/to/model'
 MODEL_NAME = 'whisper-large-v3'
 
 def load_timestamp_json(country_code: str) -> List[Dict]:
@@ -101,7 +101,7 @@ def process_country_segments(asr: WhisperASR, country_code: str, direct: bool = 
 
     # Import utils for save_transcription
     import sys
-    sys.path.append('/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark')
+    sys.path.append('/path/to/project_root')
     from scripts.utils import save_transcription
 
     try:

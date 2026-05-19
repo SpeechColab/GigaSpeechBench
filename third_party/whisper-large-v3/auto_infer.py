@@ -15,9 +15,9 @@ from whisper_asr import WhisperASR
 from language_mapping import get_supported_country_codes, COUNTRY_CODE_TO_LANGUAGE
 
 # Configuration
-DATA_DIR = '/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/examples/whisper-large-v3/data/testbatch_processed/testbatch_processed'
+DATA_DIR = '/path/to/audio_root'
 RESULTS_DIR = './results'
-MODEL_DIR = '/inspire/hdd/project/multilingualspeechrecognition/chenxie-25019/yanqiaozhu/Multilingual-ASR-Benchmark/examples/whisper-large-v3/whisper_model'
+MODEL_DIR = '/path/to/model'
 MODEL_NAME = 'whisper-large-v3'
 
 def get_country_directories() -> List[str]:
