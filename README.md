@@ -203,7 +203,6 @@ We also welcome:
 |:-----|:------|
 | Languages | 16 |
 | Total Duration | ~600+ hours |
-| Total Segments | 260,000+ |
 | Audio Format | WAV (16kHz mono) |
 | Annotation | Human-annotated transcription with speaker metadata |
 | Source | YouTube, curated per-language |
