@@ -54,7 +54,7 @@ We also welcome:
 
 ## 🏆 Leaderboard
 
-> **Languages ASR — WER/CER (%) ↓**
+> **ASR — WER/CER (%) ↓**
 
 
 <!--
