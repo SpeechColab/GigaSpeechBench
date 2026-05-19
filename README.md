@@ -70,7 +70,7 @@ We also welcome:
 | Fun-Realtime-ASR | **⭐25.44** | **⭐9.92** | 17.68 |
 | Qwen3.5-omni-plus | 27.36 | 13.10 | 20.23 |
 | Azure | 27.51 | 13.13 | 20.32 |
-| ElevenLabs Scribe v2 | 29.95 | **⭐11.81** | 20.88 |
+| ElevenLabs Scribe v2 | 29.95 | 11.81 | 20.88 |
 | Chirp3 | 36.22 | 15.96 | 26.09 |
 | Nvidia-Nemo | 32.31 | 22.61 | 27.46 |
 | Gemini 3.0 Flash | 39.84 | 16.78 | 28.31 |
