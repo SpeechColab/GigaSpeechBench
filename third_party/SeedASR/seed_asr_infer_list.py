@@ -16,12 +16,8 @@ Link：https://console.volcengine.com/speech/service/10012
 """
 
 
-DEFAULT_BATCH_OUTPUT_ROOT = Path(
-    "/Users/niuzhikang/Desktop/tmp/Multilingual-ASR-Benchmark/output_segments/seedasr1_400/ref"
-)
-DEFAULT_BATCH_INPUT_ROOT = Path(
-    "/Users/niuzhikang/Desktop/tmp/Multilingual-ASR-Benchmark/output_segments/audio/testbatch"
-)
+DEFAULT_BATCH_OUTPUT_ROOT = Path("/path/to/output_root")
+DEFAULT_BATCH_INPUT_ROOT = Path("/path/to/input_root")
 
 class ASRError(Exception):
     pass
@@ -31,19 +27,19 @@ class SeedASR():
     def __init__(self, appid, token, model_id="volc.seedasr.auc", requests_info=None):
         self.appid = appid
         self.token = token
-        self.model_id = model_id  # ByteDance Doubao Speech Recognition模型2.0的model_id是volc.seedasr.auc，ByteDance Doubao Speech Recognition模型1.0的model_id是volc.bigasr.auc
+        self.model_id = model_id  # model_id for ByteDance Doubao Speech Recognition model 2.0 is volc.seedasr.auc; model 1.0 is volc.bigasr.auc
         self.submit_url = "https://openspeech-direct.zijieapi.com/api/v3/auc/bigmodel/submit"
         self.query_url = "https://openspeech-direct.zijieapi.com/api/v3/auc/bigmodel/query"
         self.request_info = requests_info if requests_info else {
             "model_name": "bigmodel",
-            "enable_channel_split": False,  # 关闭双声道的识别
-            "enable_ddc": False,  # 关闭语义顺滑
-            "enable_speaker_info": False,  # 关闭说话人信息输出
-            "enable_punc": True,  # 开启punctuation符号
-            "enable_itn": True,  # 开启文本normalization
-            "model_version": "400",  # 传 model_version = "400" 使用400模型效果
-            "show_speech_rate": True,  # 开启语速信息输出
-            "show_volume": True,  # 开启音量信息输出
+            "enable_channel_split": False,  # Disable dual-channel recognition
+            "enable_ddc": False,  # Disable semantic smoothing
+            "enable_speaker_info": False,  # Disable speaker info output
+            "enable_punc": True,  # Enable punctuation
+            "enable_itn": True,  # Enable inverse text normalization (ITN)
+            "model_version": "400",  # Pass model_version = "400" to use the 400 model
+            "show_speech_rate": True,  # Enable speech rate info output
+            "show_volume": True,  # Enable volume info output
             # "show_utterances": True,
         }
 
@@ -373,7 +369,7 @@ class SeedASR():
         if not audio_info:
             raise ASRError(f"Audio file not found: {audio_path}")
         if language:
-            audio_info["language"] = language  # 指定可识别的语言
+            audio_info["language"] = language  # Specify the language for recognition
 
         task_id, x_tt_logid = self.submit_task(audio_info, uid=uid)
         while True:
@@ -478,7 +474,7 @@ class SeedASR():
 
 
 if __name__ == "__main__":
-    # resource_id = "volc.bigasr.auc"  # ByteDance Doubao Speech Recognition模型1.0的model_id是volc.bigasr.auc，ByteDance Doubao Speech Recognition模型2.0的model_id是volc.seedasr.auc
+    # resource_id = "volc.bigasr.auc"  # model_id for ByteDance Doubao Speech Recognition model 1.0 is volc.bigasr.auc; model 2.0 is volc.seedasr.auc
     resource_ids = ["volc.bigasr.auc", "volc.seedasr.auc"]
     for resource_id in resource_ids:
         asr = SeedASR(
