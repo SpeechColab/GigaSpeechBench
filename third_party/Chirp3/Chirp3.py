@@ -23,13 +23,6 @@ if not logger.handlers:
     logger.addHandler(handler)
     logger.setLevel(logging.DEBUG)
 
-PROJECT_ID = "steady-fin-478206-g9"
-DEFAULT_LOCATION = "eu"
-MODEL_NAME = "chirp_3"  # Actual API model name
-OUTPUT_MODEL_NAME = "chirp3"  # Display name in outputs
-MS_PER_SECOND = 1000.0
-MAX_SYNC_DURATION_SEC = 60
-
 TranscriptionSegment = namedtuple("TranscriptionSegment", ["audio_path", "start_time", "end_time", "text", "model", "language"])
 
 ALPHA3_TO_BCP47_MAP = {
