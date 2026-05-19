@@ -19,33 +19,33 @@ except ImportError:
 
 ########################################  Parameter config  ########################################
 API_KEY      = os.getenv("GEMINI_API_KEY")  # set via environment variable
-ROOT_DIR     = r"E:\workspace\SH-ASR\testbatch_processed"  # 待转录音频根目录
-TESTMARK_DIR = r"E:\workspace\SH-ASR\testmark"             # 参考格式根目录
-OUTPUT_DIR   = r"E:\workspace\SH-ASR\results"              # Output结果根目录
-MODEL_NAME   = "gemini-2.0-flash"                          # 稳定版模型
-TEMP_DIR     = r"E:\workspace\SH-ASR\temp_segments"         # 临时切割音频目录
-MAX_WORKERS  = 16                                           # 最大Thread数（根据 API Concurrency限制调整，建议 5-10）
+ROOT_DIR     = "/path/to/audio_root"    # Root directory for audio to transcribe
+TESTMARK_DIR = "/path/to/testmark"       # Root directory for reference format
+OUTPUT_DIR   = "/path/to/results_root"   # Root directory for output results
+MODEL_NAME   = "gemini-2.0-flash"        # Stable model version
+TEMP_DIR     = "/path/to/temp_segments"  # Temporary directory for cut audio segments
+MAX_WORKERS  = 16                         # Max thread count (adjust based on API concurrency limits, recommended 5-10)
 ########################################  Parameter config  ########################################
 
-# Initialize Gemini 客户端（Thread安全，无需每个Thread创建）
+# Initialize Gemini client (thread-safe, no need to create per thread)
 client = genai.Client(api_key=API_KEY)
 
-# 创建必要目录
+# Create necessary directories
 Path(TEMP_DIR).mkdir(exist_ok=True, parents=True)
 Path(OUTPUT_DIR).mkdir(exist_ok=True, parents=True)
 
-# Thread锁：避免多Thread同时打印导致输出混乱
+# Thread lock: prevent concurrent printing from mixing output
 print_lock = threading.Lock()
 
 def get_audio_segment(wav_path: str, start_sec: float, end_sec: float) -> AudioSegment:
-    """按时间切割音频片段（单位：秒）"""
+    """Cut audio segment by time (unit: seconds)"""
     audio = AudioSegment.from_wav(str(wav_path))
     start_ms = int(start_sec * 1000)
     end_ms = int(end_sec * 1000)
     return audio[start_ms:end_ms]
 
 def transcribe_segment_worker(segment_idx: int, segment_audio: AudioSegment) -> tuple[int, str]:
-    """转录单个音频片段（Thread工作函数）：返回 (分段索引, 转录文本)"""
+    """Transcribe a single audio segment (thread worker function): returns (segment index, transcribed text)"""
     temp_file = Path(TEMP_DIR) / f"temp_segment_{segment_idx}_{id(segment_audio)}.wav"
     segment_audio.export(str(temp_file), format="wav")
     
@@ -58,65 +58,65 @@ def transcribe_segment_worker(segment_idx: int, segment_audio: AudioSegment) -> 
                 uploaded
             ]
         )
-        # Clean up资源
+        # Clean up resources
         client.files.delete(name=uploaded.name)
         temp_file.unlink(missing_ok=True)
         transcribed_text = response.text.strip() if response.text else ""
         
         with print_lock:
-            print(f"[Thread完成] 分段 {segment_idx} 转录成功")
+            print(f"[Thread Done] Segment {segment_idx} transcribed successfully")
         return (segment_idx, transcribed_text)
     
     except Exception as e:
         with print_lock:
-            print(f"[Thread警告] 分段 {segment_idx} 转录失败：{e}")
+            print(f"[Thread Warning] Segment {segment_idx} transcription failed: {e}")
         temp_file.unlink(missing_ok=True)
         return (segment_idx, "")
 
 def main():
     wav_list = list(Path(ROOT_DIR).rglob("*.wav"))
     if not wav_list:
-        print("未找到任何 wav 文件，请检查目录设置！")
+        print("No wav files found, please check directory settings!")
         return
 
-    # 逐个process长音频（串行）
-    for wav_path in tqdm(wav_list, desc="Gemini-ASR 主进程"):
+    # Process each long audio file sequentially
+    for wav_path in tqdm(wav_list, desc="Gemini-ASR main process"):
         wav_path = wav_path.resolve()
         audio_name = wav_path.stem
         lang_code = wav_path.parent.name.upper()
         
-        # 找到参考 JSON 文件
+        # Find reference JSON file
         ref_json_path = Path(TESTMARK_DIR) / lang_code / f"{audio_name}.json"
         if not ref_json_path.exists():
             with print_lock:
-                print(f"\n[ERROR] 未找到参考文件：{ref_json_path}，跳过该音频")
+                print(f"\n[ERROR] Reference file not found: {ref_json_path}, skipping this audio")
             continue
         
-        # Read参考分段信息
+        # Read reference segment info
         with open(ref_json_path, "r", encoding="utf-8") as f:
             ref_data = json.load(f)
         ref_segments = ref_data.get("segments", [])
         if not ref_segments:
             with print_lock:
-                print(f"\n[WARNING] 参考文件无分段信息：{ref_json_path}，跳过该音频")
+                print(f"\n[WARNING] No segment info in reference file: {ref_json_path}, skipping this audio")
             continue
         
-        # 预process：筛选有效分段（需转录的），记录原始索引
-        valid_tasks = []  # 存储 (分段原始索引, 音频片段, 参考分段数据)
+        # Pre-process: filter valid segments (need transcription), record original indices
+        valid_tasks = []  # Store (original segment index, audio segment, reference segment data)
         for seg_idx, seg in enumerate(ref_segments):
             start_sec = seg["start"]
             end_sec = seg["end"]
-            # Skip无效分段或过短片段
+            # Skip invalid segments or overly short segments
             if seg["status"] == "invalid" or (end_sec - start_sec) < 0.1:
                 continue
-            # 切割音频片段
+            # Cut audio segment
             segment_audio = get_audio_segment(wav_path, start_sec, end_sec)
             valid_tasks.append((seg_idx, segment_audio, seg))
         
         if not valid_tasks:
             with print_lock:
-                print(f"\n[INFO] 音频 {audio_name} 无有效分段，直接复制参考文件")
-            # 直接复制参考文件（仅 text 为空）
+                print(f"\n[INFO] Audio {audio_name} has no valid segments, directly copying reference file")
+            # Directly copy reference file (text field is empty)
             output_dir = Path(OUTPUT_DIR) / lang_code
             output_dir.mkdir(exist_ok=True, parents=True)
             output_json_path = output_dir / f"{audio_name}.json"
@@ -124,45 +124,45 @@ def main():
                 json.dump(ref_data, f, ensure_ascii=False, indent=2)
             continue
         
-        # 多Thread并行转录有效分段
+        # Multi-thread parallel transcription of valid segments
         with print_lock:
-            print(f"\n[INFO] 开始处理音频 {audio_name}，共 {len(valid_tasks)} 个有效分段，使用 {MAX_WORKERS} Thread")
+            print(f"\n[INFO] Processing audio {audio_name}, {len(valid_tasks)} valid segments, using {MAX_WORKERS} threads")
         
-        # 存储转录结果：key=分段原始索引，value=转录文本
+        # Store transcription results: key=original segment index, value=transcribed text
         transcribed_results = {}
         
-        # 使用Thread池执行任务
+        # Use thread pool to execute tasks
         with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-            # 提交所有任务
+            # Submit all tasks
             future_to_seg = {
                 executor.submit(transcribe_segment_worker, seg_idx, seg_audio): (seg_idx, seg_data)
                 for seg_idx, seg_audio, seg_data in valid_tasks
             }
             
-            # 监听任务完成情况
-            for future in tqdm(as_completed(future_to_seg), total=len(future_to_seg), desc=f"{audio_name} 分段转录"):
+            # Monitor task completion
+            for future in tqdm(as_completed(future_to_seg), total=len(future_to_seg), desc=f"{audio_name} segment transcription"):
                 seg_idx, _ = future_to_seg[future]
                 try:
                     result_idx, result_text = future.result()
                     transcribed_results[result_idx] = result_text
                 except Exception as e:
                     with print_lock:
-                        print(f"[ERROR] 分段 {seg_idx} 结果获取失败：{e}")
+                        print(f"[ERROR] Segment {seg_idx} result retrieval failed: {e}")
                     transcribed_results[seg_idx] = ""
         
-        # 构建最终输出分段（replace text 字段）
+        # Build final output segments (replace text field)
         output_segments = []
         for seg_idx, seg in enumerate(ref_segments):
             if seg_idx in transcribed_results:
-                # Replace转录文本
+                # Replace transcribed text
                 output_seg = seg.copy()
                 output_seg["text"] = transcribed_results[seg_idx]
                 output_segments.append(output_seg)
             else:
-                # 无效分段直接保留原数据
+                # Invalid segments: keep original data
                 output_segments.append(seg)
         
-        # 保存输出文件
+        # Save output file
         output_dir = Path(OUTPUT_DIR) / lang_code
         output_dir.mkdir(exist_ok=True, parents=True)
         output_json_path = output_dir / f"{audio_name}.json"
@@ -174,9 +174,9 @@ def main():
             }, f, ensure_ascii=False, indent=2)
         
         with print_lock:
-            print(f"\n[SUCCESS] 音频 {audio_name} 处理完成，Save results至：{output_json_path}")
+            print(f"\n[SUCCESS] Audio {audio_name} processed, results saved to: {output_json_path}")
 
-    print(f"\n===== 全部Audio processing完成！结果在 {OUTPUT_DIR} =====")
+    print(f"\n===== All audio processing complete! Results in {OUTPUT_DIR} =====")
 
 if __name__ == "__main__":
     main()
