@@ -54,7 +54,7 @@ We also welcome:
 
 ## 🏆 Leaderboard
 
-> **Low-Resource Languages ASR — WER/CER (%) ↓**
+> **Languages ASR — WER/CER (%) ↓**
 
 
 <!--
@@ -142,12 +142,12 @@ We also welcome:
 
 ## 📦 Dataset
 
-### 📈 Low-Resource Languages Overview
+### 📈 Languages Overview
 
 | Stat | Value |
 |:-----|:------|
-| Languages | 14 |
-| Total Duration | ~280+ hours |
+| Languages | 16 |
+| Total Duration | ~600+ hours |
 | Total Segments | 260,000+ |
 | Audio Format | WAV (16kHz mono) |
 | Annotation | Human-annotated transcription with speaker metadata |
