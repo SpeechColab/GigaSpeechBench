@@ -205,7 +205,6 @@ We also welcome:
 | Total Duration | ~600+ hours |
 | Audio Format | WAV (16kHz mono) |
 | Annotation | Human-annotated transcription with speaker metadata |
-| Source | YouTube, curated per-language |
 
 ### 📝 Data Format (GigaSpeech-style)
 
