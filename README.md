@@ -61,6 +61,68 @@ We also welcome:
   <img src="assets/low-resource-results.png" alt="ASR Performance for Low Resource Languages" width="100%">
 </p>
 
+#### 🌍 Arabic Region (WER % ↓)
+
+| Model | IRQ | DZA | ARE | EGY | MAR | SAU | SYR |
+|:------|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| Qwen3.5-omni-plus | **⭐28.54** | 47.11 | 35.15 | **⭐37.12** | **⭐51.34** | **⭐16.56** | **⭐13.76** |
+| Azure | 34.61 | 51.22 | 42.82 | 47.65 | 56.64 | 20.09 | 17.74 |
+| Chirp3 | 35.71 | 53.11 | 42.88 | 42.71 | 52.30 | 16.76 | 24.13 |
+| ElevenLabs Scribe v2 | 38.67 | 50.43 | 46.10 | 44.44 | 60.06 | 33.33 | 14.73 |
+| Gemini 3.0 Flash | 36.55 | **⭐44.22** | 45.06 | 41.22 | 51.99 | 20.10 | 14.40 |
+| Fun-Realtime-ASR | 53.44 | 66.30 | 66.70 | 63.33 | 74.10 | 37.67 | 24.24 |
+| Qwen3-ASR-Flash | 33.21 | 57.18 | 44.24 | 48.78 | 68.51 | 19.21 | 14.41 |
+| FunASR-mlt-nano | - | - | - | - | - | - | 33.66 |
+| Qwen3-ASR-1.7B | 41.27 | 63.43 | 53.22 | 59.23 | 76.65 | 25.85 | 18.50 |
+| OmniASR LLM 3B | 38.80 | 57.68 | 50.83 | 52.37 | 65.52 | 25.31 | 17.86 |
+| Nvidia-Nemo | 43.22 | 62.66 | 56.00 | 54.83 | 73.65 | 29.28 | 20.13 |
+| Whisper | 51.04 | 72.02 | 68.41 | 69.78 | 91.89 | 32.79 | 19.12 |
+| GPT-4o Transcribe | 54.53 | 63.25 | **⭐26.26** | 64.23 | 71.26 | 42.38 | 31.67 |
+| Dolphin Small | 62.05 | 72.44 | 75.62 | 74.70 | 75.96 | 50.91 | 30.03 |
+| Dolphin Base | 65.20 | 78.26 | 82.87 | 85.31 | 89.74 | 52.35 | 38.12 |
+
+#### 🌏 Southeast Asia (WER % ↓)
+
+| Model | IDN | MYS | PHL | PHL_EN | PHL_noEN | VNM | THA |
+|:------|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| Qwen3.5-omni-plus | 18.05 | 28.78 | 26.13 | 24.29 | 28.96 | 9.90 | 15.10 |
+| Azure | 25.50 | 35.20 | 26.08 | 25.05 | **⭐27.54** | 10.95 | 15.66 |
+| Chirp3 | 19.98 | 29.04 | 28.18 | 26.14 | 31.10 | **⭐9.63** | 17.52 |
+| ElevenLabs Scribe v2 | 22.91 | 38.52 | 27.15 | **⭐24.19** | 31.39 | 10.52 | 13.90 |
+| Gemini 3.0 Flash | 24.18 | 40.92 | 29.17 | 26.85 | 32.47 | 11.69 | 26.58 |
+| Fun-Realtime-ASR | **⭐14.87** | **⭐25.20** | **⭐23.69** | 25.76 | 31.03 | 9.75 | **⭐10.76** |
+| Qwen3-ASR-Flash | 20.45 | 60.18 | 47.83 | 42.98 | 54.78 | 11.31 | 17.08 |
+| FunASR-mlt-nano | 27.68 | 43.01 | 36.45 | 35.02 | 38.48 | 14.02 | 20.75 |
+| Qwen3-ASR-1.7B | 22.29 | 50.68 | 51.58 | 47.03 | 58.09 | 11.90 | 15.14 |
+| OmniASR LLM 3B | 37.91 | 68.79 | 45.03 | 42.49 | 48.67 | 19.60 | 30.72 |
+| Nvidia-Nemo | - | - | - | - | - | - | - |
+| Whisper | 27.40 | 46.15 | 30.88 | 28.40 | 34.41 | 18.17 | 27.02 |
+| GPT-4o Transcribe | 37.95 | 52.30 | 38.60 | 39.89 | 36.77 | 29.24 | 48.78 |
+| Dolphin Small | 32.53 | 52.19 | 61.08 | 63.96 | 56.97 | 21.68 | 24.40 |
+| Dolphin Base | 31.29 | 54.24 | 68.36 | 69.80 | 66.30 | 21.59 | 26.97 |
+
+#### 🌸 East Asia (CER % ↓)
+
+| Model | JPN | KOR |
+|:------|:---:|:---:|
+| Qwen3.5-omni-plus | 27.36 | 13.10 |
+| Azure | 27.51 | 13.13 |
+| Chirp3 | 36.22 | 15.96 |
+| ElevenLabs Scribe v2 | 29.95 | **⭐11.81** |
+| Gemini 3.0 Flash | 39.84 | 16.78 |
+| Fun-Realtime-ASR | **⭐25.44** | **⭐9.92** |
+| Qwen3-ASR-Flash | - | - |
+| FunASR-mlt-nano | - | - |
+| Qwen3-ASR-1.7B | - | - |
+| OmniASR LLM 3B | 58.74 | 26.76 |
+| Nvidia-Nemo | 32.31 | 22.61 |
+| Whisper | - | - |
+| GPT-4o Transcribe | 44.34 | 41.31 |
+| Dolphin Small | 40.30 | 39.05 |
+| Dolphin Base | 39.61 | 28.59 |
+
+> **Note**: ⭐ = SOTA (best result for that language), **bold** = SOTA, `-` = not evaluated. JPN and KOR use **CER** (Character Error Rate) while all other languages use **WER** (Word Error Rate). Models are ordered roughly by average performance across all evaluated languages (best → worst).
+
 ### 🗺 Language Key
 
 | Code | Language | Region |
