@@ -72,7 +72,7 @@ We also welcome:
 | Azure | 27.51 | 13.13 | 20.32 |
 | ElevenLabs Scribe v2 | 29.95 | 11.81 | 20.88 |
 | Chirp3 | 36.22 | 15.96 | 26.09 |
-| Nvidia-Nemo | 32.31 | 22.61 | 27.46 |
+| Nvidia-Nemo | 32.31 | - | 32.31 |
 | Gemini 3.0 Flash | 39.84 | 16.78 | 28.31 |
 | Dolphin Base | 39.61 | 28.59 | 34.10 |
 | Dolphin Small | 40.30 | 39.05 | 39.67 |
