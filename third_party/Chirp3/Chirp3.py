@@ -27,15 +27,14 @@ TranscriptionSegment = namedtuple("TranscriptionSegment", ["audio_path", "start_
 
 ALPHA3_TO_BCP47_MAP = {
     # English accent
-    "CHN-EN": "en-US",  # Chinese-accented English, use US English model
-    "IDN-EN": "en-US",  # Indonesian-accented English
-    "JPN-EN": "en-US",  # Japanese-accented English
-    "PHL-EN": "en-US",  # Filipino-accented English
-    "SCT-EN": "en-GB",  # Scottish-accented English, use British English model
-    "SGP-EN": "en-US",  # Singaporean-accented English
-    "JIN": "cmn-Hans-CN",  # Jin dialect (Shanxi), use Mandarin model
-    "XIANG": "cmn-Hans-CN",  # Xiang dialect (Hunan), use Mandarin model
-
+    "CHN-EN": "en-US",  
+    "IDN-EN": "en-US",  
+    "JPN-EN": "en-US", 
+    "PHL-EN": "en-US", 
+    "SCT-EN": "en-GB",  
+    "SGP-EN": "en-US",  
+    "JIN": "cmn-Hans-CN",  
+    "XIANG": "cmn-Hans-CN",  
     "ARE": "ar-AE",
     "DZA": "ar-DZ",
     "EGY": "ar-EG",
@@ -51,6 +50,32 @@ ALPHA3_TO_BCP47_MAP = {
     "VNM": "vi-VN",
     "USA": "en-US",
     "CHN": "cmn-Hans-CN",
+    "MED-CH": "cmn-Hans-CN",  
+    "LAW-CH": "cmn-Hans-CN", 
+    "FIN-CH": "cmn-Hans-CN", 
+    "EDU-CH": "cmn-Hans-CN",  
+    "ART-CH": "cmn-Hans-CN",  
+    "MIL-CH": "cmn-Hans-CN",  
+    "HUM-CH": "cmn-Hans-CN", 
+    "AIT-CH": "cmn-Hans-CN",
+    "BIO-CH": "cmn-Hans-CN",
+    "ECM-CH": "cmn-Hans-CN",
+	"ENT-CH": "cmn-Hans-CN",
+	"AGR-CH": "cmn-Hans-CN",
+    "ENG-CH": "cmn-Hans-CN",
+    "MED-EN": "en-US",  
+    "LAW-EN": "en-US", 
+    "FIN-EN": "en-US", 
+    "EDU-EN": "en-US",  
+    "ART-EN": "en-US",  
+    "MIL-EN": "en-US",  
+    "HUM-EN": "en-US", 
+    "AIT-EN": "en-US",
+    "BIO-EN": "en-US",
+    "ECM-EN": "en-US",
+	"ENT-EN": "en-US",
+	"AGR-EN": "en-US",
+    "ENG-EN": "en-US",
 }
 
 _speech_client = None
