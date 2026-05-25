@@ -10,7 +10,6 @@ Batch ASR transcription using NVIDIA NeMo pre-trained models. Includes language-
 |:-----|:------------|
 | `ar_asr.py` | Arabic ASR |
 | `jpn_asr.py` | Japanese ASR |
-| `kor_asr.py` | Korean ASR |
 | `ZH-Dialects.py` | Chinese dialects ASR |
 | `EN_Dialects.py` | English dialects ASR |
 | `download.py` | Model download helper |
