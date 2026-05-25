@@ -35,7 +35,6 @@ CONFIG = {
 ```bash
 python ar_asr.py      # Arabic ASR
 python jpn_asr.py     # Japanese ASR
-python kor_asr.py     # Korean ASR
 python ZH-Dialects.py --audio_dir /path/to/audio --label_dir /path/to/labels  # Chinese dialects
 python EN_Dialects.py --audio_dir /path/to/audio --label_dir /path/to/labels  # English dialects
 ```
