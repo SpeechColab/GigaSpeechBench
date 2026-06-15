@@ -119,30 +119,6 @@ We also welcome:
 
 > **Note**: ⭐ = SOTA (best result for that language), **bold** = SOTA, `-` = not evaluated. JPN and KOR use **CER** (Character Error Rate) while all other languages use **WER** (Word Error Rate). Models are ordered roughly by average performance across all evaluated languages (best → worst).
 
-### 🌐 Speech Translation (AST)
-
-> **AST — Translation Quality (higher is better):** sacreBLEU, chrF++, COMET, BLEURT
-
-#### Low-Resource → English (`to_ENG`)
-
-| Model | sacreBLEU (AVG) | chrF++ (AVG) | COMET (AVG) | BLEURT (AVG) |
-|:--|--:|--:|--:|--:|
-| qwen35omniplus_ast | **29.9781** | **49.8701** | **0.7278** | 0.6059 |
-| gemini-3-flash-preview | 27.7319 | 49.8188 | 0.7251 | **0.6134** |
-| azure_trans | 18.5512 | 40.0461 | 0.6540 | 0.5350 |
-| seamless_m4t_v2_large | 15.2041 | 34.1848 | 0.6250 | 0.5085 |
-
-#### Low-Resource → Chinese (`to_CHN`)
-
-| Model | sacreBLEU (AVG) | chrF++ (AVG) | COMET (AVG) | BLEURT (AVG) |
-|:--|--:|--:|--:|--:|
-| gemini-3-flash-preview | **32.0732** | 21.1868 | **0.7482** | **0.5851** |
-| qwen35omniplus_ast | 31.7977 | **21.4680** | 0.7473 | 0.5747 |
-| azure_trans | 20.1778 | 13.9167 | 0.6655 | 0.4791 |
-| seamless_m4t_v2_large | 9.2419 | 7.2124 | 0.5657 | 0.3326 |
-
-> **Data source**: `/home/v-yujietu/temp/translation_eval_results.xlsx` (sheets: `to_ENG`, `to_CHN`; AVG over ARE/DZA/EGY/IDN/IRQ/MAR/MYS/PHL/SAU/THA/VNM).
-
 ### 🗺 Language Key
 
 | Code | Language | Region | Duration |
