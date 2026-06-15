@@ -60,6 +60,30 @@
   <img src="assets/low-resource-results.png" alt="低资源语言 ASR 性能" width="100%">
 </p>
 
+### 🌐 语音翻译（AST）
+
+> **AST — 翻译质量指标（数值越高越好）**：sacreBLEU、chrF++、COMET、BLEURT
+
+#### 低资源语言 → 英文（`to_ENG`）
+
+| 模型 | sacreBLEU（AVG） | chrF++（AVG） | COMET（AVG） | BLEURT（AVG） |
+|:--|--:|--:|--:|--:|
+| qwen35omniplus_ast | **29.9781** | **49.8701** | **0.7278** | 0.6059 |
+| gemini-3-flash-preview | 27.7319 | 49.8188 | 0.7251 | **0.6134** |
+| azure_trans | 18.5512 | 40.0461 | 0.6540 | 0.5350 |
+| seamless_m4t_v2_large | 15.2041 | 34.1848 | 0.6250 | 0.5085 |
+
+#### 低资源语言 → 中文（`to_CHN`）
+
+| 模型 | sacreBLEU（AVG） | chrF++（AVG） | COMET（AVG） | BLEURT（AVG） |
+|:--|--:|--:|--:|--:|
+| gemini-3-flash-preview | **32.0732** | 21.1868 | **0.7482** | **0.5851** |
+| qwen35omniplus_ast | 31.7977 | **21.4680** | 0.7473 | 0.5747 |
+| azure_trans | 20.1778 | 13.9167 | 0.6655 | 0.4791 |
+| seamless_m4t_v2_large | 9.2419 | 7.2124 | 0.5657 | 0.3326 |
+
+> **数据来源**：`/home/v-yujietu/temp/translation_eval_results.xlsx`（sheet：`to_ENG`、`to_CHN`；AVG 基于 ARE / DZA / EGY / IDN / IRQ / MAR / MYS / PHL / SAU / THA / VNM 计算）
+
 ### 🗺 语言代码
 
 | 代码 | 语言 | 地区 |
