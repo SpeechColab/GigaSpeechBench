@@ -20,40 +20,47 @@ def save_transcription(
     end_time: float
 ) -> None:
     """
-    Save transcription results to /results/{language}_{model}.json file
-    Adjust fields to audio_name format, keep others unchanged
+    Save transcription results to /results/{model}.json in release audios[] format.
     """
     results_dir = os.path.join(os.getcwd(), "results")
     os.makedirs(results_dir, exist_ok=True)
 
-    filename = f"{language}_{model}.json"
+    filename = f"{model}.json"
     output_path = os.path.join(results_dir, filename)
 
-    # Generate audio_name format: ARE#UC_p5qypAZQAUkgtjoJk5_Bg#fLqRbOYZsHY#raw.wav
-    audio_name = f"{Path(audio_path).stem}#raw.wav"
+    aid = Path(audio_path).stem
+    begin_time_str = str(start_time)
+    end_time_str = str(end_time)
+    sid = f"{aid}#{begin_time_str}#{end_time_str}"
 
-    entry = {
-        "audio_name": audio_name,  # Use simplified audio name format
+    seg_entry = {
+        "sid": sid,
+        "begin_time": begin_time_str,
+        "end_time": end_time_str,
         "text": text.strip(),
-        "language": language.strip(),
-        "model": model.strip(),
-        "start_time": float(start_time),
-        "end_time": float(end_time)
+        "lang": language.strip(),
     }
 
-    data = []
+    data = {"audios": []}
     if os.path.exists(output_path):
         try:
             with open(output_path, "r", encoding="utf-8") as f:
                 content = f.read().strip()
                 if content:
                     data = json.loads(content)
-                    if not isinstance(data, list):
-                        raise ValueError("Invalid JSON structure")
+                    if not isinstance(data, dict) or "audios" not in data:
+                        data = {"audios": []}
         except Exception as e:
             print(f"[WARN] Failed to read existing JSON ({output_path}), recreating. Reason: {e}")
 
-    data.append(entry)
+    found = False
+    for audio in data["audios"]:
+        if audio["aid"] == aid:
+            audio["segments"].append(seg_entry)
+            found = True
+            break
+    if not found:
+        data["audios"].append({"aid": aid, "segments": [seg_entry], "language": language.strip()})
 
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
@@ -126,29 +133,31 @@ class DialectEnglishASRProcessor:
                 continue
                 
             valid_count += 1
+            seg_start = seg.get("start", seg.get("begin_time", 0))
+            seg_end = seg.get("end", seg.get("end_time", 0))
             try:
-                tmp_audio = self._process_segment(audio_path, seg["start"], seg["end"])
+                tmp_audio = self._process_segment(audio_path, float(seg_start), float(seg_end))
                 asr_text = self._transcribe_segment(tmp_audio)
                 
                 save_transcription(
                     audio_path=audio_path,
                     text=asr_text,
                     language=dialect,
-                    model="nvidia-nemo",
-                    start_time=seg["start"],
-                    end_time=seg["end"]
+                    model="NVIDIA-NeMo",
+                    start_time=seg_start,
+                    end_time=seg_end
                 )
                 processed_count += 1
                 os.remove(tmp_audio) if os.path.exists(tmp_audio) else None
             except Exception as e:
-                print(f"⚠️ Segment error [{seg['start']}-{seg['end']}s]: {str(e)}")
+                print(f"⚠️ Segment error [{seg_start}-{seg_end}s]: {str(e)}")
                 save_transcription(
                     audio_path=audio_path,
                     text="",
                     language=dialect,
-                    model="nvidia-nemo",
-                    start_time=seg["start"],
-                    end_time=seg["end"]
+                    model="NVIDIA-NeMo",
+                    start_time=seg_start,
+                    end_time=seg_end
                 )
                 processed_count += 1
         

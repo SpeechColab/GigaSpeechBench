@@ -6,22 +6,22 @@ from text_norm._common import remove_paralinguistic_tags
 
 def normalize(text: str) -> str:
     """
-    Filipino normalization (stable version)
+    Filipino normalization (final stable version)
     
-    Pipeline:
-    1. protect URL/email
+    Flow:
+    1. Protect URL/email
     2. Remove accents
-    3. 去重复字符
-    4. 展开缩写
-    5. 拼写标准化
-    6. clean
-    7. 去标点（关键：在 restore 之前）
-    8. restore URL/email
-    9. upper
+    3. Remove repeated characters
+    4. Expand contractions
+    5. Standardize spelling
+    6. Clean up
+    7. Remove punctuation (key: before restoring)
+    8. Restore URL/email
+    9. Uppercase
     
-    特点：
-    - 不破坏 URL / email
-    - 适used for ASR WER/CER
+    Features:
+    - Does not break URL / email
+    - Suitable for ASR WER/CER
     """
 
     if not text or not text.strip():
@@ -33,16 +33,16 @@ def normalize(text: str) -> str:
     protected_spans = []
     text = protect_special_content(text, protected_spans)
 
-    # ===== 核心 normalize =====
+    # ===== Core normalization =====
     text = remove_accents(text)
     text = reduce_repeated_characters(text)
     text = expand_contractions(text)
     text = standardize_spelling(text)
 
-    # ===== 后process =====
+    # ===== Post-processing =====
     text = clean_text(text)
 
-    text = remove_punctuation(text)   # 👈 关键：在 restore 前
+    text = remove_punctuation(text)   # 👈 key: before restore
 
     text = restore_protected_content(text, protected_spans)
 
@@ -52,11 +52,11 @@ def normalize(text: str) -> str:
 
 
 # =========================
-# Protect / Restore
+# Protect / restore
 # =========================
 
 def protect_special_content(text: str, protected_spans: List) -> str:
-    """保护 URL 和 email"""
+    """Protect URL and email"""
     patterns = [
         r'https?://\S+',
         r'\b[\w.-]+@[\w.-]+\.\w+\b'
@@ -76,14 +76,14 @@ def protect_special_content(text: str, protected_spans: List) -> str:
 
 
 def restore_protected_content(text: str, protected_spans: List) -> str:
-    """恢复 URL / email"""
+    """Restore URL / email"""
     for i, content in enumerate(protected_spans):
         text = text.replace(f"PROTECTED_{i}", content)
     return text
 
 
 # =========================
-# Normalize steps
+# Normalization steps
 # =========================
 
 def remove_accents(text: str) -> str:
@@ -148,7 +148,7 @@ def adjust_case(original: str, replacement: str) -> str:
 
 
 # =========================
-# Post processing
+# Post-processing
 # =========================
 
 def clean_text(text: str) -> str:
@@ -159,8 +159,8 @@ def clean_text(text: str) -> str:
 
 def remove_punctuation(text: str) -> str:
     """
-    去掉所有标点（ASR友好版本）
-    保留：字母 + 数字 + 空格
+    Remove all punctuation (ASR-friendly version)
+    Keep: letters + digits + spaces
     """
     return re.sub(r'[^a-zA-Z0-9\s]', '', text)
 

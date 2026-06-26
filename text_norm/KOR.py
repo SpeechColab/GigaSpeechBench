@@ -11,10 +11,10 @@ def normalize(text: str) -> str:
     # Unicode NFKC normalization
     text = unicodedata.normalize("NFKC", text)
 
-    # Remove annotation inside [], (), {}
+    # Remove annotations inside [], (), {}
     text = re.sub(r"\[[^\]]*\]|\([^\)]*\)|\{[^\}]*\}", "", text)
 
-    # Arabic digits mapping
+    # Arabic numeral mapping
     digit_map = {
         '0': '영', '1': '일', '2': '이', '3': '삼', '4': '사',
         '5': '오', '6': '육', '7': '칠', '8': '팔', '9': '구'
@@ -23,12 +23,12 @@ def normalize(text: str) -> str:
 
     korean_english_only_pattern = re.compile(
         r"[^"
-        r"\uAC00-\uD7A3"  # Hangul Syllables (modern syllables)
-        r"\u1100-\u11FF"  # Hangul Jamo (combining letters)
-        r"\u3130-\u318F"  # Hangul Compatibility Jamo (兼容字母)
+        r"\uAC00-\uD7A3"  # Hangul syllables (modern syllables)
+        r"\u1100-\u11FF"  # Hangul Jamo (conjoining letters)
+        r"\u3130-\u318F"  # Hangul Compatibility Jamo
         r"\uA960-\uA97F"  # Hangul Jamo Extended-A
         r"\uD7B0-\uD7FF"  # Hangul Jamo Extended-B
-        r"a-zA-Z"  # English Alphabets
+        r"a-zA-Z"  # English letters
         r"]"
     )
 

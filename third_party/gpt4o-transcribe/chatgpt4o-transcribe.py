@@ -191,6 +191,8 @@ def main():
         print("No WAV files found, please check your directory settings!")
         return
 
+    all_results = {}  # (lang, aid) -> [seg_dict, ...]
+
     # Process each long audio file (serial)
     for wav_path in tqdm(wav_list, desc="ChatGPT-4o ASR main process"):
         wav_path = wav_path.resolve()
@@ -215,8 +217,8 @@ def main():
         
         valid_tasks = []  
         for seg_idx, seg in enumerate(ref_segments):
-            start_sec = seg["start"]
-            end_sec = seg["end"]
+            start_sec = float(seg.get("start", seg.get("begin_time", 0)))
+            end_sec = float(seg.get("end", seg.get("end_time", 0)))
             if seg.get("status") == "invalid" or (end_sec - start_sec) < 0.1:
                 continue
             
@@ -230,12 +232,7 @@ def main():
 
         if not valid_tasks:
             with print_lock:
-                print(f"\n[INFO] Audio {audio_name} has no valid segments, copying reference file directly")
-            output_dir = Path(OUTPUT_DIR) / lang_dir
-            output_dir.mkdir(exist_ok=True, parents=True)
-            output_json_path = output_dir / f"{audio_name}.json"
-            with open(output_json_path, "w", encoding="utf-8") as f:
-                json.dump(ref_data, f, ensure_ascii=False, indent=2)
+                print(f"\n[INFO] Audio {audio_name} has no valid segments, skipping")
             continue
         
         with print_lock:
@@ -259,32 +256,32 @@ def main():
                         print(f"[ERROR] Segment {seg_idx} result retrieval failed: {e}")
                     transcribed_results[seg_idx] = ""
         
-        output_segments = []
+        # Collect results in release format
         for seg_idx, seg in enumerate(ref_segments):
             if seg_idx in transcribed_results:
-                output_seg = seg.copy()
-                output_seg["text"] = transcribed_results[seg_idx]
-                output_segments.append(output_seg)
-            else:
-                output_segments.append(seg)
-        
-        output_dir = Path(OUTPUT_DIR) / lang_dir 
-        output_dir.mkdir(exist_ok=True, parents=True)
-        output_json_path = output_dir / f"{audio_name}.json"
-        
-        with open(output_json_path, "w", encoding="utf-8") as f:
-            json.dump({
-                "audio_name": audio_name,
-                "segments": output_segments
-            }, f, ensure_ascii=False, indent=2)
+                bt = seg.get("begin_time", str(seg.get("start", "")))
+                et = seg.get("end_time", str(seg.get("end", "")))
+                sid = seg.get("sid", f"{audio_name}#{bt}#{et}")
+                all_results.setdefault((lang_dir, audio_name), []).append({
+                    "sid": sid,
+                    "begin_time": bt,
+                    "end_time": et,
+                    "text": transcribed_results[seg_idx],
+                    "lang": lang_dir,
+                })
         
         with print_lock:
-            print(f"\n[SUCCESS] Audio {audio_name} processing complete, results saved to: {output_json_path}")
+            print(f"\n[SUCCESS] Audio {audio_name} processed")
 
-    print(f"\n===== All audio processing complete! Per-file results saved in {OUTPUT_DIR} =====")
-    
-    # <--- Call JSON aggregation function --->
-    aggregate_results(Path(OUTPUT_DIR), Path(ROOT_DIR), LANG_MAP, MODEL_NAME, Path(FINAL_OUTPUT_DIR))
+    # Save all results in release format
+    audios = []
+    for (lang, aid) in sorted(all_results.keys()):
+        audios.append({"aid": aid, "segments": all_results[(lang, aid)], "language": lang})
+    out_path = Path(FINAL_OUTPUT_DIR) / f"{MODEL_NAME}.json"
+    out_path.parent.mkdir(exist_ok=True, parents=True)
+    with open(out_path, "w", encoding="utf-8") as f:
+        json.dump({"audios": audios}, f, ensure_ascii=False, indent=2)
+    print(f"\n===== Done! Saved {sum(len(a['segments']) for a in audios)} segments -> {out_path} =====")
 
 
 if __name__ == "__main__":

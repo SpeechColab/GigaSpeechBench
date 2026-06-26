@@ -19,8 +19,8 @@ from pydub import AudioSegment
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)
 
-PROJECT_ID = "project-b8b84a33-1939-4f27-bda"
-DEFAULT_LOCATION = "eu"
+PROJECT_ID = "YOUR_PROJECT_ID"  # Replace with your Google Cloud project ID
+DEFAULT_LOCATION = "YOUR_REGION"  # e.g. "us-central1" or "eu"
 MODEL_NAME = "chirp_3"
 LANGUAGE_CODE = "ar-SA"  # SYR = Syrian Arabic; fallback to ar-SA if needed
 

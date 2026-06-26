@@ -2,76 +2,80 @@ import importlib
 
 from text_norm._common import remove_paralinguistic_tags  # noqa: F401
 
-# ── 语言代码别名映射 ──────────────────────────────
-# 将非标准 / 方言代码映射到已有的 3-letter 模块
+# ── Language-code alias mapping ──────────────────────────────
+# Map non-standard / dialect codes to existing 3-letter modules
 _LANG_ALIASES = {
-    # CH-EN-Dialects (中文方言走 CHN normalizer)
+    # CH-EN-Dialects (Chinese dialects use the CHN normalizer)
+    "GAN":   "CHN",
     "JIN":   "CHN",
     "MIN":   "CHN",
     "WU":    "CHN",
     "XIANG": "CHN",
     "YUE":   "CHN",
-    # Vertical-Domain 中文走 CHN
+    # Vertical-Domain Chinese uses CHN
     "AGR-CH": "CHN", "AIT-CH": "CHN", "ART-CH": "CHN", "BIO-CH": "CHN",
     "ECM-CH": "CHN", "EDU-CH": "CHN", "ENG-CH": "CHN", "ENT-CH": "CHN",
     "FIN-CH": "CHN", "HUM-CH": "CHN", "LAW-CH": "CHN", "MED-CH": "CHN",
     "MIL-CH": "CHN",
-    # Vertical-Domain 英文走 USA
+    # Vertical-Domain English uses USA
     "AGR-EN": "USA", "AIT-EN": "USA", "ART-EN": "USA", "BIO-EN": "USA",
     "ECM-EN": "USA", "EDU-EN": "USA", "ENG-EN": "USA", "ENT-EN": "USA",
     "FIN-EN": "USA", "HUM-EN": "USA", "LAW-EN": "USA", "MED-EN": "USA",
     "MIL-EN": "USA",
-    # CH-EN-Dialects 英文走 USA
+    # CH-EN-Dialects English uses USA
     "CHN-EN": "USA", "IDN-EN": "USA", "JPN-EN": "USA", "PHL-EN": "USA",
     "SCT-EN": "USA", "SGP-EN": "USA",
-    # _hard 变体
+    # Older-Children
+    "CHILD-CH": "CHN", "OLD-CH": "CHN",
+    "CHILD-EN": "USA", "OLD-EN": "USA",
+    # _hard variants
     "JPN_HARD": "JPN",
     "KOR_HARD": "KOR",
-    # SYR 有独立的叙利亚方言 normalizer
-    # "SYR": "ARE",  # 不再使用 ARE，改用 SYR.py
+    # SYR has its own Syrian-dialect normalizer
+    # "SYR": "ARE",  # No longer use ARE; use SYR.py instead
 }
 
 
 def get_normalizer(lang_code: str):
     """
-    Load the normalize() function for a language code.
+    Load the corresponding normalize() function based on the language code.
 
     Resolution order:
-      1. Check _LANG_ALIASES for a mapped 3-letter code
-      2. If code is 3 letters, try importing text_norm.<CODE>
-      3. If hyphenated, try the prefix (e.g. CHN-EN → CHN)
-      4. If underscored, try the prefix (e.g. JPN_hard → JPN)
-      5. Fall back to remove_paralinguistic_tags only
+      1. Look up the mapped 3-letter code in _LANG_ALIASES
+      2. If the code is 3 letters, try importing text_norm.<CODE>
+      3. If it contains a hyphen, try the prefix (e.g. CHN-EN -> CHN)
+      4. If it contains an underscore, try the prefix (e.g. JPN_hard -> JPN)
+      5. Fallback: only run remove_paralinguistic_tags
     """
     if not isinstance(lang_code, str):
         raise TypeError("lang_code must be a string, e.g. 'ARE'")
 
     code = lang_code.upper()
 
-    # 尝试解析模块名
+    # Try to resolve the module name
     candidates = []
 
-    # 1. 别名映射
+    # 1. Alias mapping
     if code in _LANG_ALIASES:
         candidates.append(_LANG_ALIASES[code])
 
-    # 2. 原始代码 (2-3 字母均可)
+    # 2. Original code (2-3 letters allowed)
     if 2 <= len(code) <= 3:
         candidates.append(code)
 
-    # 3. 连字符前缀
+    # 3. Hyphen prefix
     if "-" in code:
         prefix = code.split("-", 1)[0]
         if len(prefix) == 3:
             candidates.append(prefix)
 
-    # 4. 下划线前缀
+    # 4. Underscore prefix
     if "_" in code:
         prefix = code.split("_", 1)[0]
         if len(prefix) == 3:
             candidates.append(prefix)
 
-    # 去重保持顺序
+    # Deduplicate while preserving order
     seen = set()
     unique = []
     for c in candidates:
@@ -87,5 +91,5 @@ def get_normalizer(lang_code: str):
         except Exception:
             continue
 
-    # 兜底：仅做副语言标签移除
+    # Fallback: only remove paralinguistic tags
     return remove_paralinguistic_tags

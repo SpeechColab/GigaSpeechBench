@@ -296,17 +296,19 @@ if __name__ == "__main__":
             if seg.get("status") == "invalid":
                 continue
 
-            start = float(seg.get("start", 0.0))
-            end = float(seg.get("end", 0.0))
+            start = float(seg.get("start", seg.get("begin_time", 0.0)))
+            end = float(seg.get("end", seg.get("end_time", 0.0)))
+            begin_time_str = seg.get("begin_time", str(start))
+            end_time_str = seg.get("end_time", str(end))
+            sid = seg.get("sid", f"{audio_name}#{begin_time_str}#{end_time_str}")
             key = (lang, audio_name, f"{start:.4f}")
 
             item = {
-                "audio_name": audio_name,
+                "sid": sid,
+                "begin_time": begin_time_str,
+                "end_time": end_time_str,
                 "text": "",
-                "language": lang,
-                "model": args.model_name,
-                "start_time": start,
-                "end_time": end,
+                "lang": lang,
             }
             ref_text = seg.get("text", "")
 
@@ -315,6 +317,7 @@ if __name__ == "__main__":
             # If cache hit, use cached value directly
             if key in pre_cache:
                 item["text"] = pre_cache[key]
+                item["_audio_name"] = audio_name
                 total_found += 1
                 per_lang_results[lang].append(item)
             else:
@@ -331,6 +334,7 @@ if __name__ == "__main__":
                     hyp = recognize_chunk(tmp_wav, lang_code, args.speech_key, args.speech_region)
                     print(f"\n{audio_path}:{start}-{end} | EST: {hyp} | REF: {ref_text}")
                     item["text"] = hyp
+                    item["_audio_name"] = audio_name
                     total_found += 1
                     per_lang_results[lang].append(item)
                 except Exception as e:
@@ -340,14 +344,22 @@ if __name__ == "__main__":
                     if os.path.exists(tmp_wav):
                         os.unlink(tmp_wav)
 
-    # ===================== 5. Output results =====================
+    # ===================== 5. Output results (release format) =====================
+    audios = []
     for lang, results in per_lang_results.items():
         if not results:
             continue
-        out_file = os.path.join(SUBMISSION_ROOT, f"{lang}.json")
-        with open(out_file, "w", encoding="utf-8") as f:
-            json.dump(results, f, indent=2, ensure_ascii=False)
-        print(f"[OK] Written {out_file} | {len(results)} entries")
+        # Group by audio_name
+        by_audio = {}
+        for item in results:
+            by_audio.setdefault(item.pop("_audio_name", audio_name), []).append(item)
+        for aid, segs in sorted(by_audio.items()):
+            audios.append({"aid": aid, "segments": segs, "language": lang})
+    out_file = os.path.join(SUBMISSION_ROOT, f"{args.model_name}.json")
+    os.makedirs(SUBMISSION_ROOT, exist_ok=True)
+    with open(out_file, "w", encoding="utf-8") as f:
+        json.dump({"audios": audios}, f, indent=2, ensure_ascii=False)
+    print(f"[OK] Written {out_file} | {len(audios)} audios")
 
     print("\n============== Overall Statistics ==============")
     print(f"Valid total : {total_valid}")

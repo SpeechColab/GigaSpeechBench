@@ -7,15 +7,15 @@ def normalize(text: str) -> str:
     Arabic text normalization:
     1. Remove punctuation
     2. Remove diacritics
-    3. Eastern Arabic numerals to Western Arabic numerals
+    3. Convert Eastern Arabic numerals to Western Arabic numerals
 
-    Arguments
+    Parameters
     ---------
     text: str
-        text to normalize
-    Output
+        The text to normalize
+    Returns
     ---------
-    normalized text
+    The normalized text
     """
     # Remove paralinguistic tags and filler words
     text = remove_paralinguistic_tags(text)
@@ -24,10 +24,10 @@ def normalize(text: str) -> str:
     text = re.sub(r"[\p{p}\p{s}]", "", text)
 
     # Remove diacritics
-    diacritics = r'[\u064B-\u0652]'  # Arabic diacritical marks (Fatha, Damma, etc.)
+    diacritics = r'[\u064B-\u0652]'  # Arabic diacritics (Fatha, Damma, etc.)
     text = re.sub(diacritics, '', text)
     
-    # Normalize Hamzas and Maddas
+    # Normalize Hamza and Madda
     text = re.sub('پ', 'ب', text)
     text = re.sub('ڤ', 'ف', text)
     text = re.sub(r'[آ]', 'ا', text)
@@ -44,13 +44,13 @@ def normalize(text: str) -> str:
     for eastern, western in eastern_to_western_numerals.items():
         text = text.replace(eastern, western)
 
-    # Remove tatweel (kashida, u+0640)
+    # Remove tatweel (kashida, U+0640)
     text = re.sub(r"\u0640", "", text)
     
-    # Remove hmm-uhm-like words
+    # Remove hesitation words like hmm/uhm
     text = re.sub(r"اا+", "", text)
     
-    # Normalize multiple whitespace characters into a single space
+    # Collapse multiple whitespace characters into a single space
     text = re.sub(r'\s\s+', ' ', text)
 
     return text.strip()

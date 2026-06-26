@@ -3,10 +3,10 @@ from typing import Dict, List
 
 from text_norm._common import remove_paralinguistic_tags
 
-# Predefined constants (for maintainability)
-# Malay high-frequency abbreviation map (covers 90%+ spoken scenarios)
+# Predefined constants (improve maintainability)
+# Malay high-frequency abbreviation map (extended to cover 90%+ spoken scenarios)
 MALAY_ABBREV_MAP: Dict[str, str] = {
-    # High-frequency phrases (long words first to avoid short-word overwriting)
+    # High-frequency phrases (longer words first, avoid short-word override)
     "tak suka": "tidak suka",
     "tak nak": "tidak nak",
     "tak boleh": "tidak boleh",
@@ -19,7 +19,7 @@ MALAY_ABBREV_MAP: Dict[str, str] = {
     "cm apa": "seperti apa",
     "dlm kg": "dalam kampung",
     "dlm rumah": "dalam rumah",
-    # 基础缩写
+    # Basic abbreviations
     "sgt": "sangat", "cm": "seperti", "dlm": "dalam", "kg": "kampung",
     "tak": "tidak", "yg": "yang", "km": "kamu", "org": "orang",
     "hrga": "harga", "brg": "barang", "mn": "mana", "dr": "dari",
@@ -30,129 +30,129 @@ MALAY_ABBREV_MAP: Dict[str, str] = {
     "dgn": "dengan", "krn": "kerana", "sdh": "sudah", "blh": "boleh",
     "hri": "hari", "bln": "bulan", "thn": "tahun", "mnt": "minit",
     "jam": "jam", "kmr": "kamar", "ktm": "keretapi tanah melayu",
-    # 口语语气词标准化（保留语义）
+    # Normalize colloquial particles (preserve meaning)
     "la": "lah", "loh": "loh", "mah": "mah", "nye": "nya",
 }
 
-# 马来语拼写变体映射表
+# Malay spelling-variant map
 MALAY_SPELL_VARIANTS: Dict[str, str] = {
-    # 复合词统一（ASR高频）
+    # Compound-word unification (high frequency in ASR)
     "roticanai": "roti canai", "tehtarik": "teh tarik", "nasilemak": "nasi lemak",
     "kuehtelor": "kueh telor", "ayamgoreng": "ayam goreng",
-    # 外来词标准化
+    # Loanword normalization
     "emel": "email", "wayfi": "wifi", "waifi": "wifi", "whatsapp": "whatsapp",
     "facebook": "facebook", "instagram": "instagram", "telegram": "telegram",
-    # 常见拼写错误
-    "saya": "saya", "aku": "aku", "anda": "anda", "kamu": "kamu",  # 代词保留
-    "besarbesar": "besar-besar", "cantikcantik": "cantik-cantik",  # 补全重复词连字符
+    # Common misspellings
+    "saya": "saya", "aku": "aku", "anda": "anda", "kamu": "kamu",  # keep pronouns
+    "besarbesar": "besar-besar", "cantikcantik": "cantik-cantik",  # add hyphens for reduplicated words
 }
 
-# 需remove的特殊字符（扩展覆盖马来语场景）
+# Special characters to remove (extended for Malay scenarios)
 SPECIAL_CHARS_PATTERN = re.compile(
-    r'[\u0021-\u002F\u003A-\u0040\u005B-\u0060\u007B-\u007E'  # 基础punctuation
-    r'\u060C\u061B\u061F\u066A-\u066D\u06D4'  # 阿拉伯punctuation（避免残留）
-    r'\u2000-\u206F\u2E00-\u2E7F'  # 通用punctuation符号
-    r'\u00A0\u00AD\u2010-\u2015\u2026\u2030-\u2039'  # 特殊空白/符号
-    r'\uFEFF\uFF01-\uFF0F\uFF1A-\uFF20\uFF3B-\uFF40\uFF5B-\uFF65'  # 全角符号
-    r'\p{Emoji}\p{Emoji_Modifier}\p{Emoji_Presentation}\p{Emoji_Component}]'  # 表情符号
+    r'[\u0021-\u002F\u003A-\u0040\u005B-\u0060\u007B-\u007E'  # basic punctuation
+    r'\u060C\u061B\u061F\u066A-\u066D\u06D4'  # Arabic punctuation (avoid residue)
+    r'\u2000-\u206F\u2E00-\u2E7F'  # general punctuation
+    r'\u00A0\u00AD\u2010-\u2015\u2026\u2030-\u2039'  # special whitespace/symbols
+    r'\uFEFF\uFF01-\uFF0F\uFF1A-\uFF20\uFF3B-\uFF40\uFF5B-\uFF65'  # full-width symbols
+    r'\p{Emoji}\p{Emoji_Modifier}\p{Emoji_Presentation}\p{Emoji_Component}]'  # emoji
 )
 
-# 仅保留马来语拉丁字母、numbers和空格
+# Keep only Malay Latin letters, digits, and spaces
 VALID_CHARS_PATTERN = re.compile(r"[^\p{Latin}0-9\s]+")
 
-# 东阿拉伯numbers/全角numbers映射
+# Eastern-Arabic/full-width digit mapping
 EASTERN_ARABIC_DIGITS = str.maketrans("٠١٢٣٤٥٦٧٨٩", "0123456789")
 FULLWIDTH_DIGITS = str.maketrans("０１２３４５６７８９", "0123456789")
 
 
 def normalize(text: str) -> str:
     """
-    Malay (MYS) text normalization for ASR (comprehensive version):
-    1. Remove all punctuation, special symbols and emojis
-    2. Clean invalid characters (keep only Latin Malay + numbers + spaces)
-    3. Normalize numerals (Eastern Arabic → Western, fullwidth → halfwidth)
-    4. Standardize colloquial abbreviations (priority: longer phrases first)
-    5. Unify spelling variants (compound words, loanwords, typos)
+    Malay (MYS) ASR text normalization (full version):
+    1. Remove all punctuation, special symbols, and emoji
+    2. Clean invalid characters (keep only Latin Malay letters + digits + spaces)
+    3. Normalize digits (Eastern Arabic → Western, full-width → half-width)
+    4. Standardize colloquial abbreviations (handle longer phrases first)
+    5. Unify spelling variants (compound words, loanwords, misspellings)
     6. Preserve Malay reduplication (core linguistic feature)
-    7. Clean extra whitespace and normalize case
+    7. Clean up extra whitespace and unify case
     8. Fix common Malay grammar/spelling issues
     """
-    # 空文本保护
+    # Empty-text guard
     if not text or text.strip() == "":
         return ""
 
     # Remove paralinguistic tags and filler words
     text = remove_paralinguistic_tags(text)
 
-    # Step 1: remove所有特殊字符、punctuation、表情符号
+    # Step 1: Remove all special chars, punctuation, emoji
     text = SPECIAL_CHARS_PATTERN.sub("", text)
 
-    # Step 2: 仅保留马来语有效字符（拉丁字母、numbers、空格）
+    # Step 2: Keep only valid Malay characters (Latin letters, digits, spaces)
     text = VALID_CHARS_PATTERN.sub(" ", text).strip()
 
-    # Step 3: numbers标准化
-    # 东阿拉伯numbers → 西阿拉伯numbers
+    # Step 3: Digit normalization
+    # Eastern Arabic digits → Western Arabic digits
     text = text.translate(EASTERN_ARABIC_DIGITS)
-    # 全角numbers → 半角numbers
+    # Full-width digits → half-width digits
     text = text.translate(FULLWIDTH_DIGITS)
 
-    # Step 4: clean up多余空格（多次clean up确保彻底）
+    # Step 4: Clean up extra spaces (repeat to be thorough)
     text = re.sub(r"\s+", " ", text).strip()
 
-    # Step 5: 统一为小写（马来语大小写不敏感，降低ASR词汇量）
+    # Step 5: Lowercase (Malay is case-insensitive, reduces ASR vocabulary)
     text = text.lower()
 
-    # Step 6: 标准化缩写（按长度倒序replace，避免短词覆盖长词）
+    # Step 6: Normalize abbreviations (replace longest-first to avoid short overriding long)
     combined_norm_map = {**MALAY_ABBREV_MAP, **MALAY_SPELL_VARIANTS}
     for word, normalized in sorted(combined_norm_map.items(), key=lambda x: len(x[0]), reverse=True):
-        # 按单词边界replace（避免部分匹配，如 "km" 不replace "kmkm"）
-        # 修复原版本直接replace的部分匹配问题
+        # Replace on word boundaries (avoid partial matches, e.g. "km" not replacing "kmkm")
+        # Fix the partial-match bug of the original direct-replace version
         pattern = re.compile(rf"\b{re.escape(word)}\b")
         text = pattern.sub(normalized, text)
 
-    # Step 7: 修复重复词连字符（马来语核心特征，确保语义不丢失）
-    # Match连续重复单词（如 "besarbesar" → "besar-besar"）
+    # Step 7: Fix reduplicated-word hyphens (core Malay feature, keep meaning)
+    # Match consecutive duplicated words (e.g. "besarbesar" → "besar-besar")
     text = re.sub(r"(\b\w+)\1\b", r"\1-\1", text)
 
-    # Step 8: processcurrency单位（马来语ASR高频场景）
-    # RM → 保留，统一空格（如 "rm50" → "rm 50"）
+    # Step 8: Handle currency units (high-frequency Malay ASR scenario)
+    # RM → keep, normalize spacing (e.g. "rm50" → "rm 50")
     text = re.sub(r"rm(\d+)", r"rm \1", text)
-    # "ringgit" → 统一为 "rm"（ASR词汇表统一）
+    # "ringgit" → unify to "rm" (unify ASR vocabulary)
     text = re.sub(r"(\d+) ringgit", r"rm \1", text)
 
-    # Step 9: processmeasurement单位（统一空格，如 "2kg" → "2 kg"）
+    # Step 9: Handle measurement units (normalize spacing, e.g. "2kg" → "2 kg")
     text = re.sub(r"(\d+)([a-z]+)", r"\1 \2", text)
 
-    # Step 10: 最终空格clean up
+    # Step 10: Final whitespace cleanup
     text = re.sub(r"\s+", " ", text).strip()
 
     return text
 
 
 if __name__ == "__main__":
-    # 扩展测试用例（覆盖所有核心场景）
+    # Extended test cases (cover all core scenarios)
     examples = [
-        # 基础缩写+punctuation+表情
+        # Basic abbrev + punctuation + emoji
         "Hai! Saya sgt suka makan roti canai dlm kg yg brg hrga rm50... 😋",
-        # 否定词+长短语+东阿拉伯numbers
+        # Negation + long phrases + Eastern Arabic digits
         "Tak nak pergi dr kg ke kota, jgn cm org lain yg bkn tahu! ٥ minit lagi",
-        # 全角numbers+外来词+拼写变体
+        # Full-width digits + loanwords + spelling variants
         "Kamu knp mn lg tak datang? ２０２５年 Saya beli emel wayfi waifi!",
-        # 重复词+复合词+噪声
+        # Reduplication + compound words + noise
         " [cough] Nasi lemak dan teh tarik adalah makanan kegemaran saya [breath] besarbesar!",
-        # Currency+单位+长句
+        # Currency + units + long sentence
         "Brg ini hrga rm50/kg terlalu tinggi, knp harga brg ni sgt mahal? 3kg = 150 ringgit",
-        # 口语语气词+缩写组合
+        # Colloquial particles + abbreviation combo
         "Jgn lupa bawa barang kamu la, dlm km pergi ke pasar malam loh!",
-        # 拼写错误+重复词
+        # Spelling errors + reduplication
         "Saya tak suka ayamgoreng roticanai, cantikcantik bunga di taman!",
-        # 空文本/边界测试
+        # Empty text / boundary test
         "",
         "   !!!   ١٢٣  ４５６   😊😊   ",
     ]
 
     print("=" * 80)
-    print("马来语Text Norm 测试结果（Original → Normalized）")
+    print("马来语Text Norm 测试结果（原始 → 标准化后）")
     print("=" * 80)
     for idx, ex in enumerate(examples, 1):
         normalized = normalize(ex)

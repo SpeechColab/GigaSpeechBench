@@ -5,7 +5,7 @@ from text_norm._common import remove_paralinguistic_tags
 
 def arabic_text_normalize(text):
     """
-    Unify other Arabic dialect variants to Algerian dialect variants
+    Unify variants of other Arabic dialects into the Algerian dialect variant
     """
     stop_words = {
         # ==== Hesitation / thinking ====
@@ -16,25 +16,25 @@ def arabic_text_normalize(text):
         'آ', 'آه', 'آها', 'أوه', 'أوو', 'إيوا', 'إيوة',
         'هيه', 'ههه', 'هاه',
 
-        # ==== 转折 / 承接 ====
+        # ==== Transition / continuation ====
         'طيب', 'يعني', 'بس', 'أها', 'المهم', 'خلاص', 'تمام',
         'بصراحة', 'شوف', 'والله',
 
-        # ==== 呼语 / 引起注意 ====
+        # ==== Vocative / attention-getting ====
         'يا', 'وي', 'وَيْ', 'وييي', 'ألو', 'لك',
 
-        # ==== 方言 filler ====
-        # 黎凡特
+        # ==== Dialect filler words ====
+        # Levantine
         'شو', 'هيك',
-        # 马格里布
+        # Maghreb
         'هاك', 'باه', 'هاو', 'ياودي', 'هاديك',
-        # 海湾
+        # Gulf
         'زين', 'عد', 'هاه',
 
-        # ==== 拖时间 / 强调 ====
+        # ==== Stalling / emphasis ====
         'كذا', 'كذا يعني', 'زي', 'مثل',
 
-        # ==== 让人安静 / 其他声音 ====
+        # ==== Shushing / other sounds ====
         'ششش', 'هههه', 'مممم'
     }
     
@@ -48,7 +48,7 @@ def arabic_text_normalize(text):
     #     'حسنا', 'اوكي', 'ماشي', 'ايوا', 'ها', 'تمام', 'خلاص', 'كويس'
     # }
 
-    # normalizing stretched notes, laugh
+    # Normalize elongated sounds and laughter
     long_aaa_re = re.compile(r'ا{3,}')         # اااا
     long_hhh_re = re.compile(r'ه{3,}')         # هههه
     long_mmm_re = re.compile(r'م{3,}')         # مممم
@@ -81,7 +81,7 @@ def normalize(text: str) -> str:
     Arabic text normalization:
     1. Remove punctuation
     2. Remove diacritics
-    3. Eastern Arabic numerals to Western Arabic numerals
+    3. Convert Eastern Arabic numerals to Western Arabic numerals
     """
     # Remove paralinguistic tags and filler words
     text = remove_paralinguistic_tags(text)
@@ -93,23 +93,23 @@ def normalize(text: str) -> str:
     text = re.sub(r'[\u060C\u061B\u061F\u066A-\u066D\u06D4\.\,\!\?\:\;\-\_\(\)\[\]\"\'\/\\،؛؟…“”«»]', '', text)
 
     # Remove diacritics
-    diacritics = r"[\u064B-\u0652]"  # Arabic diacritical marks (Fatha, Damma, etc.)
+    diacritics = r"[\u064B-\u0652]"  # Arabic diacritics (Fatha, Damma, etc.)
     text = re.sub(diacritics, "", text)
     
-    # allow only arabics & numbers
+    # Keep only Arabic letters and digits
     text = re.sub(r"[^\p{Arabic}0-9]+", " ", text).strip()
 
-    # Normalize multiple whitespace characters into a single space
+    # Collapse multiple whitespace characters into a single space
     text = re.sub(r"\s\s+", " ", text)
 
     # Remove punctuation and symbols
     text = re.sub(r"[\p{P}\p{S}]", "", text)
 
     """
-    Normalize Hamzas and Maddas
-    afraid of it imfluencing the meaning of sentences, 
-    we only adopt it in evaluation,
-    instead of training text
+    Normalize Hamza and Madda
+    Because we worry it may affect sentence semantics,
+    we apply this only during evaluation,
+    and not for training text
     """
     text = re.sub("پ", "ب", text)
     text = re.sub("ڤ", "ف", text)
@@ -136,19 +136,19 @@ def normalize(text: str) -> str:
 
     text = re.sub(r'\u0640\u0651\u0653\u0654\u0655\u061C\u066B\u066C\u0671', '', text)  
     """
-    \u0640: tatweel
-    \u0651: consonant emphasis
-    \u0653: Maddah Above (vowels, combination)
-    \u0654: Hamza Above (vowels, combination)
-    \u061C: direction indicator
-    \u0655: Hamza Below (vowel, combination)
-    \u066B: Arabic Decimal Separator
-    \u066C: Arabic Thousands Separator
-    \u0671: Alif Wasla (used in Quran)
+    \u0640: tatweel (joiner)
+    \u0651: consonant emphasis mark (shadda)
+    \u0653: Maddah above (vowel, combining mark)
+    \u0654: Hamza above (vowel, combining mark)
+    \u061C: directional mark
+    \u0655: Hamza below (vowel, combining mark)
+    \u066B: Arabic decimal separator
+    \u066C: Arabic thousands separator
+    \u0671: Alif Wasla (used in the Quran)
     """    
-    # remove tatweel, and unseen char
+    # Remove tatweel and invisible characters
 
-    # normalize U+069C -> U+0634 (maghrebi to MSA)
+    # Normalize U+069C to U+0634 (Maghreb dialect to MSA)
     # return text.replace('ڜ', 'ش')
 
     return text
@@ -166,7 +166,7 @@ if __name__ == "__main__":
         "لا والله، صافي كملنا، سمحلي ولكن ما بغيتش هادشي"
     ]
     
-    print("Original → Normalized\n")
+    print("原始 → 标准化后\n")
     for ex in examples:
         print(f"{ex}")
         print(f"{normalize(ex)}\n")

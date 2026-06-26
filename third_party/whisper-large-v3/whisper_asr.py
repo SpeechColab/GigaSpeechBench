@@ -220,7 +220,6 @@ def transcribe_audio(audio_path: str, language: str = "ENG", model_dir: str = ".
 if __name__ == "__main__":
     # Example usage
     audio_file = "test.mp3"  # Replace with actual audio path
-    breakpoint()
     language_code = "ENG"     # Replace with appropriate language code
 
     try:

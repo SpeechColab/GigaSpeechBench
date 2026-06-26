@@ -174,8 +174,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Google Speech-to-Text V2 (Chirp) inference tool")
     parser.add_argument("--json_dir", required=True, type=Path)
     parser.add_argument("--audio_dir", required=True, type=Path)
-    parser.add_argument("--project_id", type=str, default=PROJECT_ID)
-    parser.add_argument("--location", type=str, default=DEFAULT_LOCATION)
+    parser.add_argument("--project_id", type=str, default="YOUR_PROJECT_ID",
+                        help="Google Cloud project ID")
+    parser.add_argument("--location", type=str, default="us-central1",
+                        help="Google Cloud region (e.g. us-central1, eu)")
     parser.add_argument("--log-level", choices=["DEBUG", "INFO", "WARNING", "ERROR"], default="INFO", help="Log level (default: INFO)")
 
     args = parser.parse_args()
@@ -212,8 +214,10 @@ if __name__ == "__main__":
 
                 for idx, segment in enumerate(obj["segments"]):
                     try:
-                        if segment["status"] == "valid":
-                            seg_pred = transcribe_audio_segment(str(audio_path), language=lang, start=segment["start"], end=segment["end"])
+                        if segment.get("status") == "valid":
+                            seg_start = float(segment.get("start", segment.get("begin_time", 0)))
+                            seg_end = float(segment.get("end", segment.get("end_time", 0)))
+                            seg_pred = transcribe_audio_segment(str(audio_path), language=lang, start=seg_start, end=seg_end)
                             save_transcription(
                                 audio_path=audio_path,
                                 text=seg_pred.text,
@@ -235,8 +239,8 @@ if __name__ == "__main__":
                             text="",
                             language=lang,
                             model=OUTPUT_MODEL_NAME,
-                            start_time=segment["start"],
-                            end_time=segment["end"],
+                            start_time=float(segment.get("start", segment.get("begin_time", 0))),
+                            end_time=float(segment.get("end", segment.get("end_time", 0))),
                         )
 
             except FileNotFoundError as e:

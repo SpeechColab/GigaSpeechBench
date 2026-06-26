@@ -98,8 +98,8 @@ def process_one_json(json_path: str, lang: str, skip_uids: set):
     for seg in segments:
         if seg.get("status") != "valid":
             continue
-        start_sec = float(seg["start"])
-        end_sec = float(seg["end"])
+        start_sec = float(seg.get("start", seg.get("begin_time", 0)))
+        end_sec = float(seg.get("end", seg.get("end_time", 0)))
 
         if os.path.basename(wav_path) + str(start_sec) + str(end_sec) in skip_uids:
             continue
@@ -139,50 +139,64 @@ def save_transcription(
     end_time: float,
 ) -> None:
     """
-    Save transcription to ./results/{language}_{model}.json
-
-    Each entry is appended as a dict with a unique `id`.
+    Save transcription to ./results/{model}.json in release audios[] format.
     """
 
     # ---------- output path ----------
     results_dir = os.path.join(os.getcwd(), "results")
     os.makedirs(results_dir, exist_ok=True)
 
-    filename = f"{language}_{model}.json"
+    filename = f"{model}.json"
     output_path = os.path.join(results_dir, filename)
 
     # ---------- new entry ----------
-    entry: Dict[str, Union[str, float, int]] = {
-        "audio_name": os.path.basename(audio_path),
+    audio_name = os.path.basename(audio_path)
+    aid = os.path.splitext(audio_name)[0] if audio_name.endswith(".wav") else audio_name
+    begin_time_str = str(start_time)
+    end_time_str = str(end_time)
+    sid = f"{aid}#{begin_time_str}#{end_time_str}"
+
+    seg_entry = {
+        "sid": sid,
+        "begin_time": begin_time_str,
+        "end_time": end_time_str,
         "text": text.strip(),
-        "language": language.strip(),
-        "model": model.strip(),
-        "start_time": float(start_time),
-        "end_time": float(end_time),
+        "lang": language.strip(),
     }
 
     # ---------- load existing ----------
-    data = []
+    data = {"audios": []}
     if os.path.exists(output_path):
         try:
             with open(output_path, "r", encoding="utf-8") as f:
                 content = f.read().strip()
                 if content:
                     data = json.loads(content)
-                    if not isinstance(data, list):
-                        raise ValueError("JSON root is not a list")
+                    if not isinstance(data, dict) or "audios" not in data:
+                        data = {"audios": []}
         except Exception as e:
             print(f"[WARN] Failed to read {output_path}, recreating. Reason: {e}")
-            data = []
+            data = {"audios": []}
 
-    # ---------- append ----------
-    data.append(entry)
+    # ---------- append to correct audio ----------
+    found = False
+    for audio in data["audios"]:
+        if audio["aid"] == aid:
+            audio["segments"].append(seg_entry)
+            found = True
+            break
+    if not found:
+        data["audios"].append({
+            "aid": aid,
+            "segments": [seg_entry],
+            "language": language.strip(),
+        })
 
     # ---------- write back ----------
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 
-    print(f"[INFO] Transcription saved -> {output_path}, path={entry['audio_name']}")
+    print(f"[INFO] Transcription saved -> {output_path}, aid={aid}")
 
 
 def main():

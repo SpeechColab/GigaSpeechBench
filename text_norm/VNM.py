@@ -8,57 +8,57 @@ from text_norm._common import remove_paralinguistic_tags
 try:
     from underthesea import text_normalize as underthesea_normalize
 except ImportError:
-    print("Error: library not found 'underthesea'。Please run: pip install underthesea")
+    print("错误: 未找到库 'underthesea'。请执行: pip install underthesea")
     sys.exit(1)
 
 try:
     from num2words import num2words
 except ImportError:
-    print("Error: library not found 'num2words'。Please run: pip install num2words")
+    print("错误: 未找到库 'num2words'。请执行: pip install num2words")
     sys.exit(1)
 
 
 def _convert_numbers(text: str) -> str:
     """
-    Convert numbers in text to Vietnamese pronunciation。
-    Add spaces around converted result to prevent merging with adjacent chars (如 '4G' -> 'bốn g')。
+    Convert digits in the text to Vietnamese readings.
+    Add spaces around the result to prevent sticking to adjacent letters (e.g. '4G' -> 'bốn g').
     """
     return re.sub(r"\d+", lambda x: " " + num2words(int(x.group()), lang="vi") + " ", text)
 
 
 def _remove_asr_tags(text: str) -> str:
     """
-    Remove non-linguistic markers from ASR data (如 [laugh], <unk>, ++garbage++)。
+    Remove non-linguistic markers in ASR datasets (e.g. [laugh], <unk>, ++garbage++).
     """
-    # Remove标准括号标签 [], (), {}, <>
+    # Remove standard bracket tags [], (), {}, <>
     text = re.sub(r"\[[^\]]*\]|\([^\)]*\)|\{[^\}]*\}|<[^>]*>", " ", text)
-    # Remove特殊标记 (如 ++noise++)
+    # Remove special markers (e.g. ++noise++)
     text = re.sub(r"\+\+[^\+]*\+\+", " ", text)
     return text
 
 
 def _remove_punctuation(text: str) -> str:
     """
-    Remove punctuation。
-    保留：Unicode 字母、数字、空格及特殊符号 (+)。
+    Remove punctuation.
+    Keep: Unicode letters, digits, spaces, and the special symbol (+).
     """
-    # Keep \w (含Vietnam语字母), \s (空格) 和 + (保留 C++, K+ 等)
+    # Keep \w (incl. Vietnamese letters), \s (spaces), and + (keep C++, K+, etc.)
     text = re.sub(r"[^\w\s\+]", " ", text)
-    # 下划线视为空格process
+    # Treat underscore as a space
     text = text.replace("_", " ")
     return text
 
 
 def normalize(text: str) -> str:
     """
-    Vietnam语 ASR 评测标准正则化入口函数。
+    Vietnamese ASR evaluation standard normalization entry function.
 
-    处理流程:
-    1. Unicode NFC 归一化
-    2. 移除 ASR 噪音标记
-    3. Underthesea 文本标准化 (声调/拼写)
-    4. 数字转文本
-    5. 移除标点并转小写
+    Processing flow:
+    1. Unicode NFC normalization
+    2. Remove ASR noise markers
+    3. Underthesea text normalization (tone/spelling)
+    4. Convert numbers to text
+    5. Remove punctuation and lowercase
     """
     if not text:
         return ""
@@ -66,67 +66,67 @@ def normalize(text: str) -> str:
     # Remove paralinguistic tags and filler words
     text = remove_paralinguistic_tags(text)
 
-    # Unicode NFC normalize (解决 NFD 分解字符问题)
+    # Unicode NFC normalization (fix NFD decomposed characters)
     text = unicodedata.normalize("NFC", text)
 
-    # Remove零宽字符
+    # Remove zero-width characters
     text = re.sub(r"[\u200B\u200C\u200D\uFEFF]", " ", text)
 
-    # Remove ASR 噪音标记
+    # Remove ASR noise markers
     text = _remove_asr_tags(text)
 
     text = text.strip()
 
-    # Text标准化 (process声调位置歧义，如 hòa/hoà)
+    # Text normalization (handle tone-placement ambiguity, e.g. hòa/hoà)
     try:
         text = underthesea_normalize(text)
     except Exception:
         pass
 
-    # Numbers转文本
+    # Convert numbers to text
     text = _convert_numbers(text)
 
-    # Removepunctuation并转小写
+    # Remove punctuation and lowercase
     text = _remove_punctuation(text)
     text = text.lower()
 
-    # Merge多余空格
+    # Collapse extra spaces
     text = re.sub(r"\s+", " ", text).strip()
 
     return text
 
 
 if __name__ == "__main__":
-    # --- 综合测试用例 ---
+    # --- Comprehensive test cases ---
 
     test_cases = [
-        # Group A: 声调与拼写 (新旧风格统一, 特殊地名)
+        # Group A: Tone & spelling (unify old/new styles, special place names)
         ("A01", "Hoà bình, Thuỷ tinh, Qui Nhơn, Đắk Lắk", "hòa bình thủy tinh quy nhơn đắk lắk"),
-        # Group B: 编码与字符 (NFD转NFC, 特殊元音, 全角字符)
+        # Group B: Encoding & chars (NFD->NFC, special vowels, full-width chars)
         ("B01", "Tiê\u0301ng Viê\u0323t (NFD), Ưu đãi, ＡＢＣ", "tiếng việt ưu đãi abc"),
-        # Group C: 复杂numbers与单位 (小数, 日期, IP, 混合时间)
+        # Group C: Complex numbers & units (decimals, dates, IP, mixed time)
         (
             "C01",
             "1,000,000; 3.14; 20/11/2024; 192.168.1.1; $50; 8h30p",
             "một không không không không không không ba mười bốn hai mươi mười một hai nghìn không trăm hai mươi bốn một chín hai một sáu tám một một năm mươi tám h ba mươi p",
         ),
-        # Group D: ASR噪声与标签 (嵌套/未闭合/特殊标记)
+        # Group D: ASR noise & tags (nested/unclosed/special markers)
         ("D01", "Hello [laugh] (noise) <unk> {breath} ++garbage++ <silence>...", "hello"),
-        # Group E: punctuation与特殊符号 (邮箱, Hashtag, 连字符)
+        # Group E: Punctuation & special symbols (email, hashtag, hyphen)
         ("E01", "user@email.com #hashtag Wi-fi_Zone A/B", "user email com hashtag wi fi zone a b"),
-        # Group F: 外来词 (保留非Vietnam语字母 F/J/Z/W)
+        # Group F: Loanwords (keep non-Vietnamese letters F/J/Z/W)
         ("F01", "Vietnam Airlines, YouTube, Zalo, Jeans", "vietnam airlines youtube zalo jeans"),
-        # Group G: 边缘情况 (混合格式, 换行, 零宽字符)
+        # Group G: Edge cases (mixed formats, newlines, zero-width chars)
         ("G01", "123!!![laugh]\nLine2\tTab\u200bZero", "một trăm hai mươi ba line2 tab zero"),
-        # Group H: 误判防御 (防粘连, 保留特殊符号 +, C++)
+        # Group H: False-positive defense (anti-stick, keep symbols +, C++)
         ("H01", "4G LTE, F0, 1A, C++, K+, Vitamin 3B", "bốn g lte f không một a c + + k + vitamin ba b"),
-        # Group I: 科技与数学 (化学式, 平方, 等式, 版本号)
+        # Group I: Sci & math (chemical formulas, squares, equations, versions)
         ("I01", "H2O, CO2, m2, 1 + 1 = 2, v1.0.0", "h hai o co hai m hai một + một hai v một không không"),
-        # Group J: 混合language (Code-switching)
+        # Group J: Mixed languages (code-switching)
         ("J01", "Sale 50%, Check mail, Log in", "sale năm mươi check mail log in"),
     ]
 
-    print("--- Vietnam语 ASR 正则化测试结果 (垂直对比) ---")
+    print("--- 越南语 ASR 正则化测试结果 (垂直对比) ---")
 
     failures = 0
     for case_id, raw, expected in test_cases:
@@ -136,10 +136,10 @@ if __name__ == "__main__":
         print(f"Raw : {raw}")
         print(f"Norm: {output}")
 
-        # 简单验证: 输入含有效内容但输出为空则报警
+        # Simple check: warn if input has valid content but output is empty
         has_content = re.search(r"[a-zA-Z0-9]", raw)
         if has_content and not output.strip():
-            print(f">>> Warning: 输入包含内容但输出为空!")
+            print(f">>> 警告: 输入包含内容但输出为空!")
             failures += 1
 
         print("-" * 60)

@@ -1,12 +1,24 @@
 data/
-__pycache__
+__pycache__/
+*.pyc
 *.pt
 *.bin
+*.wav
+*.mp4
+*.xlsx
 build_gradio/query
 normalize_fail.log
 normalize_ref_fail.log
 
 results/
+log/
+
+# Environment
+.env
+.env.*
+venv/
+.venv/
+
 # Ignore Mac system files
-results/
 .DS_Store
+

@@ -21,8 +21,12 @@ import json
 import os
 import sys
 import unicodedata
-from enum import Enum
 from collections import defaultdict
+from multiprocessing import Pool, cpu_count
+
+import kaldialign
+
+ERR = "*"
 
 
 # ---------------------------------------------------------------------------
@@ -31,13 +35,6 @@ from collections import defaultdict
 
 PUNCTS = set("!,?、。！，；？：「」︰『』《》")
 SPACELIST = set(" \t\r\n")
-
-
-class Code(Enum):
-    match = 1
-    substitution = 2
-    insertion = 3
-    deletion = 4
 
 
 def characterize(string: str):
@@ -89,139 +86,28 @@ def entity_tokens(entities, tochar: bool):
 
 
 # ---------------------------------------------------------------------------
-# Edit-distance calculator (from wer.py, simplified)
-# ---------------------------------------------------------------------------
-
-class Calculator:
-    def __init__(self):
-        self.data = {}
-        self.space = []
-        self.cost = {"cor": 0, "sub": 1, "del": 1, "ins": 1}
-
-    def calculate(self, lab, rec):
-        lab = [""] + lab
-        rec = [""] + rec
-        while len(self.space) < len(lab):
-            self.space.append([])
-        for row in self.space:
-            for element in row:
-                element["dist"] = 0
-                element["error"] = "non"
-            while len(row) < len(rec):
-                row.append({"dist": 0, "error": "non"})
-        for i in range(len(lab)):
-            self.space[i][0]["dist"] = i
-            self.space[i][0]["error"] = "del"
-        for j in range(len(rec)):
-            self.space[0][j]["dist"] = j
-            self.space[0][j]["error"] = "ins"
-        self.space[0][0]["error"] = "non"
-
-        for token in lab + rec:
-            if token and token not in self.data:
-                self.data[token] = {"all": 0, "cor": 0, "sub": 0, "ins": 0, "del": 0}
-
-        for i, lab_token in enumerate(lab):
-            for j, rec_token in enumerate(rec):
-                if i == 0 or j == 0:
-                    continue
-                min_dist = sys.maxsize
-                min_error = "none"
-                for dist, error in [
-                    (self.space[i-1][j]["dist"] + self.cost["del"], "del"),
-                    (self.space[i][j-1]["dist"] + self.cost["ins"], "ins"),
-                ]:
-                    if dist < min_dist:
-                        min_dist, min_error = dist, error
-                if lab_token == rec_token.replace("<BIAS>", ""):
-                    dist = self.space[i-1][j-1]["dist"] + self.cost["cor"]
-                    error = "cor"
-                else:
-                    dist = self.space[i-1][j-1]["dist"] + self.cost["sub"]
-                    error = "sub"
-                if dist < min_dist:
-                    min_dist, min_error = dist, error
-                self.space[i][j]["dist"] = min_dist
-                self.space[i][j]["error"] = min_error
-
-        result = {"lab": [], "rec": [], "code": [],
-                  "all": 0, "cor": 0, "sub": 0, "ins": 0, "del": 0}
-        i, j = len(lab) - 1, len(rec) - 1
-        while True:
-            err = self.space[i][j]["error"]
-            if err == "cor":
-                if lab[i]:
-                    self._update(lab[i], "cor")
-                    result["all"] += 1; result["cor"] += 1
-                result["lab"].insert(0, lab[i])
-                result["rec"].insert(0, rec[j])
-                result["code"].insert(0, Code.match)
-                i -= 1; j -= 1
-            elif err == "sub":
-                if lab[i]:
-                    self._update(lab[i], "sub")
-                    result["all"] += 1; result["sub"] += 1
-                result["lab"].insert(0, lab[i])
-                result["rec"].insert(0, rec[j])
-                result["code"].insert(0, Code.substitution)
-                i -= 1; j -= 1
-            elif err == "del":
-                if lab[i]:
-                    self._update(lab[i], "del")
-                    result["all"] += 1; result["del"] += 1
-                result["lab"].insert(0, lab[i])
-                result["rec"].insert(0, "")
-                result["code"].insert(0, Code.deletion)
-                i -= 1
-            elif err == "ins":
-                if rec[j]:
-                    self.data.setdefault(rec[j], {"all": 0, "cor": 0, "sub": 0, "ins": 0, "del": 0})
-                    self.data[rec[j]]["ins"] += 1
-                    result["ins"] += 1
-                result["lab"].insert(0, "")
-                result["rec"].insert(0, rec[j])
-                result["code"].insert(0, Code.insertion)
-                j -= 1
-            elif err == "non":
-                break
-        return result
-
-    def _update(self, token, err_type):
-        if token not in self.data:
-            self.data[token] = {"all": 0, "cor": 0, "sub": 0, "ins": 0, "del": 0}
-        self.data[token]["all"] += 1
-        self.data[token][err_type] += 1
-
-    def overall(self):
-        result = {"all": 0, "cor": 0, "sub": 0, "ins": 0, "del": 0}
-        for token in self.data:
-            for k in result:
-                result[k] += self.data[token].get(k, 0)
-        return result
-
-
-# ---------------------------------------------------------------------------
 # WER accumulator
 # ---------------------------------------------------------------------------
 
 class WordError:
     def __init__(self):
-        self.errors = {Code.substitution: 0, Code.insertion: 0, Code.deletion: 0}
+        self.sub = 0
+        self.ins = 0
+        self.dele = 0
         self.ref_words = 0
 
     def get_wer(self):
         if self.ref_words == 0:
             return 0.0
-        errs = sum(self.errors.values())
-        return 100.0 * errs / self.ref_words
+        return 100.0 * (self.sub + self.ins + self.dele) / self.ref_words
 
     def __str__(self):
         return (
             f"WER={self.get_wer():.4f}%, "
             f"ref={self.ref_words}, "
-            f"sub={self.errors[Code.substitution]}, "
-            f"ins={self.errors[Code.insertion]}, "
-            f"del={self.errors[Code.deletion]}"
+            f"sub={self.sub}, "
+            f"ins={self.ins}, "
+            f"del={self.dele}"
         )
 
 
@@ -229,14 +115,74 @@ class WordError:
 # Data loading
 # ---------------------------------------------------------------------------
 
-def load_ref(result_dir: str, domain: str):
+def load_ref(result_dir: str, domain: str, norm_ref_dir: str = None):
     """
     Load entity-annotated reference for a domain.
     Returns: dict {(audio_name, start, end): {"text": str, "entities": list}}
+
+    When norm_ref_dir is given (preferred):
+      - Segments and text come from norm_ref_dir/{domain}.json
+        (same segments as normal WER evaluation)
+      - Entities are looked up from result_dir/{domain}/metadata.json
+      This ensures segment sets are identical to normal WER.
+
+    Fallback layouts when norm_ref_dir is not given or file missing:
+    1. Release metadata: result_dir/{domain}/metadata.json
+    2. Legacy entity_ref: result_dir/{domain}/*.json
     """
+    # --- Primary: use norm_ref_dir as segment source, metadata for entities ---
+    if norm_ref_dir:
+        norm_path = os.path.join(norm_ref_dir, f"{domain}.json")
+        if os.path.isfile(norm_path):
+            # Build entity index from release metadata
+            entity_index = {}  # (aid, begin_time, end_time) -> entities list
+            domain_dir = os.path.join(result_dir, domain)
+            meta_path = os.path.join(domain_dir, "metadata.json") if os.path.isdir(domain_dir) else ""
+            if os.path.isfile(meta_path):
+                with open(meta_path, "r", encoding="utf-8") as f:
+                    meta = json.load(f)
+                for audio in meta.get("audios", []):
+                    aid = audio.get("aid", "")
+                    for seg in audio.get("segments", []):
+                        ek = (aid, seg.get("begin_time"), seg.get("end_time"))
+                        entity_index[ek] = seg.get("entities", [])
+
+            # Load segments from normalised ref (same set as normal WER)
+            ref = {}
+            with open(norm_path, "r", encoding="utf-8") as f:
+                for item in json.load(f):
+                    key = (item["audio_name"], item["start"], item["end"])
+                    ref[key] = {
+                        "text": item.get("text", ""),
+                        "entities": entity_index.get(key, []),
+                    }
+            return ref
+
+    # --- Fallback: release metadata only ---
     domain_dir = os.path.join(result_dir, domain)
     if not os.path.isdir(domain_dir):
         return {}
+
+    meta_path = os.path.join(domain_dir, "metadata.json")
+    if os.path.isfile(meta_path):
+        ref = {}
+        with open(meta_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        for audio in data.get("audios", []):
+            aid = audio.get("aid", "")
+            for seg in audio.get("segments", []):
+                start = seg.get("begin_time")
+                end = seg.get("end_time")
+                if start is None or end is None:
+                    continue
+                key = (aid, start, end)
+                ref[key] = {
+                    "text": seg.get("text", ""),
+                    "entities": seg.get("entities", []),
+                }
+        return ref
+
+    # --- Fallback: legacy entity_ref layout ---
     ref = {}
     for fname in os.listdir(domain_dir):
         if not fname.endswith(".json"):
@@ -270,6 +216,9 @@ def extract_audio_name(item: dict) -> str:
     # strip extension
     if "." in raw:
         raw = raw.rsplit(".", 1)[0]
+    # strip #raw suffix (matches norm_audio_name in compute_wer_single.py)
+    if raw.endswith("#raw"):
+        raw = raw[:-4]
     return raw
 
 
@@ -277,14 +226,16 @@ def load_hyp(hyp_dir: str, domain: str, model: str):
     """
     Load hypothesis for a domain+model combination.
     model='azure' corresponds to file {domain}.json; others: {domain}_{model}.json
+    Supports both flat layout (hyp_dir/{domain}_{model}.json) and
+    subdirectory layout (hyp_dir/{domain}/{domain}_{model}.json).
     Returns: dict {(audio_name, start, end): str}, or None if file not found.
     """
-    if model == "azure":
-        fname = f"{domain}.json"
-    else:
-        fname = f"{domain}_{model}.json"
-    fpath = os.path.join(hyp_dir, fname)
+    fname = f"{domain}_{model}.json"
+    # Try subdirectory layout first, then flat
+    fpath = os.path.join(hyp_dir, domain, fname)
     if not os.path.isfile(fpath):
+        fpath = os.path.join(hyp_dir, fname)
+    if fpath is None or not os.path.isfile(fpath):
         return None
     hyp = {}
     with open(fpath, "r", encoding="utf-8") as f:
@@ -312,83 +263,97 @@ def detect_language(domain: str) -> bool:
 
 def evaluate_domain(ref: dict, hyp: dict, tochar: bool, verbose: bool = False):
     """
-    Evaluate one domain's ref vs hyp.
+    Evaluate one domain's ref vs hyp using kaldialign.
     Returns stats dict.
     """
-    calc = Calculator()
     wer_acc = WordError()
     u_wer_acc = WordError()
     b_wer_acc = WordError()
     hotword = {"tp": 0, "tn": 0, "fp": 0, "fn": 0}
     n_matched_segs = 0
     n_skipped_segs = 0
+    overall = {"all": 0, "cor": 0, "sub": 0, "ins": 0, "del": 0}
+
+    # Build fuzzy index for tolerance matching (0.01s)
+    _MATCH_TOL = 0.01
+    hyp_by_name = defaultdict(list)
+    for (h_name, h_start, h_end), h_text in hyp.items():
+        hyp_by_name[h_name].append((float(h_start), float(h_end), h_text))
+
+    def _fuzzy_lookup(key):
+        name, start, end = key
+        start, end = float(start), float(end)
+        if key in hyp:
+            return hyp[key]
+        for h_start, h_end, h_text in hyp_by_name.get(name, []):
+            if abs(h_start - start) <= _MATCH_TOL and abs(h_end - end) <= _MATCH_TOL:
+                return h_text
+        return None
 
     for key, ref_info in ref.items():
-        if key not in hyp:
+        hyp_text = _fuzzy_lookup(key)
+        if hyp_text is None:
             n_skipped_segs += 1
             continue
         n_matched_segs += 1
-        audio_name, start, end = key
 
         lab = tokenize(ref_info["text"], tochar)
-        rec = tokenize(hyp[key], tochar)
+        rec = tokenize(hyp_text, tochar)
 
         # build hotword token set from entities
         hot_set = entity_tokens(ref_info["entities"], tochar)
-        # only keep hotword tokens that actually appear in label
         hot_true_list = {t for t in hot_set if t in set(lab)}
-        # bad hotwords: in entity list but NOT in label
         hot_bad_list = hot_set - hot_true_list
 
-        # compute edit distance
-        result = calc.calculate(lab.copy(), rec.copy())
+        # compute alignment via kaldialign (C++ backend)
+        ali = kaldialign.align(lab, rec, ERR)
 
-        if verbose:
-            seg_id = f"{audio_name}[{start:.2f},{end:.2f}]"
-            if result["all"] != 0:
-                seg_wer = (result["ins"] + result["sub"] + result["del"]) * 100.0 / result["all"]
+        # accumulate WER / U-WER / B-WER from alignment
+        for ref_tok, hyp_tok in ali:
+            if ref_tok == ERR:
+                # insertion
+                overall["ins"] += 1
+                wer_acc.ins += 1
+                if hyp_tok in hot_true_list:
+                    b_wer_acc.ins += 1
+                else:
+                    u_wer_acc.ins += 1
+            elif hyp_tok == ERR:
+                # deletion
+                overall["all"] += 1
+                overall["del"] += 1
+                wer_acc.ref_words += 1
+                wer_acc.dele += 1
+                if ref_tok in hot_true_list:
+                    b_wer_acc.ref_words += 1
+                    b_wer_acc.dele += 1
+                else:
+                    u_wer_acc.ref_words += 1
+                    u_wer_acc.dele += 1
+            elif ref_tok != hyp_tok:
+                # substitution
+                overall["all"] += 1
+                overall["sub"] += 1
+                wer_acc.ref_words += 1
+                wer_acc.sub += 1
+                if ref_tok in hot_true_list:
+                    b_wer_acc.ref_words += 1
+                    b_wer_acc.sub += 1
+                else:
+                    u_wer_acc.ref_words += 1
+                    u_wer_acc.sub += 1
             else:
-                seg_wer = 0.0
-            print(f"\n{seg_id}  WER={seg_wer:.2f}%")
-            print(f"  ref: {' '.join(lab)}")
-            print(f"  hyp: {' '.join(rec)}")
-            print(f"  entities: {ref_info['entities']}")
-
-        # accumulate U-WER / B-WER
-        rec_tokens = [w.replace("<BIAS>", "") for w in rec]
-        for code, rec_word, lab_word in zip(result["code"], result["rec"], result["lab"]):
-            if code == Code.match:
+                # correct
+                overall["all"] += 1
+                overall["cor"] += 1
                 wer_acc.ref_words += 1
-                if lab_word in hot_true_list:
+                if ref_tok in hot_true_list:
                     b_wer_acc.ref_words += 1
                 else:
                     u_wer_acc.ref_words += 1
-            elif code == Code.substitution:
-                wer_acc.ref_words += 1
-                wer_acc.errors[Code.substitution] += 1
-                if lab_word in hot_true_list:
-                    b_wer_acc.ref_words += 1
-                    b_wer_acc.errors[Code.substitution] += 1
-                else:
-                    u_wer_acc.ref_words += 1
-                    u_wer_acc.errors[Code.substitution] += 1
-            elif code == Code.deletion:
-                wer_acc.ref_words += 1
-                wer_acc.errors[Code.deletion] += 1
-                if lab_word in hot_true_list:
-                    b_wer_acc.ref_words += 1
-                    b_wer_acc.errors[Code.deletion] += 1
-                else:
-                    u_wer_acc.ref_words += 1
-                    u_wer_acc.errors[Code.deletion] += 1
-            elif code == Code.insertion:
-                wer_acc.errors[Code.insertion] += 1
-                if rec_word in hot_true_list:
-                    b_wer_acc.errors[Code.insertion] += 1
-                else:
-                    u_wer_acc.errors[Code.insertion] += 1
 
         # accumulate hotword recall stats
+        rec_tokens = [t for t in rec]
         for bad_hw in hot_bad_list:
             count = rec_tokens.count(bad_hw)
             if count == 0:
@@ -406,7 +371,6 @@ def evaluate_domain(ref: dict, hyp: dict, tochar: bool, verbose: bool = False):
                 hotword["tp"] += rec_cnt
                 hotword["fn"] += true_cnt - rec_cnt
 
-    overall = calc.overall()
     recall = (hotword["tp"] / (hotword["tp"] + hotword["fn"]) * 100
               if hotword["tp"] + hotword["fn"] > 0 else 0.0)
 
@@ -454,12 +418,17 @@ def aggregate(stats_list):
     agg_hw = {"tp": 0, "tn": 0, "fp": 0, "fn": 0}
 
     for s in stats_list:
-        for code in [Code.substitution, Code.insertion, Code.deletion]:
-            agg_wer.errors[code] += s["wer"].errors[code]
-            agg_u_wer.errors[code] += s["u_wer"].errors[code]
-            agg_b_wer.errors[code] += s["b_wer"].errors[code]
+        agg_wer.sub += s["wer"].sub
+        agg_wer.ins += s["wer"].ins
+        agg_wer.dele += s["wer"].dele
         agg_wer.ref_words += s["wer"].ref_words
+        agg_u_wer.sub += s["u_wer"].sub
+        agg_u_wer.ins += s["u_wer"].ins
+        agg_u_wer.dele += s["u_wer"].dele
         agg_u_wer.ref_words += s["u_wer"].ref_words
+        agg_b_wer.sub += s["b_wer"].sub
+        agg_b_wer.ins += s["b_wer"].ins
+        agg_b_wer.dele += s["b_wer"].dele
         agg_b_wer.ref_words += s["b_wer"].ref_words
         for k in agg_hw:
             agg_hw[k] += s["hotword"][k]
@@ -510,6 +479,23 @@ def get_args():
         action="store_true",
         help="Print per-segment details",
     )
+    parser.add_argument(
+        "--norm_ref_dir",
+        default=None,
+        help="Directory with normalised ref JSONs ({domain}.json). "
+             "Text from these files overrides raw metadata text.",
+    )
+    parser.add_argument(
+        "--skip_existing",
+        action="store_true",
+        help="Skip domain+model if hotword_cache.json already exists",
+    )
+    parser.add_argument(
+        "--workers",
+        type=int,
+        default=8,
+        help="Number of parallel workers (default: 8)",
+    )
     return parser.parse_args()
 
 
@@ -517,25 +503,65 @@ def discover_domains(result_dir: str, hyp_dir: str):
     """Return sorted list of domains present in both result_dir and hyp_dir."""
     result_domains = set(os.listdir(result_dir)) if os.path.isdir(result_dir) else set()
     hyp_domains = set()
-    for fname in os.listdir(hyp_dir):
-        if fname.endswith(".json"):
-            domain = fname.replace(".json", "").split("_")[0]
+    for entry in os.listdir(hyp_dir):
+        # Subdirectory layout: hyp_dir/{domain}/
+        if os.path.isdir(os.path.join(hyp_dir, entry)):
+            hyp_domains.add(entry)
+        # Flat layout: hyp_dir/{domain}_{model}.json
+        elif entry.endswith(".json"):
+            domain = entry.replace(".json", "").split("_")[0]
             hyp_domains.add(domain)
     return sorted(result_domains & hyp_domains)
 
 
 def discover_models(hyp_dir: str, domain: str):
     """Return list of models available for a domain."""
-    models = []
+    models = set()
+    # Check subdirectory layout: hyp_dir/{domain}/{domain}_{model}.json
+    subdir = os.path.join(hyp_dir, domain)
+    if os.path.isdir(subdir):
+        for fname in os.listdir(subdir):
+            if not fname.endswith(".json"):
+                continue
+            base = fname.replace(".json", "")
+            if base.startswith(domain + "_"):
+                models.add(base[len(domain) + 1:])
+    # Also check flat layout: hyp_dir/{domain}_{model}.json
     for fname in os.listdir(hyp_dir):
         if not fname.endswith(".json"):
             continue
         base = fname.replace(".json", "")
-        if base == domain:
-            models.append("azure")
-        elif base.startswith(domain + "_"):
-            models.append(base[len(domain) + 1:])
+        if base.startswith(domain + "_"):
+            models.add(base[len(domain) + 1:])
     return sorted(models)
+
+
+def _run_single_task(task):
+    """Execute a single hotword WER task (module-level for pickling)."""
+    domain, model, tochar, ref, hyp, m_dir, cache_path = task
+    stats = evaluate_domain(ref, hyp, tochar, verbose=False)
+    os.makedirs(m_dir, exist_ok=True)
+    hw = stats["hotword"]
+    with open(os.path.join(m_dir, "hotword_result.txt"), "w", encoding="utf8") as f:
+        f.write(f"wer={stats['wer'].get_wer():.4f}\n")
+        f.write(f"u_wer={stats['u_wer'].get_wer():.4f}\n")
+        f.write(f"b_wer={stats['b_wer'].get_wer():.4f}\n")
+        f.write(f"recall={stats['recall']:.4f}\n")
+        f.write(f"tp={hw['tp']}\ntn={hw['tn']}\nfp={hw['fp']}\nfn={hw['fn']}\n")
+        f.write(f"matched_segments={stats['n_matched']}\n")
+        f.write(f"skipped_segments={stats['n_skipped']}\n")
+    cache_data = {
+        "wer": stats["wer"].get_wer(),
+        "u_wer": stats["u_wer"].get_wer(),
+        "b_wer": stats["b_wer"].get_wer(),
+        "recall": stats["recall"],
+        "hotword": hw,
+        "matched_segments": stats["n_matched"],
+        "skipped_segments": stats["n_skipped"],
+    }
+    with open(cache_path, "w", encoding="utf8") as f:
+        json.dump(cache_data, f, ensure_ascii=False, indent=2)
+    return domain, model, stats, cache_data
 
 
 def main():
@@ -543,11 +569,13 @@ def main():
 
     # resolve defaults relative to script location
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    data_root = os.environ.get("DATA_ROOT",
-        os.path.join(base_dir, "data"))
 
-    result_dir = args.result_dir or os.path.join(data_root, "Vertical-Domain", "text", "entity_ref")
-    hyp_dir = args.hyp_dir or os.path.join(data_root, "Vertical-Domain", "text", "hyp")
+    staging_root = os.environ.get("STAGING_ROOT", "")
+    result_dir = args.result_dir or (
+        os.path.join(staging_root, "Vertical-Domain", "data") if staging_root
+        else os.path.join(base_dir, "data", "text", "Vertical-Domain", "ref"))
+    hyp_dir = args.hyp_dir or os.path.join(base_dir, "data", "text_normalized", "Vertical-Domain", "hyp")
+    norm_ref_dir = args.norm_ref_dir or os.path.join(base_dir, "data", "text_normalized", "Vertical-Domain", "ref")
     out_dir = args.out_dir or os.path.join(base_dir, "data", "results_hotword")
     os.makedirs(out_dir, exist_ok=True)
 
@@ -565,44 +593,57 @@ def main():
     # table for Excel: {model: {domain: {"wer":..., "u_wer":..., "b_wer":..., "recall":...}}}
     excel_data = defaultdict(dict)
 
+    # Build task list: [(domain, model, tochar, ref, hyp, m_dir, cache_path)]
+    tasks = []
+    cached_count = 0
     for domain in domains:
         tochar = detect_language(domain)
-        ref = load_ref(result_dir, domain)
+        ref = load_ref(result_dir, domain, norm_ref_dir=norm_ref_dir)
         if not ref:
             print(f"[WARN] No ref data for domain {domain}, skipping.", file=sys.stderr)
             continue
 
         models = args.model if args.model else discover_models(hyp_dir, domain)
         for model in models:
+            m_dir = os.path.join(out_dir, domain, model.upper())
+            cache_path = os.path.join(m_dir, "hotword_cache.json")
+
+            # Skip if cache exists and --skip_existing
+            if args.skip_existing and os.path.exists(cache_path):
+                try:
+                    cached = json.load(open(cache_path, "r", encoding="utf8"))
+                    excel_data[model][domain] = {
+                        "wer": cached["wer"],
+                        "u_wer": cached["u_wer"],
+                        "b_wer": cached["b_wer"],
+                        "recall": cached["recall"],
+                    }
+                    cached_count += 1
+                    continue
+                except Exception:
+                    pass  # cache corrupted, recompute
+
             hyp = load_hyp(hyp_dir, domain, model)
             if hyp is None:
                 continue
-            stats = evaluate_domain(ref, hyp, tochar, verbose=args.verbose)
-            print_domain_result(domain, model, stats)
+            tasks.append((domain, model, tochar, ref, hyp, m_dir, cache_path))
+
+    print(f"Hotword WER: {len(tasks)} tasks to compute, {cached_count} cached (skipped)")
+
+    # Run in parallel using multiprocessing (CPU-bound)
+    n_workers = min(args.workers, len(tasks)) if tasks else 1
+    if tasks:
+        with Pool(n_workers) as pool:
+            results = pool.map(_run_single_task, tasks)
+        for i, (domain, model, stats, cache_data) in enumerate(results):
             model_agg[model].append(stats)
-
-            # Save per-domain per-model results
-            m_dir = os.path.join(out_dir, domain, model.upper())
-            os.makedirs(m_dir, exist_ok=True)
-            hw = stats["hotword"]
-            with open(os.path.join(m_dir, "hotword_result.txt"), "w", encoding="utf8") as f:
-                f.write(f"wer={stats['wer'].get_wer():.4f}\n")
-                f.write(f"u_wer={stats['u_wer'].get_wer():.4f}\n")
-                f.write(f"b_wer={stats['b_wer'].get_wer():.4f}\n")
-                f.write(f"recall={stats['recall']:.4f}\n")
-                f.write(f"tp={hw['tp']}\n")
-                f.write(f"tn={hw['tn']}\n")
-                f.write(f"fp={hw['fp']}\n")
-                f.write(f"fn={hw['fn']}\n")
-                f.write(f"matched_segments={stats['n_matched']}\n")
-                f.write(f"skipped_segments={stats['n_skipped']}\n")
-
             excel_data[model][domain] = {
-                "wer": stats["wer"].get_wer(),
-                "u_wer": stats["u_wer"].get_wer(),
-                "b_wer": stats["b_wer"].get_wer(),
-                "recall": stats["recall"],
+                "wer": cache_data["wer"],
+                "u_wer": cache_data["u_wer"],
+                "b_wer": cache_data["b_wer"],
+                "recall": cache_data["recall"],
             }
+            print(f"  [{i+1}/{len(tasks)}] {domain}/{model}: WER={cache_data['wer']:.3f} B-WER={cache_data['b_wer']:.3f} recall={cache_data['recall']:.2f}%")
 
     # print per-model aggregate
     if len(domains) > 1:

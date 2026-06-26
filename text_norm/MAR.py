@@ -10,7 +10,7 @@ def normalize(text: str) -> str:
     Arabic text normalization:
     1. Remove punctuation
     2. Remove diacritics
-    3. Eastern Arabic numerals to Western Arabic numerals
+    3. Convert Eastern Arabic numerals to Western Arabic numerals
     """
     # Remove paralinguistic tags and filler words
     text = remove_paralinguistic_tags(text)
@@ -22,23 +22,23 @@ def normalize(text: str) -> str:
     text = re.sub(r'[\u060C\u061B\u061F\u066A-\u066D\u06D4\.\,\!\?\:\;\-\_\(\)\[\]\"\'\/\\،؛؟…“”«»]', '', text)
 
     # Remove diacritics
-    diacritics = r"[\u064B-\u0652]"  # Arabic diacritical marks (Fatha, Damma, etc.)
+    diacritics = r"[\u064B-\u0652]"  # Arabic diacritics (Fatha, Damma, etc.)
     text = re.sub(diacritics, "", text)
 
-    # allow only arabics & numbers
+    # Keep only Arabic letters and digits
     text = re.sub(r"[^\p{Arabic}0-9]+", " ", text).strip()
 
-    # Normalize multiple whitespace characters into a single space
+    # Collapse multiple whitespace characters into a single space
     text = re.sub(r"\s\s+", " ", text)
 
     # Remove punctuation and symbols
     text = re.sub(r"[\p{P}\p{S}]", "", text)
 
     """
-    Normalize Hamzas and Maddas
-    afraid of it imfluencing the meaning of sentences, 
-    we only adopt it in evaluation,
-    instead of training text
+    Normalize Hamza and Madda
+    Because we worry it may affect sentence semantics,
+    we apply this only during evaluation,
+    and not for training text
     """
     # text = re.sub("پ", "ب", text)
     # text = re.sub("ڤ", "ف", text)
@@ -63,84 +63,84 @@ def normalize(text: str) -> str:
 
     text = re.sub(r'\u0640\u0651\u0653\u0654\u0655\u061C\u066B\u066C\u0671', '', text)  
     """
-    \u0640: tatweel
-    \u0651: consonant emphasis
-    \u0653: Maddah Above (vowels, combination)
-    \u0654: Hamza Above (vowels, combination)
-    \u061C: direction indicator
-    \u0655: Hamza Below (vowel, combination)
-    \u066B: Arabic Decimal Separator
-    \u066C: Arabic Thousands Separator
-    \u0671: Alif Wasla (used in Quran)
+    \u0640: tatweel (joiner)
+    \u0651: consonant emphasis mark (shadda)
+    \u0653: Maddah above (vowel, combining mark)
+    \u0654: Hamza above (vowel, combining mark)
+    \u061C: directional mark
+    \u0655: Hamza below (vowel, combining mark)
+    \u066B: Arabic decimal separator
+    \u066C: Arabic thousands separator
+    \u0671: Alif Wasla (used in the Quran)
     """    
 
-    #    Moroccan dialect variant normalization (frequently used first)
-    #    Replace order matters: process longer patterns first
+    #    Common Moroccan dialect variant unification (ongoing; more common ones first)
+    #    The replacement order matters: handle longer ones before shorter ones
     norm_map = {
-        # 经典阿拉伯语 → Morocco口语常见变形
+        # Classical Arabic → common Moroccan colloquial forms
         "إن شاء الله": "انشاءالله",
         "إن شاءالله": "انشاءالله",
         "ما شاء الله": "ماشاءالله",
         
-        # 常见缩写/连音
+        # Common abbreviations/contractions
         "والله": "واللاه", "ولا": "ولاه", "بالله": "بلااه",
-        "علاش": "علاه",   # 很多转写系统写成 علاش
-        "علاش": "علىاش",  # 另一种常见写法也统一
+        "علاش": "علاه",   # many transcription systems write it as علاش
+        "علاش": "علىاش",  # another common spelling, also unified
         
-        # 疑问词统一
+        # Question-word unification
         "اشمن": "شنو", "أشمن": "شنو", "اش": "شنو",
         "اشناهو": "شنو", "اشنو": "شنو",
         "علاش": "علاه", "علا ش": "علاه",
-        "فين": "فين",   # 本身就统一
+        "فين": "فين",   # already unified
         "كيفاش": "كيفاه", "كيفاش": "كيفاه",
         "كيف": "كيفاه",
         
-        # 常见动词/助动词
-        "غادي": "غادي",  # 保持
+        # Common verbs/auxiliaries
+        "غادي": "غادي",  # keep
         "بغيت": "بغيت", "بغا": "بغى",
         "كنت": "كنت", "كان": "كان",
         
-        # 人称代词后缀统一（非常常见）
+        # Personal-pronoun suffix unification (very common)
         "ني": "نى", "ني ": "نى ",   # -ni → نى
-        "ك": "ك",                   # -k 保持
+        "ك": "ك",                   # -k keep
         "ه": "ه", "ها": "ها",       # -ha
         "نا": "نا",                 # -na
         
-        # 常见词变形统一（根据实际语料库频率可继续加）
+        # Common word-form unification (extend per corpus frequency)
         "هاد": "هاد", "هادي": "هادي",
         "دابا": "دابا", "دبا": "دابا",
         "بزاف": "بزاف", "بزاف": "بزّاف",
         "شوية": "شوية", "شويّة": "شوية",
         "واخا": "واخا", "واخا": "واخّا",
         "صافي": "صافي",
-        "لالّاه": "لا",   # “لا والله” 常被写成 لالاه
+        "لالّاه": "لا",   # “لا والله” often written as لالاه
         "سمح": "سمحلي", "سمحلي": "سمحلي",
         
 
-        # ق often written as گ (Moroccan)
+        # ق is often written as گ in Moroccan dialect
         "گ": "ق",
 
-        # ڭ → ق (Moroccan letter for /g/)
+        # ڭ → ق (letter representing /g/ in Moroccan dialect)
         "ڭ": "ق",
 
-        # چ → ش or ك depending on region; 常统一为 ش
+        # چ → ش or ك (depending on region); usually unified to ش
         "چ": "ش",
 
-        # ّ (shadda) often removed
+        # ّ (shadda gemination mark) is usually removed
         "ّ": "",
 
-        # Normalize Alef forms
+        # Normalize the various forms of Alef
         "أ": "ا",
         "إ": "ا",
         "آ": "ا",
 
-        # taa marbuta → ha
+        # taa marbuta (ة) → ha (ه)
         "ة": "ه",
 
-        # yaa variations
+        # yaa variants
         "ى": "ي",
 
-        # Common Darija particles
+        # Common Darija function words
         "ماغاديش": "ما غاديش",
         "غادي": "غادي",
         "بزاف": "بزاف",  # keep
@@ -150,7 +150,7 @@ def normalize(text: str) -> str:
         "عافاك": "عافاك",
     }
     
-    # 按键长度倒序replace（避免短词先replace导致长词出错）
+    # Replace by key length descending (avoid short words breaking long ones)
     for arabic_word, normalized in sorted(norm_map.items(), key=lambda x: len(x[0]), reverse=True):
         text = text.replace(arabic_word, normalized)
 
@@ -169,7 +169,7 @@ if __name__ == "__main__":
         "لا والله، صافي كملنا، سمحلي ولكن ما بغيتش هادشي"
     ]
     
-    print("Original → Normalized\n")
+    print("原始 → 标准化后\n")
     for ex in examples:
         print(f"{ex}")
         print(f"{normalize(ex)}\n")

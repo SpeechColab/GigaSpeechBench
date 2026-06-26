@@ -3,7 +3,7 @@ import regex as re
 from text_norm._common import remove_paralinguistic_tags
 
 # -----------------------------
-# saudi normalization
+# Saudi Arabic normalization
 # -----------------------------
 def normalize(text: str) -> str:
     if text is None:
@@ -18,7 +18,7 @@ def normalize(text: str) -> str:
     # Remove diacritics
     text = re.sub(r"[\u064b-\u0652]", "", text)
 
-    # Normalize similar chars
+    # Normalize similar characters
     text = re.sub(r"[إأآٱ]", "ا", text)
     text = re.sub(r"ى", "ي", text)
     text = re.sub(r"ة", "ه", text)
@@ -57,7 +57,7 @@ if __name__ == "__main__":
         "بيريرا من ويست بروميتش",
     ]
     
-    print("Original → Normalized\n")
+    print("原始 → 标准化后\n")
     for ex in examples:
         print(f"{ex}")
         print(f"{normalize(ex)}\n")

@@ -1,5 +1,12 @@
 kaldialign
+num2words
 openpyxl
 pandas
-jieba
-sacrebleu
+regex
+underthesea
+whisper_normalizer
+zhconv
+tqdm
+pydub
+gradio
+requests
