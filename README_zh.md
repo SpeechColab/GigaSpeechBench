@@ -1,7 +1,7 @@
 # 🌍 GigaSpeechBench
 
 <p align="center">
-  <b>大规模多语种语音识别评测基准</b>
+  <b>A Real-World Multilingual Speech-to-Text Benchmark</b>
 </p>
 
 <p align="center">
