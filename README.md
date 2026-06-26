@@ -221,65 +221,30 @@ conda activate asr_bench
 pip install -r requirements.txt
 ```
 
-### Step 1: Get Benchmark Data
-
-Download `release_hash/` (anonymized benchmark data with hashed audio IDs) and place it at a known path:
-
-```
-release_hash/
-├── Low-Resource-Languages/
-│   ├── data/{LANG}/metadata.json    # Reference transcriptions
-│   └── results/{Model}.json         # Existing model results
-├── CH-EN-Dialects/
-│   └── ...
-└── Vertical-Domain/
-    └── ...
-```
-
-### Step 2: Run Your Model
-
-Use scripts in `third_party/` as reference for inference:
-
-```bash
-# Example: Chirp-3
-python third_party/Chirp3/Chirp3.py \
-    --json_dir release_hash/Low-Resource-Languages/data \
-    --audio_dir /path/to/audio \
-    --project_id YOUR_PROJECT_ID
-
-# Example: Whisper Large v3
-python third_party/whisper-large-v3/auto_infer_with_segments.py ...
-
-# Example: Azure Speech
-python third_party/Azure/Azure.py ...
-```
-
-Supported model scripts: `Azure`, `Chirp3`, `dolphin`, `elevenlabs`, `gemeni`, `gpt4o-transcribe`, `nvidia-nemo`, `omnilingual-asr`, `Qwen3ASR`, `SeedASR`, `whisper-large-v3`
-
-### Step 3: Evaluate (Recommended — Gradio UI)
+### Evaluate Your Model (Gradio UI)
 
 ```bash
 python visualize/app.py --port 7860
 ```
 
 1. Open browser → "➕ Evaluate Your Model" tab
-2. Enter your result JSON file path
-3. Click **Evaluate** → results auto-computed and ranked
+2. Enter your result JSON file path (see format below)
+3. Click **Evaluate** → results auto-computed and ranked against baselines
 
-**Behind the scenes:**
-- REF data auto-prepared from `release_hash/` (cached after first run)
-- Only your model's HYP is processed (no re-run of existing models)
+**What happens automatically:**
+- Reference data is prepared on first run (cached for subsequent evaluations)
+- Only your model is evaluated (no re-run of existing models)
 - WER/CER computed → results saved to `data/new_model/<YourModel>/`
-- Ranked against all pre-computed baselines with ⭐ highlight
+- Your model is highlighted with ⭐ in the ranked leaderboard
 
-### Step 3 (Alternative): Full Pipeline via CLI
+### Full Pipeline via CLI
 
 ```bash
 # Single module
-STAGING_ROOT=/path/to/release_hash PYTHON_BIN=python3 bash run_ASR.sh Low-Resource-Languages
+STAGING_ROOT=/path/to/benchmark_data PYTHON_BIN=python3 bash run_ASR.sh Low-Resource-Languages
 
 # All modules
-STAGING_ROOT=/path/to/release_hash PYTHON_BIN=python3 bash run_ASR.sh all
+STAGING_ROOT=/path/to/benchmark_data PYTHON_BIN=python3 bash run_ASR.sh all
 ```
 
 ### Input JSON Format
@@ -290,11 +255,11 @@ Your model output must follow this structure:
 {
   "audios": [
     {
-      "aid": "LANG#hash_id",
+      "aid": "LANG#audio_id",
       "language": "ARE",
       "segments": [
         {
-          "sid": "LANG#hash_id#begin_time#end_time",
+          "sid": "LANG#audio_id#begin_time#end_time",
           "begin_time": "165.613",
           "end_time": "169.920",
           "text": "your transcription here"

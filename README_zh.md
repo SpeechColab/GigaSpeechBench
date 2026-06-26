@@ -221,65 +221,30 @@ conda activate asr_bench
 pip install -r requirements.txt
 ```
 
-### 第一步：获取基准数据
-
-下载 `release_hash/`（脱敏后的基准数据，音频 ID 已 hash）放到指定路径：
-
-```
-release_hash/
-├── Low-Resource-Languages/
-│   ├── data/{LANG}/metadata.json    # 参考转写
-│   └── results/{Model}.json         # 已有模型结果
-├── CH-EN-Dialects/
-│   └── ...
-└── Vertical-Domain/
-    └── ...
-```
-
-### 第二步：跑你的模型
-
-参考 `third_party/` 中的推理脚本：
-
-```bash
-# 示例：Chirp-3
-python third_party/Chirp3/Chirp3.py \
-    --json_dir release_hash/Low-Resource-Languages/data \
-    --audio_dir /path/to/audio \
-    --project_id YOUR_PROJECT_ID
-
-# 示例：Whisper Large v3
-python third_party/whisper-large-v3/auto_infer_with_segments.py ...
-
-# 示例：Azure Speech
-python third_party/Azure/Azure.py ...
-```
-
-支持的模型脚本：`Azure`、`Chirp3`、`dolphin`、`elevenlabs`、`gemeni`、`gpt4o-transcribe`、`nvidia-nemo`、`omnilingual-asr`、`Qwen3ASR`、`SeedASR`、`whisper-large-v3`
-
-### 第三步：评测（推荐 — Gradio UI）
+### 评测你的模型（Gradio UI）
 
 ```bash
 python visualize/app.py --port 7860
 ```
 
 1. 打开浏览器 → "➕ Evaluate Your Model" 标签
-2. 输入你的结果 JSON 文件路径
-3. 点击 **Evaluate** → 自动计算并排名
+2. 输入你的结果 JSON 文件路径（格式见下方）
+3. 点击 **Evaluate** → 自动计算并与基线对比排名
 
-**后台流程：**
-- REF 数据自动从 `release_hash/` 准备（首次运行后缓存）
-- 仅处理你的模型 HYP（不重跑已有模型）
+**后台自动执行：**
+- 参考数据在首次运行时自动准备（后续评测直接使用缓存）
+- 仅评测你的模型（不重跑已有模型）
 - 计算 WER/CER → 结果保存到 `data/new_model/<模型名>/`
-- 与所有基线对比，⭐ 标记你的模型
+- 排行榜中用 ⭐ 标记你的模型
 
-### 第三步（替代）：命令行完整流程
+### 命令行完整流程
 
 ```bash
 # 单模块
-STAGING_ROOT=/path/to/release_hash PYTHON_BIN=python3 bash run_ASR.sh Low-Resource-Languages
+STAGING_ROOT=/path/to/benchmark_data PYTHON_BIN=python3 bash run_ASR.sh Low-Resource-Languages
 
 # 全部模块
-STAGING_ROOT=/path/to/release_hash PYTHON_BIN=python3 bash run_ASR.sh all
+STAGING_ROOT=/path/to/benchmark_data PYTHON_BIN=python3 bash run_ASR.sh all
 ```
 
 ### 输入 JSON 格式
@@ -290,11 +255,11 @@ STAGING_ROOT=/path/to/release_hash PYTHON_BIN=python3 bash run_ASR.sh all
 {
   "audios": [
     {
-      "aid": "LANG#hash_id",
+      "aid": "LANG#audio_id",
       "language": "ARE",
       "segments": [
         {
-          "sid": "LANG#hash_id#begin_time#end_time",
+          "sid": "LANG#audio_id#begin_time#end_time",
           "begin_time": "165.613",
           "end_time": "169.920",
           "text": "你的转写结果"
