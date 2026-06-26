@@ -302,20 +302,3 @@ python visualize/app.py [--port 7860] [--share]
 | **WER** | 词错误率 | 字母文字语言 |
 | **CER** | 字错误率 | CJK 语言 |
 | **B-WER / B-CER** | 实体 token 错误率 | 垂直领域 |
-| **Hotword Recall** | 实体召回率 | 垂直领域 |
-
----
-
-## 📄 许可
-
-仅供非商业研究用途。
-
-## 📖 引用
-
-```bibtex
-@misc{gigaspeechbench,
-  title={GigaSpeechBench: A Large-Scale Multilingual Speech Recognition Benchmark},
-  year={2026},
-  url={https://github.com/AlexTYJ/Multilingual-ASR-Benchmark}
-}
-```

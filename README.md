@@ -302,20 +302,3 @@ python visualize/app.py [--port 7860] [--share]
 | **WER** | Word Error Rate | Alphabetic languages |
 | **CER** | Character Error Rate | CJK languages |
 | **B-WER / B-CER** | Error rate on entity tokens | Vertical-Domain |
-| **Hotword Recall** | Entity recall: TP / (TP+FN) | Vertical-Domain |
-
----
-
-## 📄 License
-
-Non-commercial research purposes only.
-
-## 📖 Citation
-
-```bibtex
-@misc{gigaspeechbench,
-  title={GigaSpeechBench: A Large-Scale Multilingual Speech Recognition Benchmark},
-  year={2026},
-  url={https://github.com/AlexTYJ/Multilingual-ASR-Benchmark}
-}
-```
