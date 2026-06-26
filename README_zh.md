@@ -5,6 +5,7 @@
 </p>
 
 <p align="center">
+  <a href="GigaSpeech_Bench_Technical_Report.pdf">📝 技术报告</a> •
   <a href="README.md">🇬🇧 English</a>
 </p>
 
