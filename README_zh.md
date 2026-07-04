@@ -5,8 +5,12 @@
 </p>
 
 <p align="center">
-  <a href="https://arxiv.org/abs/2606.28884">📄 论文 (arXiv)</a> •
-  <a href="GigaSpeech_Bench_Technical_Report.pdf">📝 技术报告 (PDF)</a> •
+  <a href="https://arxiv.org/abs/2606.28884">📄 arXiv</a> •
+  <a href="GigaSpeech_Bench_Technical_Report.pdf">📝 技术报告</a> •
+  <a href="https://huggingface.co/datasets/speechcolab/GigaSpeechBench">🤗 数据集</a>
+</p>
+
+<p align="center">
   <a href="README.md">🇬🇧 English</a>
 </p>
 
