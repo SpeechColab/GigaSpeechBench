@@ -5,9 +5,9 @@
 </p>
 
 <p align="center">
-  <a href="https://arxiv.org/abs/2606.28884">📄 arXiv</a> •
-  <a href="GigaSpeech_Bench_Technical_Report.pdf">📝 Technical Report</a> •
-  <a href="https://huggingface.co/datasets/speechcolab/GigaSpeechBench">🤗 Dataset</a>
+  📝 Technical Report: <a href="GigaSpeech_Bench_Technical_Report.pdf">PDF</a> | <a href="https://arxiv.org/abs/2606.28884">arXiv</a>
+  &nbsp;&nbsp;•&nbsp;&nbsp;
+  <a href="https://huggingface.co/datasets/speechcolab/GigaSpeechBench">🤗 Huggingface</a>
 </p>
 
 <p align="center">
