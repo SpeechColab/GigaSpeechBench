@@ -5,7 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="GigaSpeech_Bench_Technical_Report.pdf">📝 Technical Report</a> •
+  <a href="https://arxiv.org/abs/2606.28884">📄 Paper (arXiv)</a> •
+  <a href="GigaSpeech_Bench_Technical_Report.pdf">📝 Technical Report (PDF)</a> •
   <a href="README_zh.md">🇨🇳 中文版</a>
 </p>
 
