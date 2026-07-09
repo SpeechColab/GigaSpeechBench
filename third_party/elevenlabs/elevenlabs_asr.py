@@ -34,7 +34,7 @@ LANGUAGE_MAPPING = {
     "USA": "eng",  # English
     "CHN": "zho",  # Chinese (Mandarin)
     "CHN-EN": "eng",  # Chinese English
-    "IDN-EN": "eng",  # Indonesian-accented English
+    "IND-EN": "eng",  # Indian-accented English
     "JPN-EN": "eng",  # Japanese-accented English
     "PHL-EN": "eng",  # Filipino-accented English
     "SCT-EN": "eng",  # Scottish-accented English

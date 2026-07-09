@@ -35,7 +35,7 @@ LANG_MAP = {
     "SCT-EN": "en-GB",  # Scottish English
 
     "CHN-EN": "en-HK",  # Chinese English 
-    "IDN-EN": "en-US",  # Indonesian English
+    "IND-EN": "en-US",  # Indian English
     "JPN-EN": "en-US",  # Japanese English
     "JIN": "zh-CN",     # Jin dialect
     "XIANG": "zh-CN",   # Xiang dialect

@@ -23,7 +23,7 @@ _LANG_ALIASES = {
     "FIN-EN": "USA", "HUM-EN": "USA", "LAW-EN": "USA", "MED-EN": "USA",
     "MIL-EN": "USA",
     # CH-EN-Dialects English uses USA
-    "CHN-EN": "USA", "IDN-EN": "USA", "JPN-EN": "USA", "PHL-EN": "USA",
+    "CHN-EN": "USA", "IND-EN": "USA", "JPN-EN": "USA", "PHL-EN": "USA",
     "SCT-EN": "USA", "SGP-EN": "USA",
     # Older-Children
     "CHILD-CH": "CHN", "OLD-CH": "CHN",

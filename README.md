@@ -103,7 +103,7 @@
 
 #### 🗣️ CH-EN Dialects — English Accents (WER %)
 
-| Model | AVG(%) | CHN-EN | IDN-EN | JPN-EN | PHL-EN | SCT-EN | SGP-EN |
+| Model | AVG(%) | CHN-EN | IND-EN | JPN-EN | PHL-EN | SCT-EN | SGP-EN |
 |:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | 🥇 QWEN3.5-OMNI-PLUS | 14.05 | 12.98 | 7.21 | 15.67 | 11.73 | 24.27 | 12.47 |
 | 🥈 FUNASR-REALTIME | 14.40 | 13.27 | 7.70 | 15.25 | 11.10 | 26.60 | 12.45 |
@@ -212,7 +212,7 @@
 | Module | Languages | Description |
 |:-------|:----------|:------------|
 | **Low-Resource-Languages** | ARE, DZA, EGY, IRQ, MAR, SAU, SYR, IDN, MYS, PHL, THA, VNM, JPN, KOR | Low-resource & dialectal |
-| **CH-EN-Dialects** | GAN, JIN, MIN, WU, XIANG, YUE, CHN-EN, IDN-EN, JPN-EN, PHL-EN, SCT-EN, SGP-EN | Chinese dialects & accented English |
+| **CH-EN-Dialects** | GAN, JIN, MIN, WU, XIANG, YUE, CHN-EN, IND-EN, JPN-EN, PHL-EN, SCT-EN, SGP-EN | Chinese dialects & accented English |
 | **Vertical-Domain** | 12 CH + 12 EN domains (AGR, AIT, ART, BIO, ECM, ENG, ENT, FIN, HUM, LAW, MED, MIL) | Domain-specific with hotword eval |
 
 ---

@@ -65,7 +65,7 @@ COLUMN_ORDER = {
         "JPN", "KOR",
     ],
     "CH-EN-Dialects": [
-        "CHN-EN", "IDN-EN", "JPN-EN", "PHL-EN", "SCT-EN", "SGP-EN",
+        "CHN-EN", "IND-EN", "JPN-EN", "PHL-EN", "SCT-EN", "SGP-EN",
         "XIANG", "JIN", "GAN", "MIN", "YUE", "WU",
     ],
     "fleurs": [
@@ -528,7 +528,7 @@ def write_sheet(ws, table: dict, columns: list, durations: dict = None, mode: st
             ("EA AVG", ["JPN", "KOR"]),
         ],
         "CH-EN-Dialects": [
-            ("Accent AVG", ["CHN-EN", "IDN-EN", "JPN-EN", "PHL-EN", "SCT-EN", "SGP-EN"]),
+            ("Accent AVG", ["CHN-EN", "IND-EN", "JPN-EN", "PHL-EN", "SCT-EN", "SGP-EN"]),
             ("Dialect AVG", ["XIANG", "JIN", "GAN", "MIN", "YUE", "WU"]),
         ],
     }

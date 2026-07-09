@@ -31,7 +31,7 @@ LR_GROUPS = {
 }
 CED_GROUPS = {
     "Chinese Dialects": ["GAN", "JIN", "MIN", "WU", "XIANG", "YUE"],
-    "English Accents": ["CHN-EN", "IDN-EN", "JPN-EN", "PHL-EN", "SCT-EN", "SGP-EN"],
+    "English Accents": ["CHN-EN", "IND-EN", "JPN-EN", "PHL-EN", "SCT-EN", "SGP-EN"],
 }
 VD_GROUPS = {
     "Vertical-Domain-CH": ["AGR-CH", "AIT-CH", "ART-CH", "BIO-CH", "ECM-CH", "ENG-CH",

@@ -28,7 +28,7 @@ TranscriptionSegment = namedtuple("TranscriptionSegment", ["audio_path", "start_
 ALPHA3_TO_BCP47_MAP = {
     # English accent
     "CHN-EN": "en-US",  
-    "IDN-EN": "en-US",  
+    "IND-EN": "en-US",  
     "JPN-EN": "en-US", 
     "PHL-EN": "en-US", 
     "SCT-EN": "en-GB",  

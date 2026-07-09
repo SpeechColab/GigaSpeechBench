@@ -31,7 +31,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 # Constants
 # =========================
 WER_LANGS = ["IRQ","DZA","ARE","EGY","MAR","SAU","IDN","MYS","PHL","PHL_EN","PHL_noEN","VNM","SYR","USA",
-             "CHN-EN","IDN-EN","JPN-EN","PHL-EN","SCT-EN","SGP-EN","AGR-EN","AIT-EN",
+             "CHN-EN","IND-EN","JPN-EN","PHL-EN","SCT-EN","SGP-EN","AGR-EN","AIT-EN",
              "ART-EN","BIO-EN","ECM-EN","EDU-EN","ENG-EN","ENT-EN","FIN-EN","HUM-EN",
              "LAW-EN","MED-EN","MIL-EN"]
 CER_LANGS = ["JPN","JPN_hard","KOR","KOR_hard","THA","CHN","GAN","JIN","XIANG","YUE","WU",

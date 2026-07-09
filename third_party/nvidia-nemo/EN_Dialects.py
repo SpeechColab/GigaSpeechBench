@@ -110,7 +110,7 @@ class DialectEnglishASRProcessor:
         """Process a single audio file (process only segments with status=valid)"""
         # Extract dialect identifier from path
         dialect = Path(audio_path).parent.name.upper()
-        valid_dialects = {"CHN-EN", "IDN-EN", "JPN-EN", "PHL-EN", "SCT-EN", "SGP-EN"}
+        valid_dialects = {"CHN-EN", "IND-EN", "JPN-EN", "PHL-EN", "SCT-EN", "SGP-EN"}
         
         if dialect not in valid_dialects:
             dialect = "EN"

@@ -103,7 +103,7 @@
 
 #### 🗣️ CH-EN Dialects — English Accents (WER %)
 
-| Model | AVG(%) | CHN-EN | IDN-EN | JPN-EN | PHL-EN | SCT-EN | SGP-EN |
+| Model | AVG(%) | CHN-EN | IND-EN | JPN-EN | PHL-EN | SCT-EN | SGP-EN |
 |:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | 🥇 QWEN3.5-OMNI-PLUS | 14.05 | 12.98 | 7.21 | 15.67 | 11.73 | 24.27 | 12.47 |
 | 🥈 FUNASR-REALTIME | 14.40 | 13.27 | 7.70 | 15.25 | 11.10 | 26.60 | 12.45 |
@@ -212,7 +212,7 @@
 | 模块 | 语言 | 说明 |
 |:-----|:-----|:-----|
 | **Low-Resource-Languages** | ARE, DZA, EGY, IRQ, MAR, SAU, SYR, IDN, MYS, PHL, THA, VNM, JPN, KOR | 低资源及方言 |
-| **CH-EN-Dialects** | GAN, JIN, MIN, WU, XIANG, YUE, CHN-EN, IDN-EN, JPN-EN, PHL-EN, SCT-EN, SGP-EN | 中文方言与口音英语 |
+| **CH-EN-Dialects** | GAN, JIN, MIN, WU, XIANG, YUE, CHN-EN, IND-EN, JPN-EN, PHL-EN, SCT-EN, SGP-EN | 中文方言与口音英语 |
 | **Vertical-Domain** | 12中文 + 12英文领域 | 垂直领域，含热词评测 |
 
 ---
