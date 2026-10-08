@@ -11,7 +11,6 @@ normalize_fail.log
 normalize_ref_fail.log
 
 results/
-outputs/
 log/
 
 # Environment
@@ -22,3 +21,4 @@ venv/
 
 # Ignore Mac system files
 .DS_Store
+

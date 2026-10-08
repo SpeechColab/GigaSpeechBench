@@ -17,12 +17,13 @@ import sys
 import time
 import urllib.request
 
+HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE / "_common"))
+
 from client import PROFILES, atomic_json, language_code
 from export import collect
 from prepare import prepare_group
 
-HERE = Path(__file__).resolve().parent
-THIRD_PARTY = HERE.parent
 DATASET = "speechcolab/GigaSpeechBench"
 REVISION = "680d3057641b7507a1ef14974407c7b0a7964e64"
 SUBSETS = {
@@ -33,14 +34,25 @@ SUBSETS = {
     "older-children": ["Older-Children"],
     "all": ["Low-Resource-Languages", "Vertical-Domain", "CH-EN-Dialects"],
 }
-FOLDERS = {"qwen": "Qwen3-ASR-1.7B", "whisper": "whisper-large-v3",
-           "funasr": "Fun-ASR-Nano/vllm", "funasr-mlt": "Fun-ASR-Nano/ray"}
-LABELS = {"qwen": "Qwen3-ASR-1.7B", "whisper": "Whisper-Large-v3",
-          "funasr": "Fun-ASR-Nano-2512", "funasr-mlt": "Fun-ASR-MLT-Nano-2512"}
+MODEL = "funasr"
+FOLDERS = {'funasr': 'vllm', 'funasr-mlt': 'ray'}
+LABELS = {'funasr': 'Fun-ASR-Nano-2512', 'funasr-mlt': 'Fun-ASR-MLT-Nano-2512'}
+
+SOURCE_FILES = (
+    'run.py',
+    'requirements.txt',
+    '_common/client.py',
+    '_common/prepare.py',
+    '_common/export.py',
+    'ray/infer.py',
+    'ray/requirements.txt',
+    'vllm/serve.sh',
+    'vllm/requirements.txt',
+)
 
 
-def profile_for(model: str, module: str) -> str:
-    return "funasr-mlt" if model == "funasr" and module == "Low-Resource-Languages" else model
+def profile_for(module: str) -> str:
+    return "funasr-mlt" if module == "Low-Resource-Languages" else "funasr"
 
 
 def setup_python(profile: str, args: argparse.Namespace) -> Path:
@@ -50,7 +62,7 @@ def setup_python(profile: str, args: argparse.Namespace) -> Path:
         if not python.is_file():
             raise FileNotFoundError(python)
         return python
-    folder = THIRD_PARTY / FOLDERS[profile]
+    folder = HERE / FOLDERS[profile]
     env_dir = (args.env_root / profile) if args.env_root else folder / ".venv"
     python = env_dir.resolve() / "bin/python"
     if not python.exists():
@@ -74,7 +86,7 @@ def serving(profile: str, python: Path, args: argparse.Namespace, log: Path):
     if args.model_path:
         env["MODEL_PATH"] = str(args.model_path.resolve())
     with log.open("a") as writer:
-        process = subprocess.Popen(["bash", str(THIRD_PARTY / FOLDERS[profile] / "serve.sh")],
+        process = subprocess.Popen(["bash", str(HERE / FOLDERS[profile] / "serve.sh")],
                                    env=env, stdout=writer, stderr=subprocess.STDOUT, start_new_session=True)
         try:
             deadline = time.monotonic() + args.startup_timeout
@@ -144,7 +156,6 @@ def export_module(prepared: Path, raw_root: Path, work: Path, module: str, label
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--model", required=True, choices=["qwen", "whisper", "funasr"])
     parser.add_argument("--subset", required=True, choices=SUBSETS)
     parser.add_argument("--data-root", type=Path, required=True, help="Downloaded HF snapshot root")
     parser.add_argument("--work-dir", type=Path, required=True, help="Fresh run directory outside the source data")
@@ -181,7 +192,7 @@ def main() -> None:
     if not args.gpus or any(not part.isdigit() for part in args.gpus.split(",")):
         parser.error("--gpus must be comma-separated physical GPU indices")
     modules = SUBSETS[args.subset]
-    profiles = {profile_for(args.model, module) for module in modules}
+    profiles = {profile_for(module) for module in modules}
     if len(profiles) > 1 and (args.model_path or args.python_bin):
         parser.error("Mixed base/MLT runs need separate environments/checkpoints; run each subset separately")
     args.work_dir = args.work_dir.resolve()
@@ -206,17 +217,16 @@ def main() -> None:
         if not paths:
             parser.error(f"No metadata for {module}. The pinned public snapshot does not include Older-Children; "
                          "supply a local release in MODULE/data/GROUP/{metadata.json,audio.tar.gz} format.")
-    config = {"model": args.model, "subset": args.subset, "groups": args.groups,
+    config = {"model": MODEL, "subset": args.subset, "groups": args.groups,
               "limit_per_group": args.limit_per_group, "empty_retries": args.empty_retries,
               "end_tolerance_ms": args.end_tolerance_ms,
               "data_root": str(args.data_root), "dataset_repo": args.dataset_repo,
               "dataset_revision_requested": args.dataset_revision,
               "model_path": str(args.model_path.resolve()) if args.model_path else None,
-              "source_hashes": {str(p.relative_to(THIRD_PARTY)): hashlib.sha256(p.read_bytes()).hexdigest()
-                                for p in [HERE / "prepare.py", HERE / "client.py", HERE / "run_benchmark.py",
-                                          THIRD_PARTY / "Fun-ASR-Nano/ray/infer.py"]},
-              "routing": {m: {"profile": profile_for(args.model, m), "model_label": LABELS[profile_for(args.model, m)],
-                               "backend": "ray-funasr" if profile_for(args.model, m) == "funasr-mlt" else "vllm"}
+              "source_hashes": {str(p.relative_to(HERE)): hashlib.sha256(p.read_bytes()).hexdigest()
+                                for p in (HERE / name for name in SOURCE_FILES)},
+              "routing": {m: {"profile": profile_for(m), "model_label": LABELS[profile_for(m)],
+                               "backend": "ray-funasr" if profile_for(m) == "funasr-mlt" else "vllm"}
                           for m in selected}}
     args.work_dir.mkdir(parents=True, exist_ok=True)
     run_lock = (args.work_dir / ".lock").open("a")
@@ -227,7 +237,7 @@ def main() -> None:
             parser.error("Existing run or changed settings; use --resume with unchanged settings or a fresh work-dir")
     atomic_json(marker, config)
     for module, metadata_paths in selected.items():
-        profile = profile_for(args.model, module)
+        profile = profile_for(module)
         print(f"{module}: {LABELS[profile]} via {config['routing'][module]['backend']}", flush=True)
         prepared = args.work_dir / "prepared" / module
         for metadata in metadata_paths:
@@ -244,14 +254,14 @@ def main() -> None:
         if args.retry_errors:
             common.append("--retry-errors")
         if profile == "funasr-mlt":
-            command = [str(python), str(THIRD_PARTY / FOLDERS[profile] / "infer.py"), *common,
+            command = [str(python), str(HERE / FOLDERS[profile] / "infer.py"), *common,
                        "--actors-per-gpu", str(args.actors_per_gpu), "--num-gpus", str(len(args.gpus.split(",")))]
             if args.model_path:
                 command += ["--model-path", str(args.model_path.resolve())]
             subprocess.run(command, env=dict(os.environ, CUDA_VISIBLE_DEVICES=args.gpus), check=True)
         else:
             with serving(profile, python, args, args.work_dir / f"{module}.server.log") as endpoint:
-                command = [str(python), str(HERE / "client.py"), profile, *common, "--base-url", endpoint]
+                command = [str(python), str(HERE / "_common/client.py"), profile, *common, "--base-url", endpoint]
                 if args.workers:
                     command += ["--workers", str(args.workers)]
                 # /health may pass even when audio preprocessing dependencies are missing.

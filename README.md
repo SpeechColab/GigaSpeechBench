@@ -219,29 +219,6 @@
 
 ## 🚀 Quick Start
 
-### Local vLLM inference
-
-Self-hosted batch inference runners are available for
-[Qwen3-ASR-1.7B](third_party/Qwen3-ASR-1.7B),
-[Whisper large-v3](third_party/whisper-large-v3), and
-[Fun-ASR-Nano](third_party/Fun-ASR-Nano).
-Each runner includes a pinned environment, a configurable server launcher, and
-relative-path batch input/output. See the
-[shared guide](third_party/vllm_asr/README.md) for manifests, retries, and evaluation export.
-The existing `third_party/Qwen3ASR` directory remains the hosted API integration.
-
-For downloaded HF data, the [one-command workflow](third_party/vllm_asr/ONE_CLICK.md)
-automatically prepares clips, selects the model/backend, runs inference, and exports results:
-
-```bash
-bash third_party/vllm_asr/run.sh --model qwen --subset low-resource \
-  --data-root ./data/GigaSpeechBench --work-dir ./outputs/qwen_r1 --gpus 0
-```
-
-Add `--download` to fetch the selected inputs. FunASR uses MLT + Ray for low-resource
-languages and base + vLLM for Chinese/English, dialects, and locally supplied Older-Children data.
-
-
 ### Requirements
 
 ```bash

@@ -1,68 +1,60 @@
-# Fun-ASR-Nano: two checkpoints, two inference backends
+# Fun-ASR-Nano: local inference
 
-The base and multilingual (MLT) checkpoints are different weights with different
-language coverage. Changing a language option does not turn base into MLT.
-This directory provides both production paths, selected by benchmark category:
+The two backends use separate checkpoints and environments:
 
-| Category | Checkpoint | Backend | Implementation |
-| --- | --- | --- | --- |
-| Low-Resource-Languages (including Japanese) | Fun-ASR-MLT-Nano-2512 | Persistent Ray + FunASR replicas | [ray/](ray/) |
-| Vertical-Domain | Fun-ASR-Nano-2512 base | Native vLLM | [vllm/](vllm/) |
-| CH-EN-Dialects | Fun-ASR-Nano-2512 base | Native vLLM | [vllm/](vllm/) |
-| Older-Children, if supplied locally | Fun-ASR-Nano-2512 base | Native vLLM | [vllm/](vllm/) |
+| Category | Checkpoint | Backend dependencies |
+| --- | --- | --- |
+| Low-Resource-Languages | Fun-ASR-MLT-Nano-2512 | [ray/requirements.txt](ray/requirements.txt) |
+| Vertical-Domain, CH-EN-Dialects, Older-Children | Fun-ASR-Nano-2512 base | [vllm/requirements.txt](vllm/requirements.txt) |
 
-## One command from a downloaded HF dataset
+## Run a category
 
-Run from the repository root. Requires Linux, `uv`, and a compatible NVIDIA GPU/driver.
-The command installs the appropriate isolated environment, prepares clips, loads
-models once per module, runs all selected groups, and exports official-format results.
+Requires Linux, `uv`, and a compatible NVIDIA GPU/driver. From the repository root:
 
 ```bash
-# Multilingual checkpoint, two Ray replicas on one GPU.
-bash third_party/vllm_asr/run.sh --model funasr --subset low-resource \
-  --data-root ./data/GigaSpeechBench --work-dir ./outputs/funasr_mlt_r1 \
-  --gpus 0 --actors-per-gpu 2
-
-# Base checkpoint with vLLM, vertical-domain Chinese/English and dialects.
-bash third_party/vllm_asr/run.sh --model funasr --subset zh-en \
-  --data-root ./data/GigaSpeechBench --work-dir ./outputs/funasr_base_r1 --gpus 0
+cd third_party/Fun-ASR-Nano
+bash run.sh --subset low-resource --data-root ../../../datasets/GigaSpeechBench \
+  --work-dir ./outputs/mlt --gpus 0 --actors-per-gpu 2
+bash run.sh --subset zh-en --data-root ../../../datasets/GigaSpeechBench \
+  --work-dir ./outputs/base --gpus 0
 ```
 
-Add `--download` to obtain the selected HF audio archives and metadata automatically.
-Add `--groups KOR ARE --limit-per-group 2` to the first command for a small test.
-Use `--subset older-children` for a local compatible release. The pinned public
-HF snapshot currently has no Older-Children category; the command reports this
-instead of quietly skipping it. See the [complete workflow guide](../vllm_asr/ONE_CLICK.md).
+`run.sh` creates a lightweight Python 3.12 environment for data preparation.
+The selected backend is installed separately under `ray/.venv` or `vllm/.venv`;
+it loads the model once per category, transcribes all selected groups, and exports.
+The root `requirements.txt` contains only this model's preparation dependencies;
+each backend adds its own inference packages. `ASR_ENV` moves the preparation
+venv; `--env-root` moves backend venvs. `python run.py` uses an already installed
+preparation environment; `--python-bin` selects an existing backend interpreter.
 
-## Limitations we do not hide
+Input is a downloaded [GigaSpeechBench](https://huggingface.co/datasets/speechcolab/GigaSpeechBench)
+snapshot: `CATEGORY/data/GROUP/metadata.json` and `audio.tar.gz` (or `audio/`).
+Paths resolve from the caller's working directory. Add `--download` to fetch
+selected groups at revision `680d3057641b7507a1ef14974407c7b0a7964e64`.
 
-- **MLT is not native vLLM here.** We verified public native-vLLM weights for base;
-  we did not find a publicly accessible equivalent MLT checkpoint. The MLT path
-  uses the actual multilingual weights with Ray/FunASR. It is not a stub, silent
-  substitution, or a claim of equivalent vLLM performance.
-- **Separate environments are required.** The base environment pins vLLM 0.27.1
-  and Torch 2.13.0. The recovered Ray environment pins FunASR 1.3.3, Ray 2.55.1,
-  and Torch/torchaudio 2.6.0. Mixing these environments is unsupported.
-- **Separate result labels are required.** Base exports as `Fun-ASR-Nano-2512`;
-  MLT exports as `Fun-ASR-MLT-Nano-2512`. Published leaderboard entries named
-  FUNASR-MLT-NANO use MLT and should not be compared as if base used the same weights.
-- **Replicas cost memory.** Every Ray actor holds a full model. Start with two
-  actors per GPU and tune `--actors-per-gpu` for your hardware. `--gpus 0,1`
-  exposes two GPUs to Ray; replicas are reused across all selected groups.
-- **MLT alignment weights are absent.** The tested MLT config declares an optional
-  CTC branch without the corresponding checkpoint weights. The Ray path explicitly
-  disables CTC alignment and records the setting; it performs ASR text decoding only.
-- **Outputs can still be wrong or empty.** No transcript cleanup conceals model
-  repetition. `--empty-retries 10` is an explicit optional policy. Persistent
-  empty text stays `""`; repeated emptiness does not prove the recording is silent.
-- **Validation has a defined scope.** A small smoke test checks execution and
-  format, not full-benchmark quality or published-score reproducibility. Decoder,
-  frontend, precision, and model variants can change the scores.
+- `--subset`: `low-resource`, `zh-en`, `vertical-domain`, `dialects`, `all`, or
+  `older-children`. The pinned public dataset has no Older-Children category;
+  supply a local release with the same layout.
+- `--groups KOR --limit-per-group 2`: smoke test; omit the limit for full inference.
+- `--resume`: continue; add `--retry-errors` to resubmit failed requests.
+- `--empty-retries 10`: retry empty predictions; persistent empties stay `""`.
+- `--gpus 0,1 --actors-per-gpu 2`: Ray replicas; every actor holds a complete model.
+- `--workers`, `--port`, `GPU_MEMORY_UTILIZATION`: vLLM concurrency and resources.
+- `--model-path`: local checkpoint for a single backend. Mixed base/MLT runs require
+  their separate checkpoints and environments.
 
-The former root-level `serve.sh`, `infer.py`, and `requirements.txt` now live under
-`vllm/`; use the one-command entry point above or the backend-specific guides.
+Preparation writes 16 kHz mono clips. End-time overruns up to 10 ms are clamped
+and logged without changing reference timestamps (`--end-tolerance-ms 0` is strict).
+References never enter inference requests. `WORK/raw/` holds diagnostics;
+`WORK/staging/` and `WORK/pipeline/data/text/` provide the existing repository's
+staging and flat JSON formats. Failed/incomplete runs cannot be exported as complete.
+Scoring and evaluation dependencies remain with the existing evaluation pipeline.
 
-Upstream sources: [base native checkpoint](https://huggingface.co/FunAudioLLM/Fun-ASR-Nano-2512-vllm),
-[MLT checkpoint](https://huggingface.co/FunAudioLLM/Fun-ASR-MLT-Nano-2512).
+## Model limitations
 
-See the [validation record](../vllm_asr/VALIDATION.md) for the tested Ray and vLLM paths.
+MLT uses the traditional FunASR implementation with persistent Ray replicas; this
+integration does not provide native-vLLM MLT weights. Base is not substituted for
+MLT. Their result labels are `Fun-ASR-Nano-2512` and `Fun-ASR-MLT-Nano-2512`.
+MLT disables the optional CTC alignment branch because its checkpoint lacks those
+weights; this is text-only ASR. See [Ray setup](ray/README.md) and
+[vLLM setup](vllm/README.md) for backend-specific requirements.

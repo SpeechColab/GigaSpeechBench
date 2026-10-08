@@ -11,7 +11,7 @@ from pathlib import Path
 import sys
 import time
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "vllm_asr"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "_common"))
 from client import atomic_json, language_code, load_manifest
 
 MODEL_REPO = "FunAudioLLM/Fun-ASR-MLT-Nano-2512"

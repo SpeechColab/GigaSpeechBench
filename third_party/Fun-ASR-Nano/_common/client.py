@@ -26,11 +26,10 @@ class Profile:
 
 
 PROFILES = {
-    "qwen": Profile("Qwen3-ASR-1.7B", 18100, 128, 512),
-    "whisper": Profile("whisper-large-v3", 18101, 48),
     "funasr": Profile("fun-asr-nano", 18102, 16),
     "funasr-mlt": Profile("fun-asr-mlt-nano", 18102, 1),
 }
+
 LANGUAGES = {
     "CH": "zh", "CHN": "zh", "EN": "en", "ENG": "en", "USA": "en",
     "JPN": "ja", "KOR": "ko", "VNM": "vi", "THA": "th", "IDN": "id",
@@ -111,7 +110,7 @@ def transcribe(row: dict[str, Any], manifest: Path, args: argparse.Namespace,
                 raw = response.json()["text"]
                 if not isinstance(raw, str):
                     raise ValueError("Response text must be a string")
-                text = raw.split("<asr_text>", 1)[-1].strip() if args.profile == "qwen" else raw
+                text = raw
                 text = text if text.strip() else ""
                 attempt["raw_text"] = raw
                 result.update(hyp_text=text, status="done")

@@ -13,5 +13,5 @@ exec "${PYTHON_BIN:-$SCRIPT_DIR/.venv/bin/python}" -m vllm.entrypoints.cli.main 
   --host "${HOST:-127.0.0.1}" --port "${PORT:-18102}" \
   --gpu-memory-utilization "${GPU_MEMORY_UTILIZATION:-0.60}" --revision "${MODEL_REVISION:-a4362c943d48951f98ca2a62181cc028970270c5}" \
   --dtype float32 --enforce-eager --max-model-len 8192 \
-  --max-num-seqs 32 --max-num-batched-tokens 16384 \
+  --max-num-seqs "${MAX_NUM_SEQS:-32}" --max-num-batched-tokens "${MAX_NUM_BATCHED_TOKENS:-16384}" \
   --no-enable-prefix-caching --mm-processor-cache-gb 0 "$@"
