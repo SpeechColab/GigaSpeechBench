@@ -1,0 +1,243 @@
+"""One-command HF preparation, model setup, inference and official-format export."""
+
+from __future__ import annotations
+
+import argparse
+from contextlib import contextmanager
+import hashlib
+import fcntl
+import json
+import os
+from pathlib import Path
+import signal
+import socket
+import subprocess
+import sys
+import time
+import urllib.request
+
+from client import PROFILES, atomic_json, language_code
+from export import collect
+from prepare import prepare_group
+
+HERE = Path(__file__).resolve().parent
+THIRD_PARTY = HERE.parent
+DATASET = "speechcolab/GigaSpeechBench"
+REVISION = "680d3057641b7507a1ef14974407c7b0a7964e64"
+SUBSETS = {
+    "low-resource": ["Low-Resource-Languages"],
+    "zh-en": ["Vertical-Domain", "CH-EN-Dialects"],
+    "vertical-domain": ["Vertical-Domain"],
+    "dialects": ["CH-EN-Dialects"],
+    "older-children": ["Older-Children"],
+    "all": ["Low-Resource-Languages", "Vertical-Domain", "CH-EN-Dialects"],
+}
+FOLDERS = {"qwen": "Qwen3-ASR-1.7B", "whisper": "whisper-large-v3",
+           "funasr": "Fun-ASR-Nano/vllm", "funasr-mlt": "Fun-ASR-Nano/ray"}
+LABELS = {"qwen": "Qwen3-ASR-1.7B", "whisper": "Whisper-Large-v3",
+          "funasr": "Fun-ASR-Nano-2512", "funasr-mlt": "Fun-ASR-MLT-Nano-2512"}
+
+
+def profile_for(model: str, module: str) -> str:
+    return "funasr-mlt" if model == "funasr" and module == "Low-Resource-Languages" else model
+
+
+def setup_python(profile: str, args: argparse.Namespace) -> Path:
+    if args.python_bin:
+        # Resolving this symlink would bypass the venv and invoke system Python.
+        python = args.python_bin.absolute()
+        if not python.is_file():
+            raise FileNotFoundError(python)
+        return python
+    folder = THIRD_PARTY / FOLDERS[profile]
+    env_dir = (args.env_root / profile) if args.env_root else folder / ".venv"
+    python = env_dir.resolve() / "bin/python"
+    if not python.exists():
+        subprocess.run(["uv", "venv", "--python", "3.12", "--seed", str(env_dir)], check=True)
+    subprocess.run(["uv", "pip", "install", "--python", str(python), "-r",
+                    str(folder / "requirements.txt")], check=True)
+    return python
+
+
+@contextmanager
+def serving(profile: str, python: Path, args: argparse.Namespace, log: Path):
+    port = args.port or PROFILES[profile].port
+    # Refuse to accidentally use or stop another user's server.
+    with socket.socket() as sock:
+        try:
+            sock.bind(("127.0.0.1", port))
+        except OSError as exc:
+            raise RuntimeError(f"Port {port} is in use; choose --port") from exc
+    env = dict(os.environ, PYTHON_BIN=str(python), CUDA_VISIBLE_DEVICES=args.gpus,
+               HOST="127.0.0.1", PORT=str(port), SERVED_MODEL_NAME=PROFILES[profile].model)
+    if args.model_path:
+        env["MODEL_PATH"] = str(args.model_path.resolve())
+    with log.open("a") as writer:
+        process = subprocess.Popen(["bash", str(THIRD_PARTY / FOLDERS[profile] / "serve.sh")],
+                                   env=env, stdout=writer, stderr=subprocess.STDOUT, start_new_session=True)
+        try:
+            deadline = time.monotonic() + args.startup_timeout
+            while True:
+                if process.poll() is not None:
+                    raise RuntimeError(f"Server exited ({process.returncode}); see {log}")
+                try:
+                    with urllib.request.urlopen(f"http://127.0.0.1:{port}/health", timeout=2) as response:
+                        if response.status == 200:
+                            break
+                except OSError:
+                    pass
+                if time.monotonic() >= deadline:
+                    raise TimeoutError(f"Server startup timed out; see {log}")
+                time.sleep(2)
+            yield f"http://127.0.0.1:{port}/v1"
+        finally:
+            if process.poll() is None:
+                os.killpg(process.pid, signal.SIGTERM)
+                try:
+                    process.wait(timeout=30)
+                except subprocess.TimeoutExpired:
+                    os.killpg(process.pid, signal.SIGKILL)
+                    process.wait()
+
+
+def export_module(prepared: Path, raw_root: Path, work: Path, module: str, label: str) -> None:
+    audios = {}
+    for manifest in sorted(prepared.glob("*/input_prepare.json")):
+        group = manifest.parent.name
+        refs, hyps = collect(manifest, raw_root / group / "output_raw.jsonl")
+        text = work / "pipeline/data/text" / module
+        (text / "ref").mkdir(parents=True, exist_ok=True)
+        (text / "hyp" / group).mkdir(parents=True, exist_ok=True)
+        atomic_json(text / "ref" / f"{group}.json", refs)
+        atomic_json(text / "hyp" / group / f"{group}_{label}.json", hyps)
+        source_audios = {}
+        for row, hyp in zip(json.loads(manifest.read_text()), hyps):
+            aid = row["meta"]["ref_audio_name"]
+            if not aid.startswith(group + "#"):
+                raise ValueError(f"Official staging requires group-prefixed aid: {aid}")
+            source_audios.setdefault(aid, {"aid": aid, "segments": []})["segments"].append(
+                row["meta"]["source_segment"])
+            audios.setdefault(aid, {"aid": aid, "segments": []})["segments"].append({
+                "begin_time": hyp["start"], "end_time": hyp["end"], "text": hyp["text"]})
+        meta = work / "staging" / module / "data" / group
+        meta.mkdir(parents=True, exist_ok=True)
+        atomic_json(meta / "metadata.json", {"audios": list(source_audios.values())})
+    result = work / "staging" / module / "results"
+    result.mkdir(parents=True, exist_ok=True)
+    atomic_json(result / f"{label}.json", {"audios": list(audios.values())})
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--model", required=True, choices=["qwen", "whisper", "funasr"])
+    parser.add_argument("--subset", required=True, choices=SUBSETS)
+    parser.add_argument("--data-root", type=Path, required=True, help="Downloaded HF snapshot root")
+    parser.add_argument("--work-dir", type=Path, required=True, help="Fresh run directory outside the source data")
+    parser.add_argument("--download", action="store_true", help="Download only selected module/group inputs")
+    parser.add_argument("--dataset-repo", default=DATASET)
+    parser.add_argument("--dataset-revision", default=REVISION)
+    parser.add_argument("--groups", nargs="+", help="Optional subgroup names, e.g. KOR JPN or ECM-CH ECM-EN")
+    parser.add_argument("--limit-per-group", type=int, help="Smoke test only; changes the evaluated subset")
+    parser.add_argument("--prepare-only", action="store_true")
+    parser.add_argument("--resume", action="store_true")
+    parser.add_argument("--retry-errors", action="store_true")
+    parser.add_argument("--empty-retries", type=int, default=0)
+    parser.add_argument("--gpus", default="0")
+    parser.add_argument("--actors-per-gpu", type=int, default=2)
+    parser.add_argument("--workers", type=int)
+    parser.add_argument("--port", type=int)
+    parser.add_argument("--startup-timeout", type=float, default=900)
+    parser.add_argument("--model-path", type=Path, help="Override one model checkpoint; cannot mix base and MLT")
+    parser.add_argument("--env-root", type=Path, help="Parent for separate automatically installed model venvs")
+    parser.add_argument("--python-bin", type=Path, help="Use an already installed model environment")
+    args = parser.parse_args()
+    if args.limit_per_group is not None and args.limit_per_group < 1:
+        parser.error("limit-per-group must be positive")
+    if args.startup_timeout <= 0:
+        parser.error("startup-timeout must be positive")
+    if args.empty_retries < 0 or args.actors_per_gpu < 1 or (args.workers is not None and args.workers < 1):
+        parser.error("Invalid retry/worker counts")
+    if args.retry_errors and not args.resume:
+        parser.error("--retry-errors requires --resume")
+    if not args.gpus or any(not part.isdigit() for part in args.gpus.split(",")):
+        parser.error("--gpus must be comma-separated physical GPU indices")
+    modules = SUBSETS[args.subset]
+    profiles = {profile_for(args.model, module) for module in modules}
+    if len(profiles) > 1 and (args.model_path or args.python_bin):
+        parser.error("Mixed base/MLT runs need separate environments/checkpoints; run each subset separately")
+    args.work_dir = args.work_dir.resolve()
+    args.data_root = args.data_root.resolve()
+    if args.work_dir == args.data_root or args.data_root.is_relative_to(args.work_dir):
+        parser.error("work-dir must not contain the input dataset")
+    if args.download:
+        from huggingface_hub import snapshot_download
+        patterns = [f"{module}/data/{group}/{name}" for module in modules
+                    for group in (args.groups or ["*"]) for name in ("metadata.json", "audio.tar.gz")]
+        snapshot_download(args.dataset_repo, repo_type="dataset", revision=args.dataset_revision,
+                          local_dir=args.data_root, allow_patterns=patterns)
+    selected = {module: sorted((args.data_root / module / "data").glob("*/metadata.json")) for module in modules}
+    selected = {module: [p for p in paths if not args.groups or p.parent.name in args.groups]
+                for module, paths in selected.items()}
+    if args.groups:
+        found = {p.parent.name for paths in selected.values() for p in paths}
+        if set(args.groups) - found:
+            parser.error(f"Requested groups missing: {sorted(set(args.groups) - found)}")
+        selected = {m: p for m, p in selected.items() if p}
+    for module, paths in selected.items():
+        if not paths:
+            parser.error(f"No metadata for {module}. The pinned public snapshot does not include Older-Children; "
+                         "supply a local release in MODULE/data/GROUP/{metadata.json,audio.tar.gz} format.")
+    config = {"model": args.model, "subset": args.subset, "groups": args.groups,
+              "limit_per_group": args.limit_per_group, "empty_retries": args.empty_retries,
+              "data_root": str(args.data_root), "dataset_repo": args.dataset_repo,
+              "dataset_revision_requested": args.dataset_revision,
+              "model_path": str(args.model_path.resolve()) if args.model_path else None,
+              "source_hashes": {str(p.relative_to(THIRD_PARTY)): hashlib.sha256(p.read_bytes()).hexdigest()
+                                for p in [HERE / "prepare.py", HERE / "client.py", HERE / "run_benchmark.py",
+                                          THIRD_PARTY / "Fun-ASR-Nano/ray/infer.py"]},
+              "routing": {m: {"profile": profile_for(args.model, m), "model_label": LABELS[profile_for(args.model, m)],
+                               "backend": "ray-funasr" if profile_for(args.model, m) == "funasr-mlt" else "vllm"}
+                          for m in selected}}
+    args.work_dir.mkdir(parents=True, exist_ok=True)
+    run_lock = (args.work_dir / ".lock").open("a")
+    fcntl.flock(run_lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    marker = args.work_dir / "run.json"
+    if marker.exists():
+        if not args.resume or json.loads(marker.read_text()) != config:
+            parser.error("Existing run or changed settings; use --resume with unchanged settings or a fresh work-dir")
+    atomic_json(marker, config)
+    for module, metadata_paths in selected.items():
+        profile = profile_for(args.model, module)
+        print(f"{module}: {LABELS[profile]} via {config['routing'][module]['backend']}", flush=True)
+        prepared = args.work_dir / "prepared" / module
+        for metadata in metadata_paths:
+            group = metadata.parent.name
+            language_code(group, profile)
+            prepare_group(metadata.parent, prepared / group, group, args.limit_per_group)
+        if args.prepare_only:
+            continue
+        python = setup_python(profile, args)
+        raw = args.work_dir / "raw" / module / LABELS[profile]
+        common = ["--input-root", str(prepared), "--output-root", str(raw), "--empty-retries", str(args.empty_retries)]
+        if args.resume:
+            common.append("--resume")
+        if args.retry_errors:
+            common.append("--retry-errors")
+        if profile == "funasr-mlt":
+            command = [str(python), str(THIRD_PARTY / FOLDERS[profile] / "infer.py"), *common,
+                       "--actors-per-gpu", str(args.actors_per_gpu), "--num-gpus", str(len(args.gpus.split(",")))]
+            if args.model_path:
+                command += ["--model-path", str(args.model_path.resolve())]
+            subprocess.run(command, env=dict(os.environ, CUDA_VISIBLE_DEVICES=args.gpus), check=True)
+        else:
+            with serving(profile, python, args, args.work_dir / f"{module}.server.log") as endpoint:
+                command = [str(python), str(HERE / "client.py"), profile, *common, "--base-url", endpoint]
+                if args.workers:
+                    command += ["--workers", str(args.workers)]
+                subprocess.run(command, check=True)
+        export_module(prepared, raw, args.work_dir, module, LABELS[profile])
+    print(f"Completed. Run record: {marker}", flush=True)
+
+
+if __name__ == "__main__":
+    main()

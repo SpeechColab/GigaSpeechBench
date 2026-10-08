@@ -7,7 +7,7 @@ from pathlib import Path
 from client import load_manifest
 
 
-def export(manifest: Path, raw: Path, output: Path, allow_errors: bool = False) -> None:
+def collect(manifest: Path, raw: Path, allow_errors: bool = False) -> tuple[list, list]:
     rows = load_manifest(manifest)
     latest = {}
     for line in raw.read_text(encoding="utf-8").splitlines():
@@ -36,6 +36,11 @@ def export(manifest: Path, raw: Path, output: Path, allow_errors: bool = False) 
             raise ValueError("hyp_text must be a string")
         refs.append(dict(entry, text=row["ref_text"]))
         hyps.append(dict(entry, text=text))
+    return refs, hyps
+
+
+def export(manifest: Path, raw: Path, output: Path, allow_errors: bool = False) -> None:
+    refs, hyps = collect(manifest, raw, allow_errors)
     output.mkdir(parents=True, exist_ok=False)
     for name, values in (("ref.json", refs), ("hyp.json", hyps)):
         (output / name).write_text(json.dumps(values, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

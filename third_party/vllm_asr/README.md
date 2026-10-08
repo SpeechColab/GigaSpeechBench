@@ -1,9 +1,14 @@
-# Shared vLLM batch client
+# Shared ASR batch tooling
+
+For automatic HF download/preparation, category selection, model setup, inference,
+and export, start with the [one-command workflow](ONE_CLICK.md). The lower-level
+manifest client documented below remains available for custom prepared data.
 
 This module packages the audio-only HTTP workflow used for the three local ASR
 runs: [Qwen3-ASR-1.7B](../Qwen3-ASR-1.7B),
 [Whisper large-v3](../whisper-large-v3), and [Fun-ASR-Nano](../Fun-ASR-Nano).
-Each model has its own pinned environment and server launcher. The Python client
+Each vLLM model has its own pinned environment and server launcher. FunASR MLT
+uses the separate Ray implementation under `../Fun-ASR-Nano/ray`. The Python client
 and evaluation exporter are shared to keep the input/output contract consistent.
 This is a portability refactor of the October 2026 batch scripts, not a new model
 implementation. It does not change the repository's hosted Qwen3ASR integration.
@@ -47,7 +52,8 @@ such as `CHILD-CH`, `OLD-EN`, `ECM-CH`, `JPN`, and `KOR` are also accepted.
 The historical GAN/JIN/MIN/WU/XIANG/YUE mapping to `zh` is retained for reproduction;
 use `--language` to explicitly override it for a new experiment. That override
 is recorded in the run specification. Model language coverage still applies.
-Fun-ASR-Nano rejects languages outside zh/en/ja.
+The base vLLM client rejects languages outside zh/en/ja; the category runner
+routes the entire low-resource module to MLT + Ray instead.
 
 ## Output and resume
 
@@ -135,3 +141,6 @@ transcriptions succeeded, with no empty outputs; flat export and no-op resume
 were verified for each model. The requirements were independently resolved with
 `uv pip compile`. A fresh full installation and a new full-dataset benchmark
 were not run during this portability check.
+
+See the [validation record](VALIDATION.md) for tested environments, real-model checks,
+resolved issues, and remaining scope limits.

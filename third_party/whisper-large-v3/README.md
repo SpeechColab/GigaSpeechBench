@@ -14,6 +14,23 @@ with the Qwen runner's 0.14.0 environment.
 
 Upstream: [Whisper large-v3](https://huggingface.co/openai/whisper-large-v3).
 
+## One-command HF dataset workflow
+
+From the repository root:
+
+```bash
+bash third_party/vllm_asr/run.sh --model whisper --subset low-resource \
+  --data-root ./data/GigaSpeechBench --work-dir ./outputs/whisper_low_resource_r1 --gpus 0
+
+bash third_party/vllm_asr/run.sh --model whisper --subset zh-en \
+  --data-root ./data/GigaSpeechBench --work-dir ./outputs/whisper_zh_en_r1 --gpus 0
+```
+
+Add `--download` to download the selected HF inputs. This entry point handles
+setup, cropping, server startup/shutdown, inference, and export automatically.
+See [all options and limitations](../vllm_asr/ONE_CLICK.md). The manual commands
+below are for users who already have cropped manifests or a running server.
+
 ## Setup
 
 Linux, an NVIDIA GPU with sufficient memory, `uv`, and Python 3.12 are required.

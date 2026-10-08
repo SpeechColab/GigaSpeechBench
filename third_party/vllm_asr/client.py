@@ -29,18 +29,23 @@ PROFILES = {
     "qwen": Profile("Qwen3-ASR-1.7B", 18100, 128, 512),
     "whisper": Profile("whisper-large-v3", 18101, 48),
     "funasr": Profile("fun-asr-nano", 18102, 16),
+    "funasr-mlt": Profile("fun-asr-mlt-nano", 18102, 1),
 }
 LANGUAGES = {
     "CH": "zh", "CHN": "zh", "EN": "en", "ENG": "en", "USA": "en",
     "JPN": "ja", "KOR": "ko", "VNM": "vi", "THA": "th", "IDN": "id",
-    "IND": "id", "MYS": "ms", "FIL": "tl", "GAN": "zh", "JIN": "zh",
+    "IND": "id", "MYS": "ms", "FIL": "tl", "PHL": "tl", "GAN": "zh", "JIN": "zh",
     "MIN": "zh", "WU": "zh", "XIANG": "zh", "YUE": "zh",
+    "ARE": "ar", "DZA": "ar", "EGY": "ar", "IRQ": "ar", "MAR": "ar",
+    "SAU": "ar", "SYR": "ar",
 }
 
 
 def language_code(value: str, profile: str) -> str:
     suffix = value.upper().rsplit("-", 1)[-1]
     code = LANGUAGES.get(suffix, value.lower())
+    if profile == "funasr-mlt" and value.upper() == "YUE":
+        return "yue"
     if not (len(code) == 2 and code.isascii() and code.isalpha()):
         raise ValueError(f"Use an explicit ISO language code, got {value!r}")
     if profile == "funasr" and code not in {"zh", "en", "ja"}:
@@ -249,3 +254,11 @@ def main(profile: str) -> None:
         relative = Path() if args.input_json else manifest.parent.relative_to(args.input_root)
         failures += run_manifest(manifest, args.output_root / relative, args)
     raise SystemExit(int(failures > 0))
+
+
+if __name__ == "__main__":
+    import sys
+    selected = sys.argv.pop(1)
+    if selected not in PROFILES:
+        raise SystemExit(f"Unknown profile: {selected}")
+    main(selected)

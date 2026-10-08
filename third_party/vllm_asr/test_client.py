@@ -63,6 +63,8 @@ class BatchTests(unittest.TestCase):
 
     def run_client(self, model="Qwen3-ASR-1.7B", extra=(), output="out", expected=0):
         script = Path(__file__).resolve().parents[1] / model / "infer.py"
+        if model == "Fun-ASR-Nano":
+            script = script.parent / "vllm" / "infer.py"
         cmd = [sys.executable, str(script), "--input-json", "dataset/GROUP/input_prepare.json",
                "--output-root", output, "--base-url", self.endpoint, "--workers", "2", *extra]
         result = subprocess.run(cmd, cwd=self.root, capture_output=True, text=True)

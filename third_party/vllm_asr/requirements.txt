@@ -1,0 +1,5 @@
+httpx==0.28.1
+huggingface-hub>=0.36,<2
+soundfile>=0.13,<0.15
+numpy>=1.26,<3
+scipy>=1.13,<2
