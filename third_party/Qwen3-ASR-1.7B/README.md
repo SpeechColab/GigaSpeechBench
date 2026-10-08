@@ -1,14 +1,14 @@
-# Whisper large-v3: local inference
+# Qwen3-ASR-1.7B: local inference
 
-Requires Linux, `uv`, and an NVIDIA GPU/driver supported by vLLM 0.14.1.
+Requires Linux, `uv`, and an NVIDIA GPU/driver supported by vLLM 0.14.0.
 Dependencies are local to this directory. vLLM selects its matching PyTorch and
 CUDA packages; configure the host driver using upstream installation guidance.
-The default checkpoint revision is `06f233fe06e710322aca913c1bc4249a0d71fce1`.
+The default checkpoint revision is `7278e1e70fe206f11671096ffdd38061171dd6e5`.
 
 ## Run a category
 
 ```bash
-cd third_party/whisper-large-v3
+cd third_party/Qwen3-ASR-1.7B
 bash run.sh --subset low-resource --data-root ../../../datasets/GigaSpeechBench \
   --work-dir ./outputs/low_resource --gpus 0
 bash run.sh --subset zh-en --data-root ../../../datasets/GigaSpeechBench \
