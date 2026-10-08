@@ -78,3 +78,6 @@ The endpoint defaults to `http://127.0.0.1:18100/v1` and the request model to
 Use `--max-items 8` and a fresh output directory for a small smoke test.
 
 See the [shared input/output, retry, export, and evaluation guide](../vllm_asr/README.md).
+
+The default checkpoint revision is `7278e1e70fe206f11671096ffdd38061171dd6e5`, matching the fresh
+README reproduction. Set `MODEL_REVISION` explicitly to test a different revision.

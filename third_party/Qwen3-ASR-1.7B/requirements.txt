@@ -1,5 +1,5 @@
 qwen-asr[vllm]==0.0.6
-vllm==0.14.0
+vllm[audio]==0.14.0
 torch==2.9.1
 transformers==4.57.6
 httpx==0.28.1

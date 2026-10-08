@@ -173,6 +173,7 @@ def run_locked(manifest: Path, output: Path, rows: list[dict[str, Any]],
     if args.max_items is not None:
         pending = pending[:args.max_items]
     completed = 0
+    errors_current = 0
     audio_seconds = 0.0
     started = time.perf_counter()
     records = iter(pending)
@@ -197,16 +198,19 @@ def run_locked(manifest: Path, output: Path, rows: list[dict[str, Any]],
                 writer.flush()
                 latest[row["segment_key"]] = row
                 completed += 1
+                errors_current += int(row["status"] == "error")
                 if row["status"] == "done":
                     audio_seconds += row["inference"].get("audio_seconds", 0)
                 if completed % args.log_every == 0:
                     print(f"{manifest.parent.name}: {completed}/{len(pending)}", flush=True)
-                schedule()
+                if not args.stop_after_errors or errors_current < args.stop_after_errors:
+                    schedule()
     wall = time.perf_counter() - started
     summary = {"total": len(rows), "completed": len(latest), "attempted_current": completed,
                "errors": sum(r["status"] == "error" for r in latest.values()),
                "empty_outputs": sum(r["status"] == "done" and not r["hyp_text"] for r in latest.values()),
                "remaining": len(rows) - len(latest), "wall_seconds_current": wall,
+               "stopped_after_errors": bool(args.stop_after_errors and errors_current >= args.stop_after_errors),
                "audio_seconds_current": audio_seconds, "rtfx_current": audio_seconds / max(wall, 1e-9)}
     atomic_json(output / "summary.json", summary)
     print(json.dumps({"dataset": manifest.parent.name, **summary}), flush=True)
@@ -233,11 +237,13 @@ def main(profile: str) -> None:
     parser.add_argument("--retry-errors", action="store_true")
     parser.add_argument("--max-items", type=int)
     parser.add_argument("--log-every", type=int, default=1000)
+    parser.add_argument("--stop-after-errors", type=int, default=50,
+                        help="Stop scheduling after this many failed requests; 0 disables")
     args = parser.parse_args()
     args.profile = profile
     if min(args.workers, args.log_every) < 1 or not math.isfinite(args.timeout) or args.timeout <= 0:
         parser.error("workers, log-every and timeout must be positive")
-    if min(args.retries, args.empty_retries, args.max_completion_tokens) < 0:
+    if min(args.retries, args.empty_retries, args.max_completion_tokens, args.stop_after_errors) < 0:
         parser.error("Retry counts and token limit must be nonnegative")
     if not math.isfinite(args.temperature) or args.temperature < 0:
         parser.error("temperature must be finite and nonnegative")

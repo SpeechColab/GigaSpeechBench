@@ -18,12 +18,15 @@ from client import atomic_json
 
 
 def prepare_group(source: Path, output: Path, language: str,
-                  limit: int | None = None) -> Path:
+                  limit: int | None = None, end_tolerance_ms: float = 10.0) -> Path:
+    if not math.isfinite(end_tolerance_ms) or end_tolerance_ms < 0:
+        raise ValueError("end_tolerance_ms must be finite and nonnegative")
     metadata = source / "metadata.json"
     content = metadata.read_bytes()
     spec = {"metadata_sha256": hashlib.sha256(content).hexdigest(),
             "prepare_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
-            "language": language, "limit": limit, "sample_rate": 16000}
+            "language": language, "limit": limit, "sample_rate": 16000,
+            "end_tolerance_ms": end_tolerance_ms}
     manifest = output / "input_prepare.json"
     marker = output / "prepare_spec.json"
     if marker.exists():
@@ -69,6 +72,7 @@ def prepare_group(source: Path, output: Path, language: str,
         raise ValueError(f"No valid segments: {metadata}")
     (output / "cropped_audios").mkdir(parents=True, exist_ok=True)
     remaining = set(selected)
+    clamped = []
 
     def crop(aid: str, stream: Any) -> None:
         with sf.SoundFile(stream) as audio:
@@ -76,8 +80,14 @@ def prepare_group(source: Path, output: Path, language: str,
             for row in selected[aid]:
                 start = round(row["meta"]["start_time"] * rate)
                 end = round(row["meta"]["end_time"] * rate)
-                if end > len(audio) + 1 or start >= len(audio):
+                overrun = end - len(audio)
+                if overrun > round(end_tolerance_ms * rate / 1000) or start >= len(audio):
                     raise ValueError(f"Segment exceeds recording: {row['segment_key']}")
+                if overrun > 0:
+                    adjustment = {"segment_key": row["segment_key"], "source_sample_rate": rate,
+                                  "overrun_frames": overrun, "overrun_ms": overrun * 1000 / rate}
+                    clamped.append(adjustment)
+                    row["meta"]["end_clamp"] = adjustment
                 end = min(end, len(audio))
                 if end <= start:
                     raise ValueError(f"Empty segment after rounding: {row['segment_key']}")
@@ -122,6 +132,8 @@ def prepare_group(source: Path, output: Path, language: str,
     if remaining:
         raise FileNotFoundError(f"Missing recordings in {source}: {sorted(remaining)[:5]}")
     atomic_json(manifest, rows)
+    atomic_json(output / "preparation_report.json", {"segments": len(rows),
+                "end_tolerance_ms": end_tolerance_ms, "clamped_count": len(clamped), "clamped": clamped})
     atomic_json(marker, spec)
     print(f"Prepared {source.parent.parent.name}/{source.name}: {len(rows)} clips", flush=True)
     return manifest

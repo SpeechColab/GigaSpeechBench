@@ -42,7 +42,9 @@ successful empty predictions. A failed later attempt preserves a prior successfu
 empty response. Each attempted raw text is retained.
 
 Use a short writable temporary path via `RAY_TMPDIR` if Ray reports an AF_UNIX
-socket-path length error. Multiple replicas and Ray's shared-memory object store
+socket-path length error. The complete generated path must fit within 107 bytes
+on Linux; keep the base around 40 bytes or shorter. A long shared-filesystem
+`TMPDIR` may need an explicit shorter `RAY_TMPDIR`. Multiple replicas and Ray's shared-memory object store
 consume RAM as well as GPU memory. The object store is capped at 512 MiB;
 requests carry paths rather than full recordings through Ray. This path is independent of the vLLM server;
 it should not be installed into that environment.

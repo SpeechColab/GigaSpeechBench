@@ -134,6 +134,29 @@ class BatchTests(unittest.TestCase):
         self.run_client("Fun-ASR-Nano", extra=["--language", "ko"], expected=1)
         self.assertEqual(self.requests, [])
 
+    def test_error_budget_stops_and_explicit_resume_recovers(self):
+        rows = [dict(self.row, segment_key=f"example|{i}|{i + 1}") for i in range(20)]
+        self.manifest.write_text(json.dumps(rows))
+        self.responses = [None]
+        failed = self.run_client(extra=["--workers", "1", "--stop-after-errors", "2"], expected=1)
+        self.assertEqual(len(failed), 2)
+        summary = json.loads((self.root / "out/summary.json").read_text())
+        self.assertTrue(summary["stopped_after_errors"])
+        self.assertEqual(summary["remaining"], 18)
+        self.responses = ["recovered"]
+        records = self.run_client(extra=["--resume", "--retry-errors"])
+        self.assertEqual(len(records), 22)
+        self.assertEqual(len(self.requests), 22)
+
+    def test_one_request_probe_continues_without_duplicate(self):
+        self.manifest.write_text(json.dumps([
+            dict(self.row, segment_key=f"example|{i}|{i + 1}") for i in range(3)]))
+        self.run_client(extra=["--max-items", "1"])
+        self.assertEqual(len(self.requests), 1)
+        records = self.run_client(extra=["--resume"])
+        self.assertEqual(len(self.requests), 3)
+        self.assertEqual(len(records), 3)
+
     def test_export_rejects_incomplete_or_failed_runs(self):
         self.responses = [None]
         self.run_client(expected=1)

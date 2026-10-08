@@ -68,7 +68,10 @@ The lock file prevents two local clients from writing the same output concurrent
 Successful and failed rows are skipped on resume by default. To resubmit failures,
 add `--resume --retry-errors`. Completed empty predictions are successful rows and
 remain skipped on resume. Malformed/truncated JSONL is rejected for manual review.
-The process exits nonzero if any request errors remain, after saving all results.
+The process exits nonzero if any request errors remain, after saving attempted
+results. `--stop-after-errors 50` stops new submissions within a group after 50
+errors (the default); outstanding requests are drained. Use 0 to disable this
+budget. Unsubmitted segments remain pending and are never exported as complete.
 `--max-items` limits pending requests for a smoke test; the summary reports how
 many segments remain. Export rejects incomplete runs.
 

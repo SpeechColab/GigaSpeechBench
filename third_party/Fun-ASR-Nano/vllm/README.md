@@ -17,10 +17,42 @@ off, temperature 0. Lower-precision trials produced repetitive outputs on some
 samples; these defaults deliberately retain the validated configuration. Rare
 repetitive or empty outputs can still occur and are not silently cleaned up.
 
-Use a driver compatible with the installed CUDA wheel. The original H100 setup
-used CUDA compatibility libraries 580.65.06. Those host-specific libraries are not
-bundled or injected here. If your system needs CUDA forward compatibility,
-configure it through your system administrator before starting the server.
+## CUDA driver check
+
+This environment installs Torch's **CUDA 13.0** wheel. Check `nvidia-smi` first:
+a native compatible driver is normally **R580 or newer**; a driver adequate for
+the CUDA 12 Qwen/Whisper environments is not sufficient by itself.
+[NVIDIA's version requirements](https://docs.nvidia.com/deploy/cuda-compatibility/minor-version-compatibility.html)
+and [forward-compatibility restrictions](https://docs.nvidia.com/deploy/cuda-compatibility/forward-compatibility.html)
+apply. Prefer a supported native driver. Compatibility packages are only an option
+for supported hardware/driver combinations, not a general fix for any old GPU.
+
+Our clean H100 test on host driver 550.127.08 failed with `NVIDIA driver ... too old`.
+It required explicitly configured 580.65.06 user-space compatibility libraries.
+R550 is no longer listed as a supported target in NVIDIA's current matrix; this
+local observation is not a support guarantee. The runner does not install or
+silently inject driver libraries.
+
+For an administrator-approved CUDA 13.0 compatibility deployment on Linux x86-64,
+the exact package used in that test can be unpacked without changing the host driver:
+
+```bash
+mkdir -p ./runtime/cuda13
+curl --fail --location --output ./runtime/cuda13/package.deb \
+  https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-compat-13-0_580.65.06-0ubuntu1_amd64.deb
+printf '%s  %s\n' \
+  11a067e09aeb3d16b025c77225d26493857926edc17104dc1bdcfa63f9293e48 \
+  ./runtime/cuda13/package.deb | sha256sum --check
+dpkg-deb --extract ./runtime/cuda13/package.deb ./runtime/cuda13
+GSB_COMPAT_DIR="$(pwd)/runtime/cuda13/usr/local/cuda-13.0/compat"
+LD_LIBRARY_PATH="$GSB_COMPAT_DIR${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" \
+  CUDA_VISIBLE_DEVICES=0 bash serve.sh
+```
+
+Run this example from the model directory after environment setup. For the
+category runner, prefix its command with the same `LD_LIBRARY_PATH` assignment.
+Keep this setting scoped to that invocation. A compatibility library copied into
+a directory has no effect until the loader is explicitly configured.
 
 Upstream: [native vLLM checkpoint](https://huggingface.co/FunAudioLLM/Fun-ASR-Nano-2512-vllm).
 

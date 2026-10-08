@@ -1,4 +1,4 @@
-vllm==0.27.1
+vllm[audio]==0.27.1
 torch==2.13.0
 transformers==5.18.0
 httpx==0.28.1

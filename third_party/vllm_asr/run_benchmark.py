@@ -7,6 +7,7 @@ from contextlib import contextmanager
 import hashlib
 import fcntl
 import json
+import math
 import os
 from pathlib import Path
 import signal
@@ -91,13 +92,27 @@ def serving(profile: str, python: Path, args: argparse.Namespace, log: Path):
                 time.sleep(2)
             yield f"http://127.0.0.1:{port}/v1"
         finally:
-            if process.poll() is None:
-                os.killpg(process.pid, signal.SIGTERM)
+            # A second Ctrl-C must not interrupt cleanup of the detached server.
+            previous = {sig: signal.signal(sig, signal.SIG_IGN)
+                        for sig in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP)}
+            try:
+                try:
+                    os.killpg(process.pid, signal.SIGTERM)
+                except ProcessLookupError:
+                    pass
                 try:
                     process.wait(timeout=30)
                 except subprocess.TimeoutExpired:
+                    pass
+                # The API process can exit before its engine workers do.
+                try:
                     os.killpg(process.pid, signal.SIGKILL)
-                    process.wait()
+                except ProcessLookupError:
+                    pass
+                process.wait()
+            finally:
+                for sig, handler in previous.items():
+                    signal.signal(sig, handler)
 
 
 def export_module(prepared: Path, raw_root: Path, work: Path, module: str, label: str) -> None:
@@ -138,6 +153,8 @@ def main() -> None:
     parser.add_argument("--dataset-revision", default=REVISION)
     parser.add_argument("--groups", nargs="+", help="Optional subgroup names, e.g. KOR JPN or ECM-CH ECM-EN")
     parser.add_argument("--limit-per-group", type=int, help="Smoke test only; changes the evaluated subset")
+    parser.add_argument("--end-tolerance-ms", type=float, default=10.0,
+                        help="Maximum rounding overrun to clamp at recording end; default 10 ms")
     parser.add_argument("--prepare-only", action="store_true")
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--retry-errors", action="store_true")
@@ -151,6 +168,8 @@ def main() -> None:
     parser.add_argument("--env-root", type=Path, help="Parent for separate automatically installed model venvs")
     parser.add_argument("--python-bin", type=Path, help="Use an already installed model environment")
     args = parser.parse_args()
+    if not math.isfinite(args.end_tolerance_ms) or args.end_tolerance_ms < 0:
+        parser.error("end-tolerance-ms must be finite and nonnegative")
     if args.limit_per_group is not None and args.limit_per_group < 1:
         parser.error("limit-per-group must be positive")
     if args.startup_timeout <= 0:
@@ -189,6 +208,7 @@ def main() -> None:
                          "supply a local release in MODULE/data/GROUP/{metadata.json,audio.tar.gz} format.")
     config = {"model": args.model, "subset": args.subset, "groups": args.groups,
               "limit_per_group": args.limit_per_group, "empty_retries": args.empty_retries,
+              "end_tolerance_ms": args.end_tolerance_ms,
               "data_root": str(args.data_root), "dataset_repo": args.dataset_repo,
               "dataset_revision_requested": args.dataset_revision,
               "model_path": str(args.model_path.resolve()) if args.model_path else None,
@@ -213,7 +233,7 @@ def main() -> None:
         for metadata in metadata_paths:
             group = metadata.parent.name
             language_code(group, profile)
-            prepare_group(metadata.parent, prepared / group, group, args.limit_per_group)
+            prepare_group(metadata.parent, prepared / group, group, args.limit_per_group, args.end_tolerance_ms)
         if args.prepare_only:
             continue
         python = setup_python(profile, args)
@@ -234,10 +254,25 @@ def main() -> None:
                 command = [str(python), str(HERE / "client.py"), profile, *common, "--base-url", endpoint]
                 if args.workers:
                     command += ["--workers", str(args.workers)]
+                # /health may pass even when audio preprocessing dependencies are missing.
+                first = next(iter(sorted(prepared.glob("*/input_prepare.json"))))
+                probe = list(command)
+                source_index = probe.index("--input-root")
+                probe[source_index:source_index + 2] = ["--input-json", str(first)]
+                probe[probe.index("--output-root") + 1] = str(raw / first.parent.name)
+                subprocess.run(probe + ["--max-items", "1"], check=True)
+                if "--resume" not in command:
+                    command.append("--resume")
                 subprocess.run(command, check=True)
         export_module(prepared, raw, args.work_dir, module, LABELS[profile])
     print(f"Completed. Run record: {marker}", flush=True)
 
 
+def interrupted(signum, frame):
+    raise SystemExit(128 + signum)
+
+
 if __name__ == "__main__":
+    for stop_signal in (signal.SIGTERM, signal.SIGHUP):
+        signal.signal(stop_signal, interrupted)
     main()

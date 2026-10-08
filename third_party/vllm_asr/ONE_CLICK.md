@@ -4,6 +4,12 @@ Prerequisites: Linux, `uv`, internet access for first-time package/model downloa
 and an NVIDIA GPU with a driver compatible with the selected Torch wheel. The
 tested hardware is H100 80 GB. The command creates separate Python 3.12 environments;
 it does not install drivers or change other running GPU processes.
+**FunASR base installs a CUDA 13.0 Torch wheel and requires a compatible driver
+(normally R580 or newer).** An older driver that runs Qwen/Whisper may still fail
+for this backend. See the [driver check and explicit compatibility setup](../Fun-ASR-Nano/vllm/README.md#cuda-driver-check)
+before downloading the base environment. All vLLM requirements include the
+`audio` extra; installing bare `vllm` can produce a healthy server whose audio
+requests fail because `librosa` is absent.
 
 From the repository root, using a downloaded
 [speechcolab/GigaSpeechBench](https://huggingface.co/datasets/speechcolab/GigaSpeechBench)
@@ -72,9 +78,12 @@ the public release. References and entity annotations remain local metadata.
 Preparation reads recordings from archives without unpacking arbitrary member
 paths. It crops at rounded source sample indices, averages stereo channels if
 needed, resamples to 16 kHz with polyphase filtering, and writes PCM16 mono clips.
-An end boundary may exceed the recording by at most one sample and is clamped;
-larger mismatches, duplicate identities, missing audio, and segments over 30 s
-fail explicitly. There is no VAD, silence removal, or text normalization.
+End timestamps may exceed the recording by up to 10 ms due to release rounding;
+only the crop boundary is clamped, while the original evaluation timestamps are
+preserved. Each clamp is listed in `preparation_report.json` and the row metadata.
+The full public YUE group has 230 such boundaries, at most 5 ms over the file end.
+Use `--end-tolerance-ms 0` for strict bounds. Larger mismatches, duplicate identities,
+missing audio, and segments over 30 s fail explicitly. There is no VAD, silence removal, or text normalization.
 Source files are never modified. Prepared clips are cached inside the work directory
 and reused only when metadata and preparation settings match.
 
@@ -83,7 +92,8 @@ and reused only when metadata and preparation settings match.
 1. Optionally download the selected HF inputs.
 2. Prepare the selected groups and create relative-path manifests.
 3. Install the appropriate isolated model environment and obtain weights.
-4. Start the vLLM server and wait for health, or start persistent Ray actors for MLT.
+4. Start vLLM, wait for health, and validate one real transcription before bulk submission;
+   or start persistent Ray actors for MLT.
 5. Transcribe all groups in the category using the same loaded model(s).
 6. Export both staging JSON and flat pipeline JSON, retaining empty strings.
 7. Shut down the server/actors created by this invocation.
@@ -91,8 +101,11 @@ and reused only when metadata and preparation settings match.
 An occupied server port is an error; another user's process is never stopped or
 silently reused. A server startup failure reports its log path. Request failures
 remain in raw output and make the command exit nonzero; incomplete runs are not
-presented as completed official-format results. Use Ctrl-C to interrupt; a managed
-vLLM server is stopped in cleanup. Ray shutdown is also performed in cleanup.
+presented as completed official-format results. The real-request probe is retained
+and resumed without duplicate inference. The HTTP client stops scheduling a group
+after 50 request errors by default (in-flight requests are drained); its direct
+CLI exposes `--stop-after-errors`. Use Ctrl-C to interrupt; a managed
+vLLM server is stopped in cleanup, including SIGTERM/SIGHUP during startup. Ray shutdown is also performed in cleanup.
 
 ## Smaller tests, resume and tuning
 
@@ -124,6 +137,10 @@ local checkpoint. A combined FunASR `--subset all` run needs separate base and M
 environments/models, so these single-environment/checkpoint overrides require
 running its categories separately. `RAY_TMPDIR` can select a short writable Ray
 temporary directory if the system's default path exceeds Unix socket limits.
+Ray adds session/socket suffixes, so keep the chosen base short (roughly 40 bytes
+or less), for example `RAY_TMPDIR=./ray_tmp` from a short working-directory path.
+The full socket path must fit within 107 bytes on Linux. Changing only replica
+count/GPU assignment on resume is allowed; avoid concurrent writers to one run.
 
 ## Results and official evaluation
 

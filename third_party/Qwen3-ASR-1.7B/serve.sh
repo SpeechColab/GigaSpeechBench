@@ -11,4 +11,5 @@ exec "${PYTHON_BIN:-$SCRIPT_DIR/.venv/bin/python}" -m qwen_asr.cli.serve \
   "${MODEL_PATH:-Qwen/Qwen3-ASR-1.7B}" \
   --served-model-name "${SERVED_MODEL_NAME:-Qwen3-ASR-1.7B}" \
   --host "${HOST:-127.0.0.1}" --port "${PORT:-18100}" \
+  --revision "${MODEL_REVISION:-7278e1e70fe206f11671096ffdd38061171dd6e5}" \
   --gpu-memory-utilization "${GPU_MEMORY_UTILIZATION:-0.90}" --tensor-parallel-size "${TENSOR_PARALLEL_SIZE:-1}" --disable-log-requests "$@"

@@ -63,6 +63,27 @@ class PrepareTests(unittest.TestCase):
             prepare_group(self.source, self.root / "prepared/KOR", "KOR")
         self.assertFalse((self.root / "prepared/KOR/prepare_spec.json").exists())
 
+    def test_rounded_end_is_clamped_and_reported_without_changing_reference_time(self):
+        self.archive()
+        self.metadata["audios"][0]["segments"][0]["end_time"] = "1.005"
+        (self.source / "metadata.json").write_text(json.dumps(self.metadata))
+        manifest = prepare_group(self.source, self.root / "prepared/KOR", "KOR")
+        row = json.loads(manifest.read_text())[0]
+        self.assertEqual(row["meta"]["end_time"], 1.005)
+        self.assertEqual(row["meta"]["end_clamp"]["overrun_ms"], 5)
+        self.assertEqual(sf.info(manifest.parent / row["audio_path"]).frames, 14400)
+        report = json.loads((manifest.parent / "preparation_report.json").read_text())
+        self.assertEqual(report["clamped_count"], 1)
+        with self.assertRaises(ValueError):
+            prepare_group(self.source, self.root / "strict", "KOR", end_tolerance_ms=1)
+
+    def test_large_end_overrun_is_rejected(self):
+        self.archive()
+        self.metadata["audios"][0]["segments"][0]["end_time"] = "1.02"
+        (self.source / "metadata.json").write_text(json.dumps(self.metadata))
+        with self.assertRaises(ValueError):
+            prepare_group(self.source, self.root / "prepared/KOR", "KOR")
+
     def test_base_mlt_routing_and_arabic_country_codes(self):
         self.assertEqual(profile_for("funasr", "Low-Resource-Languages"), "funasr-mlt")
         for module in ("Vertical-Domain", "CH-EN-Dialects", "Older-Children"):
