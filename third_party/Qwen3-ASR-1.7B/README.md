@@ -1,18 +1,16 @@
-# whisper-large-v3: local vLLM inference
+# Qwen3-ASR-1.7B: local vLLM inference
 
-This directory replaces the previous Transformers/OpenAI-Whisper scripts with
-local vLLM serving and concurrent transcription requests. The old
-`auto_infer.py`, `auto_infer_with_segments.py`, and `uv sync` entry points have
-been replaced by the commands below; do not use their old configuration constants.
+This runner hosts the open-weight **Qwen3-ASR-1.7B** model locally. It is separate from
+[`../Qwen3ASR`](../Qwen3ASR), which contains the existing hosted API integration.
 
-The tested environment uses `vllm==0.14.1`, `torch==2.9.1`, and
-`transformers==4.57.6`. We observed increasing GPU memory usage with Whisper on
-vLLM 0.14.0; use the pinned 0.14.1 environment, which completed an 18,040-request
-local stability check without that growth. This is a report of our tested setup,
-not a guarantee for every driver/hardware combination. Do not merge this environment
-with the Qwen runner's 0.14.0 environment.
+The tested environment uses `qwen-asr==0.0.6`, `vllm==0.14.0`,
+`torch==2.9.1`, and `transformers==4.57.6`. The launcher uses
+`qwen_asr.cli.serve` to register the model with this vLLM version.
+Use `Qwen/Qwen3-ASR-1.7B`, not the later `-hf` checkpoint with a different layout.
+The client strips the `<asr_text>` metadata prefix, retaining the original response
+in `inference.attempts`. The default decoding cap is 512 tokens.
 
-Upstream: [Whisper large-v3](https://huggingface.co/openai/whisper-large-v3).
+Upstream: [Qwen3-ASR](https://github.com/QwenLM/Qwen3-ASR).
 
 ## Setup
 
@@ -21,7 +19,7 @@ The original runs used H100 80 GB GPUs. Create a **separate** environment for ea
 model; these vLLM versions are intentionally different. Run from the repository root:
 
 ```bash
-cd third_party/whisper-large-v3
+cd third_party/Qwen3-ASR-1.7B
 uv venv --python 3.12 --seed .venv
 uv pip install --python .venv/bin/python -r requirements.txt
 CUDA_VISIBLE_DEVICES=0 bash serve.sh
@@ -31,7 +29,7 @@ The launcher downloads the public model into `.cache/huggingface` on first use.
 To use a downloaded checkpoint instead:
 
 ```bash
-MODEL_PATH=./models/whisper-large-v3 CUDA_VISIBLE_DEVICES=0 bash serve.sh
+MODEL_PATH=./models/Qwen3-ASR-1.7B CUDA_VISIBLE_DEVICES=0 bash serve.sh
 ```
 
 The venv and cache defaults resolve relative to `serve.sh`. A relative `MODEL_PATH`
@@ -45,11 +43,11 @@ physical GPU assignment is hardcoded. The default bind address is loopback.
 In another terminal, from this model directory:
 
 ```bash
-curl --fail http://127.0.0.1:18101/health
+curl --fail http://127.0.0.1:18100/health
 .venv/bin/python infer.py \
   --input-root ../../data/prepared/Older-Children \
   --output-root ./outputs/run_001 \
-  --workers 48
+  --workers 128
 ```
 
 `--input-root` finds all nested `input_prepare.json` files and preserves their
@@ -58,8 +56,8 @@ use `--input-json` instead; its results go directly in `--output-root`.
 All CLI paths resolve against the current working directory; audio paths resolve
 against their manifest directory.
 
-The endpoint defaults to `http://127.0.0.1:18101/v1` and the request model to
-`whisper-large-v3`. Change `--base-url` and `--model` when overriding the server settings.
+The endpoint defaults to `http://127.0.0.1:18100/v1` and the request model to
+`Qwen3-ASR-1.7B`. Change `--base-url` and `--model` when overriding the server settings.
 Use `--max-items 8` and a fresh output directory for a small smoke test.
 
 See the [shared input/output, retry, export, and evaluation guide](../vllm_asr/README.md).
