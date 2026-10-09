@@ -1,0 +1,6 @@
+requests==2.34.2
+oss2==2.19.1
+numpy>=1.26,<3
+soundfile>=0.13,<0.15
+scipy>=1.13,<2
+huggingface-hub>=0.36,<2
