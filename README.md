@@ -205,6 +205,31 @@
 | GPT-4O-TRANSCRIBE | 23.36 | 21.86 | 34.51 | 18.87 | 9.77 | 35.10 | 24.20 | 30.51 | 20.53 | 17.53 | 21.96 | 30.62 | 14.84 |
 | META-OMNIASR-3B | 29.29 | 34.76 | 36.49 | 40.12 | 16.73 | 24.02 | 23.73 | 57.73 | 32.71 | 17.89 | 35.39 | 21.05 | 10.89 |
 
+#### 👵🧒 Older-Children — Children and Older Adults (WER/CER %)
+
+English subsets use WER; Chinese subsets use CER. AVG is the equal-weight mean of the four unrounded subset scores. Dolphin models provide Chinese results only, so their four-subset AVG is unavailable.
+
+| Model | AVG(%) | CHILD-EN | CHILD-CH | OLD-EN | OLD-CH |
+|:---|:---:|:---:|:---:|:---:|:---:|
+| Duration (valid ref) | - | 9.98h | 9.83h | 10.09h | 10.04h |
+| 🥇 QWEN-AUDIO-3.1-ASR-FLASH | 12.93 | 17.91 | 9.86 | 14.19 | 9.75 |
+| 🥈 QWEN3-ASR-1.7B | 13.15 | 18.26 | 10.34 | 13.54 | 10.43 |
+| 🥉 QWEN3.5-OMNI-PLUS | 13.33 | 19.89 | 9.30 | 15.01 | 9.13 |
+| BIGASR | 13.51 | 19.69 | 9.42 | 15.17 | 9.77 |
+| SEEDASR | 13.52 | 19.67 | 9.42 | 15.19 | 9.78 |
+| FUN-ASR-NANO-2512 | 16.72 | 22.95 | 13.47 | 16.70 | 13.75 |
+| AZURE | 16.81 | 23.10 | 15.58 | 15.71 | 12.85 |
+| ELEVENLABS-SCRIBE-V2 | 19.85 | 27.82 | 16.55 | 20.43 | 14.58 |
+| WHISPER-LARGE-V3 | 21.27 | 21.17 | 26.03 | 16.67 | 21.22 |
+| CHIRP-3 | 21.63 | 20.58 | 26.90 | 15.34 | 23.71 |
+| GEMINI-3.0-FLASH | 25.25 | 24.08 | 31.18 | 19.74 | 26.01 |
+| META-OMNIASR-3B | 28.46 | 45.21 | 23.95 | 24.22 | 20.46 |
+| GPT-4O-TRANSCRIBE | 35.58 | 35.86 | 33.59 | 36.85 | 36.02 |
+| NVIDIA-NEMO | 39.43 | 32.11 | 58.64 | 17.82 | 49.17 |
+| DOLPHIN-SMALL | - | - | 16.67 | - | 15.86 |
+| DOLPHIN-BASE | - | - | 22.38 | - | 18.64 |
+| MIN | 12.93 | 17.91 | 9.30 | 13.54 | 9.13 |
+
 ---
 
 ## 📦 Modules
@@ -214,6 +239,7 @@
 | **Low-Resource-Languages** | ARE, DZA, EGY, IRQ, MAR, SAU, SYR, IDN, MYS, PHL, THA, VNM, JPN, KOR | Low-resource & dialectal |
 | **CH-EN-Dialects** | GAN, JIN, MIN, WU, XIANG, YUE, CHN-EN, IND-EN, JPN-EN, PHL-EN, SCT-EN, SGP-EN | Chinese dialects & accented English |
 | **Vertical-Domain** | 12 CH + 12 EN domains (AGR, AIT, ART, BIO, ECM, ENG, ENT, FIN, HUM, LAW, MED, MIL) | Domain-specific with hotword eval |
+| **Older-Children** | CHILD-EN, CHILD-CH, OLD-EN, OLD-CH | Children and older adults; English WER and Chinese CER |
 
 ---
 
