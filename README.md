@@ -15,11 +15,11 @@
 ## News
 
 - [2026-11-12] Released **Older-Children**, completing the **690-hour** benchmark, and migrated all subsets to **WebDataset**.
-- [2026-06-26] Released **Low-Resource-Languages**, **CH-EN-Dialects**, and **Vertical-Domain**, including data and model evaluation results.
+- [2026-06-26] Released **Low-Resource-Languages**, **CH-EN-Dialects**, and **Vertical-Domain**, including ASR results, Chinese and English translation references for **11 languages**, and speech translation evaluation results.
 
 ## Overview of GigaSpeechBench
 
-GigaSpeechBench is a real-world multilingual speech-to-text benchmark with approximately **690 hours** of human-annotated speech across **54 test subsets**. It covers low-resource languages, Chinese dialects, English accents, Chinese and English vertical domains, and older-adult and child speech.
+GigaSpeechBench is a real-world multilingual benchmark for **speech recognition (ASR) and speech translation (AST)**, with approximately **690 hours** of human-annotated speech across **54 test subsets**. It covers low-resource languages, Chinese dialects, English accents, Chinese and English vertical domains, and older-adult and child speech. We also provide **human-translated Chinese and English references for 11 source languages**, together with speech translation evaluation results.
 
 | Module | Languages | Description |
 |:-------|:----------|:------------|
