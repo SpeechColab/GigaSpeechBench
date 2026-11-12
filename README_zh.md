@@ -1,26 +1,32 @@
-# 🌍 GigaSpeechBench
+# GigaSpeechBench: A Real-World Multilingual Speech-to-Text Benchmark
+
+[**📖 arXiv**](https://arxiv.org/abs/2606.28884) | [**📄 技术报告**](assets/GigaSpeech_Bench_Technical_Report.pdf) | [**🛠️ 代码**](https://github.com/SpeechColab/GigaSpeechBench) | [**🤗 数据下载**](https://huggingface.co/datasets/speechcolab/GigaSpeechBench) | [**English**](README.md)
 
 <p align="center">
-  <b>A Real-World Multilingual Speech-to-Text Benchmark</b>
+  <img src="assets/gigaspeechbench-overview.png" alt="GigaSpeechBench overview" width="100%">
 </p>
 
-<p align="center">
-  📝 技术报告: <a href="GigaSpeech_Bench_Technical_Report.pdf">PDF</a> | <a href="https://arxiv.org/abs/2606.28884">arXiv</a>
-  &nbsp;&nbsp;•&nbsp;&nbsp;
-  <a href="https://huggingface.co/datasets/speechcolab/GigaSpeechBench">🤗 Huggingface</a>
-</p>
+## 最新动态
 
-<p align="center">
-  <a href="README.md">🇬🇧 English</a>
-</p>
+- [2026-11-12] 发布**老年人与儿童语音**，完成全部 **690 小时**数据发布，并将全库统一为 **WebDataset** 格式。
+- [2026-06-26] 发布**低资源语言、中文方言、英语口音和中英双语垂直领域**的数据及模型评测结果。
 
----
+## GigaSpeechBench 概览
 
-## 🏆 Leaderboard
+GigaSpeechBench 是面向真实场景的多语言语音转写评测基准，包含约 **690 小时**人工标注语音、**54 个评测子集**，覆盖低资源语言、中文方言、英语口音、中英双语垂直领域，以及老年人与儿童语音。
+
+| 模块 | 语言 | 说明 |
+|:-----|:-----|:-----|
+| **Low-Resource-Languages** | ARE, DZA, EGY, IRQ, MAR, SAU, SYR, IDN, MYS, PHL, THA, VNM, JPN, KOR | 低资源及方言 |
+| **CH-EN-Dialects** | GAN, JIN, MIN, WU, XIANG, YUE, CHN-EN, IND-EN, JPN-EN, PHL-EN, SCT-EN, SGP-EN | 中文方言与口音英语 |
+| **Vertical-Domain** | 12中文 + 12英文领域 | 垂直领域，含热词评测 |
+| **Older-Children** | CHILD-EN, CHILD-CH, OLD-EN, OLD-CH | 儿童与老年人；英文 WER、中文 CER |
+
+## Leaderboard
 
 > **WER/CER (%) ↓ — Lower is better. Duration > 0.5s filter applied.**
 
-#### 🌸 Low-Resource — East Asian (CER %)
+### Low-Resource — East Asian (CER %)
 
 | Model | AVG(%) | JPN | KOR |
 |:---|:---:|:---:|:---:|
@@ -40,7 +46,7 @@
 | META-OMNIASR-3B | 42.75 | 58.74 | 26.76 |
 | GPT-4O-TRANSCRIBE | 42.83 | 44.34 | 41.31 |
 
-#### 🌏 Low-Resource — Southeast Asian (WER %)
+### Low-Resource — Southeast Asian (WER %)
 
 | Model | AVG(%) | IDN | MYS | PHL | THA | VNM |
 |:---|:---:|:---:|:---:|:---:|:---:|:---:|
@@ -59,7 +65,7 @@
 | DOLPHIN-BASE | 40.49 | 31.29 | 54.24 | 68.36 | 26.97 | 21.59 |
 | GPT-4O-TRANSCRIBE | 41.37 | 37.95 | 52.30 | 38.60 | 48.78 | 29.24 |
 
-#### 🌍 Low-Resource — Arabic (WER %)
+### Low-Resource — Arabic (WER %)
 
 | Model | AVG(%) | ARE | DZA | EGY | IRQ | MAR | SAU | SYR |
 |:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
@@ -79,7 +85,7 @@
 | DOLPHIN-SMALL | 63.10 | 75.62 | 72.44 | 74.70 | 62.05 | 75.96 | 50.91 | 30.03 |
 | DOLPHIN-BASE | 70.26 | 82.87 | 78.26 | 85.31 | 65.20 | 89.74 | 52.35 | 38.12 |
 
-#### 🗣️ CH-EN Dialects — Chinese Dialects (CER %)
+### CH-EN Dialects — Chinese Dialects (CER %)
 
 | Model | AVG(%) | GAN | JIN | MIN | WU | XIANG | YUE |
 |:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
@@ -101,7 +107,7 @@
 | CHIRP-3 | 70.77 | 71.06 | 59.38 | 89.34 | 85.23 | 71.88 | 47.70 |
 | NVIDIA-NEMO | 87.66 | 83.69 | 80.16 | 94.74 | 86.42 | 85.49 | 95.44 |
 
-#### 🗣️ CH-EN Dialects — English Accents (WER %)
+### CH-EN Dialects — English Accents (WER %)
 
 | Model | AVG(%) | CHN-EN | IND-EN | JPN-EN | PHL-EN | SCT-EN | SGP-EN |
 |:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
@@ -121,7 +127,7 @@
 | GPT-4O-TRANSCRIBE | 39.88 | 66.12 | 17.12 | 38.57 | 38.04 | 43.57 | 35.85 |
 | META-OMNIASR-3B | 41.01 | 37.11 | 21.67 | 44.21 | 44.65 | 54.22 | 44.18 |
 
-#### 🏢 Vertical Domain — Chinese B-CER (%) [Hotword]
+### Vertical Domain — Chinese B-CER (%) [Hotword]
 
 | Model | AVG(%) | AGR-CH | AIT-CH | ART-CH | BIO-CH | ECM-CH | ENG-CH | ENT-CH | FIN-CH | HUM-CH | LAW-CH | MED-CH | MIL-CH |
 |:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
@@ -143,7 +149,7 @@
 | DOLPHIN-BASE | 42.09 | 51.83 | 62.50 | 38.04 | 45.86 | 46.77 | 46.53 | 53.57 | 25.05 | 43.06 | 17.48 | 47.62 | 26.71 |
 | NVIDIA-NEMO | 60.11 | 69.15 | 78.49 | 55.91 | 65.51 | 68.51 | 65.91 | 74.94 | 40.25 | 56.88 | 33.29 | 65.70 | 46.80 |
 
-#### 🏢 Vertical Domain — Chinese CER (%)
+### Vertical Domain — Chinese CER (%)
 
 | Model | AVG(%) | AGR-CH | AIT-CH | ART-CH | BIO-CH | ECM-CH | ENG-CH | ENT-CH | FIN-CH | HUM-CH | LAW-CH | MED-CH | MIL-CH |
 |:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
@@ -165,7 +171,7 @@
 | GPT-4O-TRANSCRIBE | 15.29 | 15.50 | 19.58 | 15.11 | 11.58 | 29.30 | 29.63 | 12.61 | 13.32 | 7.08 | 13.58 | 8.73 | 7.41 |
 | NVIDIA-NEMO | 26.95 | 29.95 | 36.11 | 23.80 | 26.53 | 38.86 | 29.07 | 31.71 | 20.30 | 22.06 | 22.75 | 21.75 | 20.47 |
 
-#### 🏢 Vertical Domain — English B-WER (%) [Hotword]
+### Vertical Domain — English B-WER (%) [Hotword]
 
 | Model | AVG(%) | AGR-EN | AIT-EN | ART-EN | BIO-EN | ECM-EN | ENG-EN | ENT-EN | FIN-EN | HUM-EN | LAW-EN | MED-EN | MIL-EN |
 |:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
@@ -185,7 +191,7 @@
 | GPT-4O-TRANSCRIBE | 24.79 | 15.06 | 44.01 | 18.79 | 17.09 | 36.64 | 29.04 | 29.87 | 19.75 | 10.48 | 20.85 | 32.10 | 23.87 |
 | META-OMNIASR-3B | 26.56 | 22.69 | 42.15 | 22.60 | 28.45 | 27.60 | 26.53 | 40.29 | 22.74 | 12.22 | 27.87 | 24.59 | 21.03 |
 
-#### 🏢 Vertical Domain — English WER (%)
+### Vertical Domain — English WER (%)
 
 | Model | AVG(%) | AGR-EN | AIT-EN | ART-EN | BIO-EN | ECM-EN | ENG-EN | ENT-EN | FIN-EN | HUM-EN | LAW-EN | MED-EN | MIL-EN |
 |:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
@@ -205,7 +211,7 @@
 | GPT-4O-TRANSCRIBE | 23.36 | 21.86 | 34.51 | 18.87 | 9.77 | 35.10 | 24.20 | 30.51 | 20.53 | 17.53 | 21.96 | 30.62 | 14.84 |
 | META-OMNIASR-3B | 29.29 | 34.76 | 36.49 | 40.12 | 16.73 | 24.02 | 23.73 | 57.73 | 32.71 | 17.89 | 35.39 | 21.05 | 10.89 |
 
-#### 👵🧒 Older-Children — 儿童与老年人（WER/CER %）
+### Older-Children — 儿童与老年人（WER/CER %）
 
 英文子集使用 WER，中文子集使用 CER。AVG 为四个子集未舍入分数的等权平均。Dolphin 模型仅提供中文结果，因此不计算四子集 AVG。
 
@@ -229,20 +235,7 @@
 | DOLPHIN-BASE | - | - | 22.38 | - | 18.64 |
 | MIN | 12.93 | 17.91 | 9.30 | 13.54 | 9.13 |
 
----
-
-## 📦 评测模块
-
-| 模块 | 语言 | 说明 |
-|:-----|:-----|:-----|
-| **Low-Resource-Languages** | ARE, DZA, EGY, IRQ, MAR, SAU, SYR, IDN, MYS, PHL, THA, VNM, JPN, KOR | 低资源及方言 |
-| **CH-EN-Dialects** | GAN, JIN, MIN, WU, XIANG, YUE, CHN-EN, IND-EN, JPN-EN, PHL-EN, SCT-EN, SGP-EN | 中文方言与口音英语 |
-| **Vertical-Domain** | 12中文 + 12英文领域 | 垂直领域，含热词评测 |
-| **Older-Children** | CHILD-EN, CHILD-CH, OLD-EN, OLD-CH | 儿童与老年人；英文 WER、中文 CER |
-
----
-
-## 🚀 快速开始
+## 评测你的模型
 
 ### 环境配置
 
@@ -326,9 +319,7 @@ bash run_ASR.sh Older-Children 0 1
 - **模块** 根据文件中语言代码自动检测
 - 部分覆盖可以跑（缺失语言会有警告提示）
 
----
-
-## 🖥 Gradio 可视化
+## Gradio 可视化
 
 ```bash
 python visualize/app.py [--port 7860] [--share]
@@ -337,9 +328,7 @@ python visualize/app.py [--port 7860] [--share]
 - **排行榜** — 10 个表：3 LR + 2 CED + 4 VD + 1 老年人与儿童
 - **评测新模型** — 提交 JSON → 自动评测 → 排名标 ⭐
 
----
-
-## 📊 评测指标
+## 评测指标
 
 | 指标 | 说明 | 适用 |
 |:-----|:-----|:-----|

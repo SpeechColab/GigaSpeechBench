@@ -1,26 +1,32 @@
-# 🌍 GigaSpeechBench
+# GigaSpeechBench: A Real-World Multilingual Speech-to-Text Benchmark
+
+[**📖 arXiv**](https://arxiv.org/abs/2606.28884) | [**📄 Technical Report**](assets/GigaSpeech_Bench_Technical_Report.pdf) | [**🛠️ Code**](https://github.com/SpeechColab/GigaSpeechBench) | [**🤗 Dataset Download**](https://huggingface.co/datasets/speechcolab/GigaSpeechBench) | [**中文**](README_zh.md)
 
 <p align="center">
-  <b>A Real-World Multilingual Speech-to-Text Benchmark</b>
+  <img src="assets/gigaspeechbench-overview.png" alt="GigaSpeechBench overview" width="100%">
 </p>
 
-<p align="center">
-  📝 Technical Report: <a href="GigaSpeech_Bench_Technical_Report.pdf">PDF</a> | <a href="https://arxiv.org/abs/2606.28884">arXiv</a>
-  &nbsp;&nbsp;•&nbsp;&nbsp;
-  <a href="https://huggingface.co/datasets/speechcolab/GigaSpeechBench">🤗 Huggingface</a>
-</p>
+## News
 
-<p align="center">
-  <a href="README_zh.md">🇨🇳 中文版</a>
-</p>
+- [2026-11-12] Released **Older-Children**, completing the **690-hour** benchmark, and migrated all subsets to **WebDataset**.
+- [2026-06-26] Released **Low-Resource-Languages**, **CH-EN-Dialects**, and **Vertical-Domain**, including data and model evaluation results.
 
----
+## Overview of GigaSpeechBench
 
-## 🏆 Leaderboard
+GigaSpeechBench is a real-world multilingual speech-to-text benchmark with approximately **690 hours** of human-annotated speech across **54 test subsets**. It covers low-resource languages, Chinese dialects, English accents, Chinese and English vertical domains, and older-adult and child speech.
+
+| Module | Languages | Description |
+|:-------|:----------|:------------|
+| **Low-Resource-Languages** | ARE, DZA, EGY, IRQ, MAR, SAU, SYR, IDN, MYS, PHL, THA, VNM, JPN, KOR | Low-resource & dialectal |
+| **CH-EN-Dialects** | GAN, JIN, MIN, WU, XIANG, YUE, CHN-EN, IND-EN, JPN-EN, PHL-EN, SCT-EN, SGP-EN | Chinese dialects & accented English |
+| **Vertical-Domain** | 12 CH + 12 EN domains (AGR, AIT, ART, BIO, ECM, ENG, ENT, FIN, HUM, LAW, MED, MIL) | Domain-specific with hotword eval |
+| **Older-Children** | CHILD-EN, CHILD-CH, OLD-EN, OLD-CH | Children and older adults; English WER and Chinese CER |
+
+## Leaderboard
 
 > **WER/CER (%) ↓ — Lower is better. Duration > 0.5s filter applied.**
 
-#### 🌸 Low-Resource — East Asian (CER %)
+### Low-Resource — East Asian (CER %)
 
 | Model | AVG(%) | JPN | KOR |
 |:---|:---:|:---:|:---:|
@@ -40,7 +46,7 @@
 | META-OMNIASR-3B | 42.75 | 58.74 | 26.76 |
 | GPT-4O-TRANSCRIBE | 42.83 | 44.34 | 41.31 |
 
-#### 🌏 Low-Resource — Southeast Asian (WER %)
+### Low-Resource — Southeast Asian (WER %)
 
 | Model | AVG(%) | IDN | MYS | PHL | THA | VNM |
 |:---|:---:|:---:|:---:|:---:|:---:|:---:|
@@ -59,7 +65,7 @@
 | DOLPHIN-BASE | 40.49 | 31.29 | 54.24 | 68.36 | 26.97 | 21.59 |
 | GPT-4O-TRANSCRIBE | 41.37 | 37.95 | 52.30 | 38.60 | 48.78 | 29.24 |
 
-#### 🌍 Low-Resource — Arabic (WER %)
+### Low-Resource — Arabic (WER %)
 
 | Model | AVG(%) | ARE | DZA | EGY | IRQ | MAR | SAU | SYR |
 |:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
@@ -79,7 +85,7 @@
 | DOLPHIN-SMALL | 63.10 | 75.62 | 72.44 | 74.70 | 62.05 | 75.96 | 50.91 | 30.03 |
 | DOLPHIN-BASE | 70.26 | 82.87 | 78.26 | 85.31 | 65.20 | 89.74 | 52.35 | 38.12 |
 
-#### 🗣️ CH-EN Dialects — Chinese Dialects (CER %)
+### CH-EN Dialects — Chinese Dialects (CER %)
 
 | Model | AVG(%) | GAN | JIN | MIN | WU | XIANG | YUE |
 |:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
@@ -101,7 +107,7 @@
 | CHIRP-3 | 70.77 | 71.06 | 59.38 | 89.34 | 85.23 | 71.88 | 47.70 |
 | NVIDIA-NEMO | 87.66 | 83.69 | 80.16 | 94.74 | 86.42 | 85.49 | 95.44 |
 
-#### 🗣️ CH-EN Dialects — English Accents (WER %)
+### CH-EN Dialects — English Accents (WER %)
 
 | Model | AVG(%) | CHN-EN | IND-EN | JPN-EN | PHL-EN | SCT-EN | SGP-EN |
 |:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
@@ -121,7 +127,7 @@
 | GPT-4O-TRANSCRIBE | 39.88 | 66.12 | 17.12 | 38.57 | 38.04 | 43.57 | 35.85 |
 | META-OMNIASR-3B | 41.01 | 37.11 | 21.67 | 44.21 | 44.65 | 54.22 | 44.18 |
 
-#### 🏢 Vertical Domain — Chinese B-CER (%) [Hotword]
+### Vertical Domain — Chinese B-CER (%) [Hotword]
 
 | Model | AVG(%) | AGR-CH | AIT-CH | ART-CH | BIO-CH | ECM-CH | ENG-CH | ENT-CH | FIN-CH | HUM-CH | LAW-CH | MED-CH | MIL-CH |
 |:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
@@ -143,7 +149,7 @@
 | DOLPHIN-BASE | 42.09 | 51.83 | 62.50 | 38.04 | 45.86 | 46.77 | 46.53 | 53.57 | 25.05 | 43.06 | 17.48 | 47.62 | 26.71 |
 | NVIDIA-NEMO | 60.11 | 69.15 | 78.49 | 55.91 | 65.51 | 68.51 | 65.91 | 74.94 | 40.25 | 56.88 | 33.29 | 65.70 | 46.80 |
 
-#### 🏢 Vertical Domain — Chinese CER (%)
+### Vertical Domain — Chinese CER (%)
 
 | Model | AVG(%) | AGR-CH | AIT-CH | ART-CH | BIO-CH | ECM-CH | ENG-CH | ENT-CH | FIN-CH | HUM-CH | LAW-CH | MED-CH | MIL-CH |
 |:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
@@ -165,7 +171,7 @@
 | GPT-4O-TRANSCRIBE | 15.29 | 15.50 | 19.58 | 15.11 | 11.58 | 29.30 | 29.63 | 12.61 | 13.32 | 7.08 | 13.58 | 8.73 | 7.41 |
 | NVIDIA-NEMO | 26.95 | 29.95 | 36.11 | 23.80 | 26.53 | 38.86 | 29.07 | 31.71 | 20.30 | 22.06 | 22.75 | 21.75 | 20.47 |
 
-#### 🏢 Vertical Domain — English B-WER (%) [Hotword]
+### Vertical Domain — English B-WER (%) [Hotword]
 
 | Model | AVG(%) | AGR-EN | AIT-EN | ART-EN | BIO-EN | ECM-EN | ENG-EN | ENT-EN | FIN-EN | HUM-EN | LAW-EN | MED-EN | MIL-EN |
 |:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
@@ -185,7 +191,7 @@
 | GPT-4O-TRANSCRIBE | 24.79 | 15.06 | 44.01 | 18.79 | 17.09 | 36.64 | 29.04 | 29.87 | 19.75 | 10.48 | 20.85 | 32.10 | 23.87 |
 | META-OMNIASR-3B | 26.56 | 22.69 | 42.15 | 22.60 | 28.45 | 27.60 | 26.53 | 40.29 | 22.74 | 12.22 | 27.87 | 24.59 | 21.03 |
 
-#### 🏢 Vertical Domain — English WER (%)
+### Vertical Domain — English WER (%)
 
 | Model | AVG(%) | AGR-EN | AIT-EN | ART-EN | BIO-EN | ECM-EN | ENG-EN | ENT-EN | FIN-EN | HUM-EN | LAW-EN | MED-EN | MIL-EN |
 |:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
@@ -205,7 +211,7 @@
 | GPT-4O-TRANSCRIBE | 23.36 | 21.86 | 34.51 | 18.87 | 9.77 | 35.10 | 24.20 | 30.51 | 20.53 | 17.53 | 21.96 | 30.62 | 14.84 |
 | META-OMNIASR-3B | 29.29 | 34.76 | 36.49 | 40.12 | 16.73 | 24.02 | 23.73 | 57.73 | 32.71 | 17.89 | 35.39 | 21.05 | 10.89 |
 
-#### 👵🧒 Older-Children — Children and Older Adults (WER/CER %)
+### Older-Children — Children and Older Adults (WER/CER %)
 
 English subsets use WER; Chinese subsets use CER. AVG is the equal-weight mean of the four unrounded subset scores. Dolphin models provide Chinese results only, so their four-subset AVG is unavailable.
 
@@ -229,20 +235,7 @@ English subsets use WER; Chinese subsets use CER. AVG is the equal-weight mean o
 | DOLPHIN-BASE | - | - | 22.38 | - | 18.64 |
 | MIN | 12.93 | 17.91 | 9.30 | 13.54 | 9.13 |
 
----
-
-## 📦 Modules
-
-| Module | Languages | Description |
-|:-------|:----------|:------------|
-| **Low-Resource-Languages** | ARE, DZA, EGY, IRQ, MAR, SAU, SYR, IDN, MYS, PHL, THA, VNM, JPN, KOR | Low-resource & dialectal |
-| **CH-EN-Dialects** | GAN, JIN, MIN, WU, XIANG, YUE, CHN-EN, IND-EN, JPN-EN, PHL-EN, SCT-EN, SGP-EN | Chinese dialects & accented English |
-| **Vertical-Domain** | 12 CH + 12 EN domains (AGR, AIT, ART, BIO, ECM, ENG, ENT, FIN, HUM, LAW, MED, MIL) | Domain-specific with hotword eval |
-| **Older-Children** | CHILD-EN, CHILD-CH, OLD-EN, OLD-CH | Children and older adults; English WER and Chinese CER |
-
----
-
-## 🚀 Quick Start
+## Test Your Model
 
 ### Requirements
 
@@ -326,9 +319,7 @@ Your model output must follow this structure:
 - **Module** auto-detected from language codes in the file
 - Partial coverage OK (missing languages shown as warning)
 
----
-
-## 🖥 Gradio UI
+## Gradio UI
 
 ```bash
 python visualize/app.py [--port 7860] [--share]
@@ -337,9 +328,7 @@ python visualize/app.py [--port 7860] [--share]
 - **Leaderboard** — 10 tables: 3 LR + 2 CED + 4 VD + 1 Older-Children
 - **Evaluate Your Model** — Submit JSON → auto pipeline → ranked with ⭐
 
----
-
-## 📊 Metrics
+## Metrics
 
 | Metric | Description | Used For |
 |:-------|:------------|:---------|
