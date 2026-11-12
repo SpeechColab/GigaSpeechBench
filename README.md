@@ -1,9 +1,15 @@
 # GigaSpeechBench: A Real-World Multilingual Speech-to-Text Benchmark
 
-[**📖 arXiv**](https://arxiv.org/abs/2606.28884) | [**📄 Technical Report**](assets/GigaSpeech_Bench_Technical_Report.pdf) | [**🛠️ Code**](https://github.com/SpeechColab/GigaSpeechBench) | [**🤗 Dataset Download**](https://huggingface.co/datasets/speechcolab/GigaSpeechBench) | [**中文**](README_zh.md)
+<p align="center">
+  <a href="https://arxiv.org/abs/2606.28884"><strong>📖 arXiv</strong></a> |
+  <a href="assets/GigaSpeech_Bench_Technical_Report.pdf"><strong>📄 Technical Report</strong></a> |
+  <a href="https://github.com/SpeechColab/GigaSpeechBench"><strong>🛠️ Code</strong></a> |
+  <a href="https://huggingface.co/datasets/speechcolab/GigaSpeechBench"><strong>🤗 Dataset Download</strong></a> |
+  <a href="README_zh.md"><strong>中文</strong></a>
+</p>
 
 <p align="center">
-  <img src="assets/gigaspeechbench-overview.png" alt="GigaSpeechBench overview" width="100%">
+  <img src="assets/gigaspeechbench-overview.png" alt="GigaSpeechBench overview" width="80%">
 </p>
 
 ## News
