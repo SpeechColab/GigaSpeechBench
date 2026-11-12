@@ -2021,5 +2021,167 @@
       "MIL-EN": 21.03,
       "Coverage": "12/12"
     }
+  ],
+  "OC_Older-Children": [
+    {
+      "Model": "🥇 QWEN-AUDIO-3.1-ASR-FLASH",
+      "AVG(%)": 12.93,
+      "CHILD-EN": 17.91,
+      "CHILD-CH": 9.86,
+      "OLD-EN": 14.19,
+      "OLD-CH": 9.75,
+      "Coverage": "4/4",
+      "#": 1
+    },
+    {
+      "Model": "🥈 QWEN3-ASR-1.7B",
+      "AVG(%)": 13.15,
+      "CHILD-EN": 18.26,
+      "CHILD-CH": 10.34,
+      "OLD-EN": 13.54,
+      "OLD-CH": 10.43,
+      "Coverage": "4/4",
+      "#": 2
+    },
+    {
+      "Model": "🥉 QWEN3.5-OMNI-PLUS",
+      "AVG(%)": 13.33,
+      "CHILD-EN": 19.89,
+      "CHILD-CH": 9.3,
+      "OLD-EN": 15.01,
+      "OLD-CH": 9.13,
+      "Coverage": "4/4",
+      "#": 3
+    },
+    {
+      "Model": "BIGASR",
+      "AVG(%)": 13.51,
+      "CHILD-EN": 19.69,
+      "CHILD-CH": 9.42,
+      "OLD-EN": 15.17,
+      "OLD-CH": 9.77,
+      "Coverage": "4/4",
+      "#": 4
+    },
+    {
+      "Model": "SEEDASR",
+      "AVG(%)": 13.52,
+      "CHILD-EN": 19.67,
+      "CHILD-CH": 9.42,
+      "OLD-EN": 15.19,
+      "OLD-CH": 9.78,
+      "Coverage": "4/4",
+      "#": 5
+    },
+    {
+      "Model": "FUN-ASR-NANO-2512",
+      "AVG(%)": 16.72,
+      "CHILD-EN": 22.95,
+      "CHILD-CH": 13.47,
+      "OLD-EN": 16.7,
+      "OLD-CH": 13.75,
+      "Coverage": "4/4",
+      "#": 6
+    },
+    {
+      "Model": "AZURE",
+      "AVG(%)": 16.81,
+      "CHILD-EN": 23.1,
+      "CHILD-CH": 15.58,
+      "OLD-EN": 15.71,
+      "OLD-CH": 12.85,
+      "Coverage": "4/4",
+      "#": 7
+    },
+    {
+      "Model": "ELEVENLABS-SCRIBE-V2",
+      "AVG(%)": 19.85,
+      "CHILD-EN": 27.82,
+      "CHILD-CH": 16.55,
+      "OLD-EN": 20.43,
+      "OLD-CH": 14.58,
+      "Coverage": "4/4",
+      "#": 8
+    },
+    {
+      "Model": "WHISPER-LARGE-V3",
+      "AVG(%)": 21.27,
+      "CHILD-EN": 21.17,
+      "CHILD-CH": 26.03,
+      "OLD-EN": 16.67,
+      "OLD-CH": 21.22,
+      "Coverage": "4/4",
+      "#": 9
+    },
+    {
+      "Model": "CHIRP-3",
+      "AVG(%)": 21.63,
+      "CHILD-EN": 20.58,
+      "CHILD-CH": 26.9,
+      "OLD-EN": 15.34,
+      "OLD-CH": 23.71,
+      "Coverage": "4/4",
+      "#": 10
+    },
+    {
+      "Model": "GEMINI-3.0-FLASH",
+      "AVG(%)": 25.25,
+      "CHILD-EN": 24.08,
+      "CHILD-CH": 31.18,
+      "OLD-EN": 19.74,
+      "OLD-CH": 26.01,
+      "Coverage": "4/4",
+      "#": 11
+    },
+    {
+      "Model": "META-OMNIASR-3B",
+      "AVG(%)": 28.46,
+      "CHILD-EN": 45.21,
+      "CHILD-CH": 23.95,
+      "OLD-EN": 24.22,
+      "OLD-CH": 20.46,
+      "Coverage": "4/4",
+      "#": 12
+    },
+    {
+      "Model": "GPT-4O-TRANSCRIBE",
+      "AVG(%)": 35.58,
+      "CHILD-EN": 35.86,
+      "CHILD-CH": 33.59,
+      "OLD-EN": 36.85,
+      "OLD-CH": 36.02,
+      "Coverage": "4/4",
+      "#": 13
+    },
+    {
+      "Model": "NVIDIA-NEMO",
+      "AVG(%)": 39.43,
+      "CHILD-EN": 32.11,
+      "CHILD-CH": 58.64,
+      "OLD-EN": 17.82,
+      "OLD-CH": 49.17,
+      "Coverage": "4/4",
+      "#": 14
+    },
+    {
+      "Model": "DOLPHIN-BASE",
+      "AVG(%)": null,
+      "CHILD-EN": null,
+      "CHILD-CH": 22.38,
+      "OLD-EN": null,
+      "OLD-CH": 18.64,
+      "Coverage": "2/4",
+      "#": 15
+    },
+    {
+      "Model": "DOLPHIN-SMALL",
+      "AVG(%)": null,
+      "CHILD-EN": null,
+      "CHILD-CH": 16.67,
+      "OLD-EN": null,
+      "OLD-CH": 15.86,
+      "Coverage": "2/4",
+      "#": 16
+    }
   ]
 }

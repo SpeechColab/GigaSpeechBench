@@ -1,200 +1,135 @@
 #!/usr/bin/env bash
-
 set -euo pipefail
 
-# Usage:
-#   bash run.sh [MODULE] [SKIP_EXISTING] [SKIP_REF] [MATCHED_ONLY]
-# MODULE: Low-Resource-Languages | CH-EN-Dialects | Vertical-Domain | Older-Children | translation | all
-# SKIP_EXISTING: 1 skip existing outputs, 0 overwrite existing outputs
-# SKIP_REF: 1 skip ref generate & ref normalize, 0 run all steps
-# MATCHED_ONLY: 1 Excel only includes fully-matched (ref==matched), 0 include all
-
+# bash run_ASR.sh [MODULE] [SKIP_EXISTING=1] [SKIP_REF=0] [MATCHED_ONLY=0]
 MODULE="${1:-CH-EN-Dialects}"
-SKIP_EXISTING=1
+SKIP_EXISTING="${2:-1}"
 SKIP_REF="${3:-0}"
 MATCHED_ONLY="${4:-0}"
 BASE_DIR="$(cd "$(dirname "$0")" && pwd)"
+OUT_ROOT="${OUT_ROOT:-$BASE_DIR}"
 DATA_ROOT="${DATA_ROOT:-}"
 STAGING_ROOT="${STAGING_ROOT:-}"
 PYTHON_BIN="${PYTHON_BIN:-python3}"
 MODELS="${MODELS:-}"
+WORKERS="${WORKERS:-4}"
+MIN_DURATION="${MIN_DURATION:-0.5}"
 
-if [[ "$SKIP_EXISTING" != "0" && "$SKIP_EXISTING" != "1" ]]; then
-    echo "SKIP_EXISTING must be 0 or 1"
-    exit 1
-fi
+for option in SKIP_EXISTING SKIP_REF MATCHED_ONLY; do
+    if [[ "${!option}" != "0" && "${!option}" != "1" ]]; then
+        echo "$option must be 0 or 1"
+        exit 1
+    fi
+done
 
 run_one_module() {
     local module="$1"
+    local ref_out="$OUT_ROOT/data/text/$module/ref"
+    local hyp_out="$OUT_ROOT/data/text/$module/hyp"
+    local norm_out="$OUT_ROOT/data/text_normalized/$module"
+    local results_out="$OUT_ROOT/data/results_$module"
+    local norm_mindur="$OUT_ROOT/data/text_normalized_mindur/$module"
+    local results_mindur="$OUT_ROOT/data/results_${module}_mindur"
+    local staging_module=""
 
-    REF_OUT="$BASE_DIR/data/text/$module/ref"
-    HYP_OUT="$BASE_DIR/data/text/$module/hyp"
-    NORM_OUT="$BASE_DIR/data/text_normalized/$module"
-    RESULTS_OUT="$BASE_DIR/data/results_$module"
-
-    if [[ "$SKIP_EXISTING" == "0" ]]; then
-        rm -rf "$BASE_DIR/data/text/$module" "$NORM_OUT" "$RESULTS_OUT"
+    if [[ "$SKIP_REF" == "1" && ! -d "$norm_out/ref" ]]; then
+        echo "Normalized references not found: $norm_out/ref"
+        exit 1
     fi
-
-    # Check if staging mode
-    STAGING_MODULE=""
-    if [[ -n "$STAGING_ROOT" ]]; then
-        STAGING_MODULE="$STAGING_ROOT/$module"
-        if [[ ! -d "$STAGING_MODULE/data" ]]; then
-            # Try without module suffix (staging path already includes module)
-            STAGING_MODULE="$STAGING_ROOT"
+    if [[ "$SKIP_EXISTING" == "0" ]]; then
+        rm -rf "$hyp_out" "$norm_out/hyp" "$results_out" "$norm_mindur" "$results_mindur"
+        if [[ "$SKIP_REF" == "0" ]]; then
+            rm -rf "$ref_out" "$norm_out/ref"
         fi
     fi
-
-    echo "=============================================="
-    echo "Running ASR Bench pipeline for $module"
-    echo "SKIP_EXISTING = $SKIP_EXISTING"
-    echo "SKIP_REF      = $SKIP_REF"
-    echo "MATCHED_ONLY  = $MATCHED_ONLY"
-    echo "BASE_DIR      = $BASE_DIR"
-    if [[ -n "$STAGING_MODULE" ]]; then
-        echo "STAGING       = $STAGING_MODULE"
-    else
-        echo "DATA_ROOT     = $DATA_ROOT"
+    if [[ -n "$STAGING_ROOT" ]]; then
+        staging_module="$STAGING_ROOT/$module"
+        if [[ ! -d "$staging_module/data" ]]; then
+            staging_module="$STAGING_ROOT"
+        fi
     fi
-    echo "=============================================="
+    echo "Running $module: SKIP_EXISTING = $SKIP_EXISTING, SKIP_REF = $SKIP_REF"
 
-    if [[ -n "$STAGING_MODULE" && -d "$STAGING_MODULE/data" ]]; then
-        echo "Step 1/5: Convert staging to text format"
-        local models_arg=""
+    if [[ -n "$staging_module" && -d "$staging_module/data" ]]; then
+        local model_args=()
         if [[ -n "$MODELS" ]]; then
-            models_arg="--models $MODELS"
+            model_args=(--models "$MODELS")
         fi
         "$PYTHON_BIN" "$BASE_DIR/data_process/convert_staging.py" \
-            --staging_root "$STAGING_MODULE" \
-            --module "$module" \
-            --out_root "$BASE_DIR" \
-            $models_arg
+            --staging_root "$staging_module" --module "$module" --out_root "$OUT_ROOT" \
+            --skip_existing "$SKIP_EXISTING" --skip_ref "$SKIP_REF" "${model_args[@]}"
     else
-        REF_OLD="$DATA_ROOT/$module/text/ref"
-        HYP_OLD="$DATA_ROOT/$module/text/hyp"
-        if [[ ! -d "$REF_OLD" || ! -d "$HYP_OLD" ]]; then
+        local old_ref="$DATA_ROOT/$module/text/ref"
+        local old_hyp="$DATA_ROOT/$module/text/hyp"
+        if [[ ! -d "$old_hyp" || ( "$SKIP_REF" == "0" && ! -d "$old_ref" ) ]]; then
             echo "Input text directories not found under $DATA_ROOT/$module"
             exit 1
         fi
-        echo "Step 1a/5: Build consolidated REF json"
-        "$PYTHON_BIN" "$BASE_DIR/data_process/generate_ref.py" \
-            --old_ref_root "$REF_OLD" \
-            --out_ref_root "$REF_OUT" \
-            --skip_existing "$SKIP_EXISTING"
-        echo "Step 1b/5: Build model-wise HYP json"
+        if [[ "$SKIP_REF" == "0" ]]; then
+            "$PYTHON_BIN" "$BASE_DIR/data_process/generate_ref.py" \
+                --old_ref_root "$old_ref" --out_ref_root "$ref_out" --skip_existing "$SKIP_EXISTING"
+        fi
         "$PYTHON_BIN" "$BASE_DIR/data_process/generate_hyp.py" \
-            --hyp_input_root "$HYP_OLD" \
-            --out_hyp_root "$HYP_OUT" \
-            --ref_root "$REF_OUT" \
-            --skip_existing "$SKIP_EXISTING"
+            --hyp_input_root "$old_hyp" --out_hyp_root "$hyp_out" \
+            --ref_root "$ref_out" --skip_existing "$SKIP_EXISTING"
     fi
 
-echo "Step 2/5: Normalize REF"
-"$PYTHON_BIN" "$BASE_DIR/data_process/normalize_ref.py" \
-    --ref_root "$REF_OUT" \
-    --out_root "$NORM_OUT" \
-    --skip_existing "$SKIP_EXISTING"
-
-echo "Step 3/5: Normalize HYP"
-"$PYTHON_BIN" "$BASE_DIR/data_process/normalize_hyp.py" \
-    --hyp_root "$HYP_OUT" \
-    --ref_root "$REF_OUT" \
-    --out_root "$NORM_OUT" \
-    --skip_existing "$SKIP_EXISTING"
-
-echo "Step 4/5: Compute WER/CER"
-"$PYTHON_BIN" "$BASE_DIR/scripts/compute_wer.py" \
-    --ref_root "$NORM_OUT/ref" \
-    --hyp_root "$NORM_OUT/hyp" \
-    --out_root "$RESULTS_OUT" \
-    --skip_existing "$SKIP_EXISTING"
-
-# Duration-filtered pipeline
-MIN_DURATION="${MIN_DURATION:-0.5}"
-NORM_MINDUR="$BASE_DIR/data/text_normalized_mindur/$module"
-RESULTS_MINDUR="$BASE_DIR/data/results_${module}_mindur"
-
-echo "Step 4b/5: Filter by duration > ${MIN_DURATION}s"
-"$PYTHON_BIN" "$BASE_DIR/scripts/filter_duration.py" \
-    --norm_root "$NORM_OUT" \
-    --out_root "$NORM_MINDUR" \
-    --min_duration "$MIN_DURATION"
-
-echo "Step 4c/5: Compute WER/CER (filtered)"
-"$PYTHON_BIN" "$BASE_DIR/scripts/compute_wer.py" \
-    --ref_root "$NORM_MINDUR/ref" \
-    --hyp_root "$NORM_MINDUR/hyp" \
-    --out_root "$RESULTS_MINDUR" \
-    --skip_existing "$SKIP_EXISTING"
-
-echo "Step 5/5: Build Excel"
-mapfile -t EXCEL_COUNTRIES < <(find "$NORM_OUT/ref" -maxdepth 1 -name '*.json' -printf '%f\n' | sed 's/\.json$//' | sort)
-if [[ ${#EXCEL_COUNTRIES[@]} -eq 0 ]]; then
-    echo "No normalized ref files found in $NORM_OUT/ref"
-    exit 1
-fi
-
-"$PYTHON_BIN" "$BASE_DIR/scripts/build_excel.py" \
-    --results_root "$RESULTS_OUT" \
-    --ref_root "$NORM_OUT/ref" \
-    --excel_countries "${EXCEL_COUNTRIES[@]}" \
-    --skip_existing "$SKIP_EXISTING" \
-    --matched_only "$MATCHED_ONLY"
-
-echo "=============================================="
-echo "Pipeline finished for $module"
-echo "Results: $RESULTS_OUT"
-echo "=============================================="
-
-# Hotword WER: only for Vertical-Domain when release metadata has entities
-ENTITY_REF_DIR="$STAGING_ROOT/Vertical-Domain/data"
-if [[ "$module" == "Vertical-Domain" && -n "$STAGING_ROOT" && -d "$ENTITY_REF_DIR" ]]; then
-    local hotword_hyp="$NORM_OUT/hyp"
-    echo "Step Extra: Hotword WER evaluation"
-    local skip_flag=""
-    if [[ "$SKIP_EXISTING" == "1" ]]; then
-        skip_flag="--skip_existing"
+    if [[ "$SKIP_REF" == "0" ]]; then
+        "$PYTHON_BIN" "$BASE_DIR/data_process/normalize_ref.py" \
+            --ref_root "$ref_out" --out_root "$norm_out" \
+            --skip_existing "$SKIP_EXISTING" --workers "$WORKERS"
     fi
-    "$PYTHON_BIN" "$BASE_DIR/scripts/hotword_wer.py" \
-        --result_dir "$ENTITY_REF_DIR" \
-        --hyp_dir "$hotword_hyp" \
-        --norm_ref_dir "$NORM_OUT/ref" \
-        --out_dir "$BASE_DIR/data/results_hotword" \
-        $skip_flag
+    "$PYTHON_BIN" "$BASE_DIR/data_process/normalize_hyp.py" \
+        --hyp_root "$hyp_out" --out_root "$norm_out" \
+        --skip_existing "$SKIP_EXISTING" --workers "$WORKERS"
+    "$PYTHON_BIN" "$BASE_DIR/scripts/compute_wer.py" \
+        --ref_root "$norm_out/ref" --hyp_root "$norm_out/hyp" --out_root "$results_out" \
+        --skip_existing "$SKIP_EXISTING" --min_duration "$MIN_DURATION" --workers "$WORKERS"
+    "$PYTHON_BIN" "$BASE_DIR/scripts/filter_duration.py" \
+        --norm_root "$norm_out" --out_root "$norm_mindur" --min_duration "$MIN_DURATION"
+    "$PYTHON_BIN" "$BASE_DIR/scripts/compute_wer.py" \
+        --ref_root "$norm_mindur/ref" --hyp_root "$norm_mindur/hyp" --out_root "$results_mindur" \
+        --skip_existing "$SKIP_EXISTING" --min_duration "$MIN_DURATION" --workers "$WORKERS"
 
-    echo "Step Extra: Hotword WER evaluation (duration > ${MIN_DURATION}s)"
-    "$PYTHON_BIN" "$BASE_DIR/scripts/hotword_wer.py" \
-        --result_dir "$ENTITY_REF_DIR" \
-        --hyp_dir "$NORM_MINDUR/hyp" \
-        --norm_ref_dir "$NORM_MINDUR/ref" \
-        --out_dir "$BASE_DIR/data/results_hotword_mindur" \
-        $skip_flag
-fi
+    local countries=()
+    mapfile -t countries < <(find "$norm_out/ref" -maxdepth 1 -name '*.json' -printf '%f\n' | sed 's/\.json$//' | sort)
+    if [[ ${#countries[@]} -eq 0 ]]; then
+        echo "No normalized ref files found in $norm_out/ref"
+        exit 1
+    fi
+    local variant root ref
+    for variant in all mindur; do
+        root="$results_out"; ref="$norm_out/ref"
+        if [[ "$variant" == "mindur" ]]; then
+            root="$results_mindur"; ref="$norm_mindur/ref"
+        fi
+        "$PYTHON_BIN" "$BASE_DIR/scripts/build_excel.py" \
+            --results_root "$root" --ref_root "$ref" --excel_countries "${countries[@]}" \
+            --skip_existing "$SKIP_EXISTING" --matched_only "$MATCHED_ONLY"
+    done
 
-# Translation evaluation is handled separately by run_translation.sh
-
-# Generate merged all_results Excel
-echo "Step Extra: Merge all_results Excel"
-"$PYTHON_BIN" "$BASE_DIR/scripts/merge_excel.py" --base_dir "$BASE_DIR" || true
-
+    if [[ "$module" == "Vertical-Domain" && -n "$staging_module" ]]; then
+        local skip_args=()
+        if [[ "$SKIP_EXISTING" == "1" ]]; then skip_args=(--skip_existing); fi
+        "$PYTHON_BIN" "$BASE_DIR/scripts/hotword_wer.py" \
+            --result_dir "$staging_module/data" --hyp_dir "$norm_out/hyp" \
+            --norm_ref_dir "$norm_out/ref" --out_dir "$OUT_ROOT/data/results_hotword" "${skip_args[@]}"
+        "$PYTHON_BIN" "$BASE_DIR/scripts/hotword_wer.py" \
+            --result_dir "$staging_module/data" --hyp_dir "$norm_mindur/hyp" \
+            --norm_ref_dir "$norm_mindur/ref" --out_dir "$OUT_ROOT/data/results_hotword_mindur" "${skip_args[@]}"
+    fi
+    echo "Results: $results_mindur"
 }
 
 case "$MODULE" in
-    "CH-EN-Dialects"|"Low-Resource-Languages"|"Vertical-Domain"|"Older-Children")
-        run_one_module "$MODULE"
-        ;;
-    "all")
-        run_one_module "Low-Resource-Languages"
-        run_one_module "CH-EN-Dialects"
-        run_one_module "Vertical-Domain"
-        run_one_module "Older-Children"
-        echo "Step 7: Merge all results into all_results.xlsx"
-        "$PYTHON_BIN" "$BASE_DIR/scripts/merge_excel.py" --base_dir "$BASE_DIR"
-        ;;
+    CH-EN-Dialects|Low-Resource-Languages|Vertical-Domain|Older-Children)
+        run_one_module "$MODULE" ;;
+    all)
+        for module in Low-Resource-Languages CH-EN-Dialects Vertical-Domain Older-Children; do
+            run_one_module "$module"
+        done ;;
     *)
-        echo "Unsupported MODULE: $MODULE"
         echo "Supported: Low-Resource-Languages | CH-EN-Dialects | Vertical-Domain | Older-Children | all"
-        exit 1
-        ;;
+        exit 1 ;;
 esac
+"$PYTHON_BIN" "$BASE_DIR/scripts/merge_excel.py" --base_dir "$OUT_ROOT"

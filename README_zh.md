@@ -253,6 +253,15 @@ conda activate asr_bench
 pip install -r requirements.txt
 ```
 
+### 下载数据
+
+```bash
+hf download speechcolab/GigaSpeechBench --repo-type dataset --local-dir data/benchmark
+export STAGING_ROOT="$PWD/data/benchmark"
+```
+
+每个子集的 `test/*.tar` 包含同名 `.wav` 和 `.json`，模型转写位于各模块的 `results/`。
+
 ### 评测你的模型（Gradio UI）
 
 ```bash
@@ -272,12 +281,17 @@ python visualize/app.py --port 7860
 ### 命令行完整流程
 
 ```bash
-# 单模块
-STAGING_ROOT=/path/to/benchmark_data PYTHON_BIN=python3 bash run_ASR.sh Low-Resource-Languages
+# 老年人与儿童
+bash run_ASR.sh Older-Children 0
 
 # 全部模块
-STAGING_ROOT=/path/to/benchmark_data PYTHON_BIN=python3 bash run_ASR.sh all
+bash run_ASR.sh all 0
+
+# 保留已处理的参考文本，重新评测模型转写
+bash run_ASR.sh Older-Children 0 1
 ```
+
+参数：`模块 跳过已有结果 跳过参考处理 仅汇总完整匹配`，默认值为 `CH-EN-Dialects 1 0 0`。结果输出到 `data/results_<模块>_mindur/`，合并榜单位于 `data/excel_output/`。
 
 ### 输入 JSON 格式
 
@@ -321,7 +335,7 @@ STAGING_ROOT=/path/to/benchmark_data PYTHON_BIN=python3 bash run_ASR.sh all
 python visualize/app.py [--port 7860] [--share]
 ```
 
-- **排行榜** — 9 个表：3 LR + 2 CED + 4 VD（CER/WER + B-CER/B-WER）
+- **排行榜** — 10 个表：3 LR + 2 CED + 4 VD + 1 老年人与儿童
 - **评测新模型** — 提交 JSON → 自动评测 → 排名标 ⭐
 
 ---

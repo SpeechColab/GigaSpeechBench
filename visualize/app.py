@@ -10,10 +10,10 @@ Usage:
 import argparse
 import json
 import os
-import shutil
+import re
 import subprocess
 import sys
-import uuid
+import tempfile
 from pathlib import Path
 
 import gradio as gr
@@ -21,7 +21,7 @@ import pandas as pd
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 STATIC_FILE = Path(__file__).resolve().parent / "static_results.json"
-DEFAULT_STAGING = str(BASE_DIR.parent / "data" / "release_hash")
+DEFAULT_STAGING = os.environ.get("STAGING_ROOT", str(BASE_DIR / "data" / "benchmark"))
 
 # ─── Language groups ───
 LR_GROUPS = {
@@ -40,10 +40,13 @@ VD_GROUPS = {
                            "ENT-EN", "FIN-EN", "HUM-EN", "LAW-EN", "MED-EN", "MIL-EN"],
 }
 
+OC_GROUPS = {"Older-Children": ["CHILD-EN", "CHILD-CH", "OLD-EN", "OLD-CH"]}
+
 MODULE_GROUPS = {
     "Low-Resource-Languages": LR_GROUPS,
     "CH-EN-Dialects": CED_GROUPS,
     "Vertical-Domain": VD_GROUPS,
+    "Older-Children": OC_GROUPS,
 }
 
 MEDALS = {1: "🥇", 2: "🥈", 3: "🥉"}
@@ -64,14 +67,21 @@ def parse_results_dir(results_dir: str) -> dict:
         for model_dir in sorted(country_dir.iterdir()):
             if not model_dir.is_dir():
                 continue
-            for err_file in model_dir.glob("errs-*"):
-                line = open(err_file).readline().strip()
-                if line.startswith("%WER") or line.startswith("%CER"):
-                    try:
-                        results[country][model_dir.name] = float(line.split("=")[1].strip())
-                    except (ValueError, IndexError):
-                        pass
-                break
+            err_files = sorted(model_dir.glob("errs-*.txt"))
+            err_file = next((p for p in err_files if not p.stem.endswith("-mindur")), None)
+            if err_file is None:
+                continue
+            lines = err_file.read_text().splitlines()
+            if not lines or not lines[0].startswith(("%WER", "%CER")):
+                continue
+            value = float(lines[0].split("=", 1)[1].strip())
+            if len(lines) > 1:
+                counts = re.search(r"Errors: (\d+) insertions, (\d+) deletions, (\d+) substitutions, over (\d+) units", lines[1])
+                if counts:
+                    insertions, deletions, substitutions, units = map(int, counts.groups())
+                    value = 100 * (insertions + deletions + substitutions) / units if units else 0.0
+            results[country][model_dir.name] = value
+
     return results
 
 
@@ -176,127 +186,80 @@ def load_static():
 
 # ─── New model submission ───
 
+def run_step(script, *args):
+    result = subprocess.run(
+        [sys.executable, str(BASE_DIR / script), *map(str, args)],
+        capture_output=True, text=True, cwd=str(BASE_DIR),
+    )
+    if result.returncode:
+        raise RuntimeError(result.stderr.strip() or result.stdout.strip())
+
+
+def module_path(staging, module):
+    return staging / module if (staging / module / "data").is_dir() else staging
+
+
 def ensure_ref_ready(module: str, staging: Path, progress=None):
-    """Ensure REF is converted, normalized, and duration-filtered. Cached/skipped if already done."""
+    """Prepare references through the same release loader used by the CLI."""
     text_dir = BASE_DIR / "data" / "text" / module
     norm_dir = BASE_DIR / "data" / "text_normalized" / module
     mindur_dir = BASE_DIR / "data" / "text_normalized_mindur" / module
-
-    ref_out = text_dir / "ref"
-    norm_ref = norm_dir / "ref"
-    mindur_ref = mindur_dir / "ref"
-
-    py = sys.executable
-    staging_module = staging / module
-
-    # Step 1: Convert REF from staging (skip if exists)
-    if not ref_out.exists() or not list(ref_out.glob("*.json")):
-        if progress:
-            progress(0.05, desc="Converting REF from staging...")
-        subprocess.run([py, str(BASE_DIR / "data_process" / "convert_staging.py"),
-                        "--staging_root", str(staging_module),
-                        "--module", module,
-                        "--out_root", str(BASE_DIR),
-                        "--models", "__REF_ONLY__"],  # special: no HYP
-                       capture_output=True, text=True, cwd=str(BASE_DIR))
-        # convert_staging with non-existent model name -> only REF is produced
-        # Actually let's just run it without models filter for ref
-        if not ref_out.exists() or not list(ref_out.glob("*.json")):
-            subprocess.run([py, str(BASE_DIR / "data_process" / "convert_staging.py"),
-                            "--staging_root", str(staging_module),
-                            "--module", module,
-                            "--out_root", str(BASE_DIR)],
-                           capture_output=True, text=True, cwd=str(BASE_DIR))
-
-    # Step 2: Normalize REF (skip if exists)
-    if not norm_ref.exists() or not list(norm_ref.glob("*.json")):
-        if progress:
-            progress(0.1, desc="Normalizing REF...")
-        subprocess.run([py, str(BASE_DIR / "data_process" / "normalize_ref.py"),
-                        "--ref_root", str(ref_out),
-                        "--out_root", str(norm_dir),
-                        "--skip_existing", "1"],
-                       capture_output=True, text=True, cwd=str(BASE_DIR))
-
-    # Step 3: Duration filter REF (skip if exists)
-    if not mindur_ref.exists() or not list(mindur_ref.glob("*.json")):
-        if progress:
-            progress(0.15, desc="Filtering by duration...")
-        subprocess.run([py, str(BASE_DIR / "scripts" / "filter_duration.py"),
-                        "--norm_root", str(norm_dir),
-                        "--out_root", str(mindur_dir),
-                        "--min_duration", "0.5"],
-                       capture_output=True, text=True, cwd=str(BASE_DIR))
+    groups = {lang for langs in MODULE_GROUPS[module].values() for lang in langs}
+    source = module_path(staging, module)
+    signature = []
+    for lang in sorted(groups):
+        group = source / "data" / lang
+        metadata = group / "metadata.json"
+        files = [metadata] if metadata.is_file() else sorted((group / "test").glob("*.tar"))
+        for path in files:
+            stat = path.stat()
+            signature.append([str(path.resolve()), stat.st_size, stat.st_mtime_ns])
+    cache = norm_dir / "reference_source.json"
+    ready = all((directory / f"{lang}.json").is_file()
+                for directory in [text_dir / "ref", norm_dir / "ref", mindur_dir / "ref"]
+                for lang in groups)
+    if ready and cache.is_file() and json.loads(cache.read_text()) == signature:
+        return
+    if progress:
+        progress(0.05, desc="Preparing reference data...")
+    run_step("data_process/convert_staging.py",
+             "--staging_root", source,
+             "--module", module, "--out_root", BASE_DIR, "--ref_only", "--skip_existing", 0)
+    run_step("data_process/normalize_ref.py", "--ref_root", text_dir / "ref",
+             "--out_root", norm_dir, "--skip_existing", 0, "--workers", 4)
+    run_step("scripts/filter_duration.py", "--norm_root", norm_dir,
+             "--out_root", mindur_dir, "--min_duration", 0.5)
+    cache.write_text(json.dumps(signature))
 
 
 def eval_single_model(model_name: str, json_file: str, module: str, staging: Path, progress=None):
-    """Evaluate a single new model without touching other models' data."""
-    text_dir = BASE_DIR / "data" / "text" / module
-    norm_dir = BASE_DIR / "data" / "text_normalized" / module
-    mindur_dir = BASE_DIR / "data" / "text_normalized_mindur" / module
-    results_dir = BASE_DIR / "data" / "new_model" / model_name
-
-    hyp_out = text_dir / "hyp"
-    norm_hyp = norm_dir / "hyp"
-    mindur_hyp = mindur_dir / "hyp"
-
-    py = sys.executable
-    staging_module = staging / module
-
-    # Step 1: Inject model into staging temporarily (skip if already there)
-    target_dir = staging_module / "results"
-    target_dir.mkdir(parents=True, exist_ok=True)
-    target_file = target_dir / f"{model_name}.json"
-    src_path = Path(json_file).resolve()
-    injected = False
-    if src_path != target_file.resolve():
-        shutil.copy2(json_file, target_file)
-        injected = True
-
-    try:
-        # Step 2: Convert only this model's HYP
-        if progress:
-            progress(0.2, desc="Converting HYP...")
-        subprocess.run([py, str(BASE_DIR / "data_process" / "convert_staging.py"),
-                        "--staging_root", str(staging_module),
-                        "--module", module,
-                        "--out_root", str(BASE_DIR),
-                        "--models", model_name],
-                       capture_output=True, text=True, cwd=str(BASE_DIR))
-
-        # Step 3: Normalize this model's HYP
-        if progress:
-            progress(0.4, desc="Normalizing HYP...")
-        subprocess.run([py, str(BASE_DIR / "data_process" / "normalize_hyp.py"),
-                        "--hyp_root", str(hyp_out),
-                        "--out_root", str(norm_dir),
-                        "--skip_existing", "1"],
-                       capture_output=True, text=True, cwd=str(BASE_DIR))
-
-        # Step 4: Duration filter HYP
-        if progress:
-            progress(0.5, desc="Filtering HYP by duration...")
-        subprocess.run([py, str(BASE_DIR / "scripts" / "filter_duration.py"),
-                        "--norm_root", str(norm_dir),
-                        "--out_root", str(mindur_dir),
-                        "--min_duration", "0.5"],
-                       capture_output=True, text=True, cwd=str(BASE_DIR))
-
-        # Step 5: Compute WER (only new model will be computed, others skipped by skip_existing)
-        if progress:
-            progress(0.6, desc="Computing WER/CER...")
-        results_dir.mkdir(parents=True, exist_ok=True)
-        subprocess.run([py, str(BASE_DIR / "scripts" / "compute_wer.py"),
-                        "--ref_root", str(mindur_dir / "ref"),
-                        "--hyp_root", str(mindur_dir / "hyp"),
-                        "--out_root", str(results_dir),
-                        "--skip_existing", "0"],
-                       capture_output=True, text=True, cwd=str(BASE_DIR))
-    finally:
-        # Clean staging (only if we injected)
-        if injected and target_file.exists():
-            target_file.unlink()
-
+    """Score each submission in its own run directory."""
+    model_root = BASE_DIR / "data" / "new_model" / model_name
+    model_root.mkdir(parents=True, exist_ok=True)
+    run_root = Path(tempfile.mkdtemp(prefix="run_", dir=model_root))
+    norm_dir = run_root / "data" / "text_normalized" / module
+    mindur_dir = run_root / "data" / "text_normalized_mindur" / module
+    results_dir = run_root / "data" / f"results_{module}_mindur"
+    if progress:
+        progress(0.2, desc="Converting model predictions...")
+    run_step("data_process/convert_staging.py",
+             "--staging_root", module_path(staging, module), "--module", module,
+             "--out_root", run_root, "--skip_ref", 1, "--skip_existing", 0,
+             "--hyp_file", Path(json_file).resolve())
+    if progress:
+        progress(0.4, desc="Normalizing predictions...")
+    run_step("data_process/normalize_hyp.py",
+             "--hyp_root", run_root / "data" / "text" / module / "hyp",
+             "--out_root", norm_dir, "--workers", 4)
+    (norm_dir / "ref").symlink_to(BASE_DIR / "data" / "text_normalized" / module / "ref",
+                                 target_is_directory=True)
+    run_step("scripts/filter_duration.py", "--norm_root", norm_dir,
+             "--out_root", mindur_dir, "--min_duration", 0.5)
+    if progress:
+        progress(0.6, desc="Computing WER/CER...")
+    run_step("scripts/compute_wer.py", "--ref_root", mindur_dir / "ref",
+             "--hyp_root", mindur_dir / "hyp", "--out_root", results_dir,
+             "--skip_existing", 0, "--workers", 4)
     return results_dir
 
 
@@ -356,22 +319,14 @@ def submit_new_model(json_file: str, progress=gr.Progress()):
     # Detect module from language codes in data
     langs_in_data = set()
     for audio in data["audios"]:
-        lang = audio.get("language", "")
+        lang = audio.get("language") or audio.get("aid", "").split("#", 1)[0]
         if lang:
             langs_in_data.add(lang)
 
-    all_lr = set(l for ls in LR_GROUPS.values() for l in ls)
-    all_ced = set(l for ls in CED_GROUPS.values() for l in ls)
-    all_vd = set(l for ls in VD_GROUPS.values() for l in ls)
-
-    lr_overlap = langs_in_data & all_lr
-    ced_overlap = langs_in_data & all_ced
-    vd_overlap = langs_in_data & all_vd
-
-    # Pick best matching module
-    overlaps = [("Low-Resource-Languages", lr_overlap, all_lr),
-                ("CH-EN-Dialects", ced_overlap, all_ced),
-                ("Vertical-Domain", vd_overlap, all_vd)]
+    overlaps = []
+    for name, groups in MODULE_GROUPS.items():
+        expected = {lang for langs in groups.values() for lang in langs}
+        overlaps.append((name, langs_in_data & expected, expected))
     overlaps.sort(key=lambda x: len(x[1]), reverse=True)
     module, matched_langs, expected_langs = overlaps[0]
 
@@ -394,12 +349,11 @@ def submit_new_model(json_file: str, progress=gr.Progress()):
     if not staging.exists():
         return f"❌ Benchmark data not found at: {staging}", "", None, None, None
 
-    progress(0.05, desc="Preparing REF data...")
-    ensure_ref_ready(module, staging, progress)
-
-    # Evaluate new model only
-    progress(0.2, desc=f"Evaluating {model_name} on {module}...")
-    results_dir = eval_single_model(model_name, json_file, module, staging, progress)
+    try:
+        ensure_ref_ready(module, staging, progress)
+        results_dir = eval_single_model(model_name, json_file, module, staging, progress)
+    except (RuntimeError, OSError) as error:
+        return f"❌ Evaluation failed: {error}", "", None, None, None
 
     progress(0.9, desc="Building leaderboards...")
 
@@ -410,7 +364,7 @@ def submit_new_model(json_file: str, progress=gr.Progress()):
     static = load_static()
     groups = MODULE_GROUPS[module]
     group_names = list(groups.keys())
-    prefix_map = {"Low-Resource-Languages": "LR", "CH-EN-Dialects": "CED", "Vertical-Domain": "VD"}
+    prefix_map = {"Low-Resource-Languages": "LR", "CH-EN-Dialects": "CED", "Vertical-Domain": "VD", "Older-Children": "OC"}
     prefix = prefix_map[module]
 
     dfs = []
@@ -427,7 +381,7 @@ def submit_new_model(json_file: str, progress=gr.Progress()):
             if l in new_results and model_name.upper() in new_results[l]:
                 v = round(new_results[l][model_name.upper()], 2)
                 new_row[l] = v
-                vals.append(v)
+                vals.append(new_results[l][model_name.upper()])
             else:
                 new_row[l] = None
         new_row["AVG(%)"] = round(sum(vals) / len(vals), 2) if vals else None
@@ -436,7 +390,7 @@ def submit_new_model(json_file: str, progress=gr.Progress()):
         # Insert into static DataFrame
         if not static_df.empty and new_row["AVG(%)"] is not None:
             new_df = pd.DataFrame([new_row])
-            combined = pd.concat([static_df.reset_index(), new_df], ignore_index=True)
+            combined = pd.concat([static_df.reset_index(drop=True), new_df], ignore_index=True)
             combined = combined.sort_values("AVG(%)", ascending=True).reset_index(drop=True)
             combined.index = combined.index + 1
             combined.index.name = "#"
@@ -446,6 +400,8 @@ def submit_new_model(json_file: str, progress=gr.Progress()):
                     rank_info.append(f"**{gname}**: Rank #{idx}/{len(combined)}")
                     break
             dfs.append(combined)
+        elif new_row["AVG(%)"] is not None:
+            dfs.append(pd.DataFrame([new_row]))
         else:
             dfs.append(static_df)
 
@@ -526,6 +482,10 @@ def create_ui():
                         gr.Markdown("### WER")
                         gr.Dataframe(value=s("VD_Vertical-Domain-EN"), interactive=False, wrap=True)
 
+            with gr.Tab("👵🧒 Older Adults & Children"):
+                gr.Markdown("English: WER (%). Chinese: CER (%).")
+                gr.Dataframe(value=s("OC_Older-Children"), interactive=False, wrap=True)
+
             # ─── Submit ───
             with gr.Tab("➕ Evaluate Your Model"):
                 gr.Markdown(
@@ -598,7 +558,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--port", type=int, default=7860)
     parser.add_argument("--share", action="store_true")
+    parser.add_argument("--staging_root", default=DEFAULT_STAGING)
     args = parser.parse_args()
 
+    DEFAULT_STAGING = args.staging_root
     app = create_ui()
     app.launch(server_name="0.0.0.0", server_port=args.port, share=args.share)

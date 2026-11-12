@@ -253,6 +253,15 @@ conda activate asr_bench
 pip install -r requirements.txt
 ```
 
+### Download Data
+
+```bash
+hf download speechcolab/GigaSpeechBench --repo-type dataset --local-dir data/benchmark
+export STAGING_ROOT="$PWD/data/benchmark"
+```
+
+Each subset's `test/*.tar` contains paired `.wav` and `.json` files. Model predictions are in each module's `results/` directory.
+
 ### Evaluate Your Model (Gradio UI)
 
 ```bash
@@ -272,12 +281,17 @@ python visualize/app.py --port 7860
 ### Full Pipeline via CLI
 
 ```bash
-# Single module
-STAGING_ROOT=/path/to/benchmark_data PYTHON_BIN=python3 bash run_ASR.sh Low-Resource-Languages
+# Older adults and children
+bash run_ASR.sh Older-Children 0
 
 # All modules
-STAGING_ROOT=/path/to/benchmark_data PYTHON_BIN=python3 bash run_ASR.sh all
+bash run_ASR.sh all 0
+
+# Re-score predictions using the prepared reference text
+bash run_ASR.sh Older-Children 0 1
 ```
+
+Arguments: `MODULE SKIP_EXISTING SKIP_REF MATCHED_ONLY`, defaulting to `CH-EN-Dialects 1 0 0`. Filtered scores are saved to `data/results_<MODULE>_mindur/`; merged leaderboards are in `data/excel_output/`.
 
 ### Input JSON Format
 
@@ -321,7 +335,7 @@ Your model output must follow this structure:
 python visualize/app.py [--port 7860] [--share]
 ```
 
-- **Leaderboard** — 9 tables: 3 LR + 2 CED + 4 VD (CER/WER + B-CER/B-WER)
+- **Leaderboard** — 10 tables: 3 LR + 2 CED + 4 VD + 1 Older-Children
 - **Evaluate Your Model** — Submit JSON → auto pipeline → ranked with ⭐
 
 ---

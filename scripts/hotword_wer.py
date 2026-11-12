@@ -26,6 +26,9 @@ from multiprocessing import Pool, cpu_count
 
 import kaldialign
 
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from data_process.release_data import iter_audio_records
+
 ERR = "*"
 
 
@@ -123,7 +126,7 @@ def load_ref(result_dir: str, domain: str, norm_ref_dir: str = None):
     When norm_ref_dir is given (preferred):
       - Segments and text come from norm_ref_dir/{domain}.json
         (same segments as normal WER evaluation)
-      - Entities are looked up from result_dir/{domain}/metadata.json
+      - Entities are read from WebDataset shards or legacy metadata.json
       This ensures segment sets are identical to normal WER.
 
     Fallback layouts when norm_ref_dir is not given or file missing:
@@ -134,18 +137,8 @@ def load_ref(result_dir: str, domain: str, norm_ref_dir: str = None):
     if norm_ref_dir:
         norm_path = os.path.join(norm_ref_dir, f"{domain}.json")
         if os.path.isfile(norm_path):
-            # Build entity index from release metadata
-            entity_index = {}  # (aid, begin_time, end_time) -> entities list
-            domain_dir = os.path.join(result_dir, domain)
-            meta_path = os.path.join(domain_dir, "metadata.json") if os.path.isdir(domain_dir) else ""
-            if os.path.isfile(meta_path):
-                with open(meta_path, "r", encoding="utf-8") as f:
-                    meta = json.load(f)
-                for audio in meta.get("audios", []):
-                    aid = audio.get("aid", "")
-                    for seg in audio.get("segments", []):
-                        ek = (aid, seg.get("begin_time"), seg.get("end_time"))
-                        entity_index[ek] = seg.get("entities", [])
+            entity_index = {key: info["entities"]
+                            for key, info in load_ref(result_dir, domain).items()}
 
             # Load segments from normalised ref (same set as normal WER)
             ref = {}
@@ -164,11 +157,9 @@ def load_ref(result_dir: str, domain: str, norm_ref_dir: str = None):
         return {}
 
     meta_path = os.path.join(domain_dir, "metadata.json")
-    if os.path.isfile(meta_path):
+    if os.path.isfile(meta_path) or os.path.isdir(os.path.join(domain_dir, "test")):
         ref = {}
-        with open(meta_path, "r", encoding="utf-8") as f:
-            data = json.load(f)
-        for audio in data.get("audios", []):
+        for audio in iter_audio_records(domain_dir):
             aid = audio.get("aid", "")
             for seg in audio.get("segments", []):
                 start = seg.get("begin_time")

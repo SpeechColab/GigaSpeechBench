@@ -34,6 +34,8 @@ MODEL_ORDER = [
     ("Chirp 3",                 {"CHIRP3", "CHIRP-3"}),
     ("ElevenLabs Scribe v2",    {"ELEVENLABS_SCRIBE_V2", "ELEVENLABS-SCRIBE-V2"}),
     ("Meta OmniASR 3B",         {"OMNIASR_LLM_3B", "META-OMNIAST-3B", "META-OMNIASR-3B"}),
+    ("Qwen Audio 3.1 ASR Flash", {"QWEN-AUDIO-3.1-ASR-FLASH"}),
+    ("Fun-ASR-Nano-2512", {"FUN-ASR-NANO-2512"}),
     ("Qwen3-ASR-Flash",         {"QWEN3-ASR-FLASH"}),
     ("Qwen3-ASR-1.7B",          {"QWEN3-ASR-1.7B"}),
     ("NVIDIA NeMo",             {"NVIDIA-NEMO"}),

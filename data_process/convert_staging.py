@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """
-Convert dataset_staging format to pipeline text format.
+Convert WebDataset or legacy metadata releases to pipeline text format.
 
 Staging format:
-  data/{LANG}/ref/{AUDIO_NAME}.json  (per-audio, with segments[])
+  data/{LANG}/test/*.tar             (paired WAV and JSON records)
+  data/{LANG}/metadata.json          (legacy annotations)
   results/{MODEL}.json               (merged format: {audios:[{aid, segments:[{begin_time, end_time, text}]}]})
 
 Output format:
@@ -18,6 +19,11 @@ import argparse
 import json
 import os
 from datetime import datetime
+from pathlib import Path
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from data_process.release_data import iter_audio_records
 
 
 # Lang name mapping: normalize hyp lang prefix to match ref folder names
@@ -31,7 +37,8 @@ def _log(msg):
     print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] {msg}", flush=True)
 
 
-def convert_staging(staging_root, module_name, out_root, langs=None, models=None):
+def convert_staging(staging_root, module_name, out_root, langs=None, models=None,
+                    skip_existing=True, skip_ref=False, ref_only=False, hyp_file=None):
     data_dir = os.path.join(staging_root, "data")
     results_dir = os.path.join(staging_root, "results")
 
@@ -45,23 +52,21 @@ def convert_staging(staging_root, module_name, out_root, langs=None, models=None
     if langs:
         _log(f"[convert_staging] langs: {langs}")
 
-    for lang in sorted(os.listdir(data_dir)):
+    for lang in ([] if skip_ref else sorted(os.listdir(data_dir))):
         if langs and lang not in langs:
             continue
         lang_dir = os.path.join(data_dir, lang)
         if not os.path.isdir(lang_dir):
             continue
 
-        ref_segs = []
-        meta_path = os.path.join(lang_dir, "metadata.json")
-
-        if not os.path.exists(meta_path):
-            _log(f"  [REF] {lang}: SKIP (no metadata.json)")
+        out_path = os.path.join(ref_out, f"{lang}.json")
+        if skip_existing and os.path.exists(out_path):
+            _log(f"  [REF] {lang}.json: SKIP (exists)")
             continue
-
-        with open(meta_path, encoding="utf-8") as fh:
-            meta = json.load(fh)
-        for audio in meta.get("audios", []):
+        ref_segs = []
+        audio_count = 0
+        for audio in iter_audio_records(lang_dir):
+            audio_count += 1
             audio_name = audio.get("audio_name", audio.get("aid", ""))
             for seg in audio.get("segments", []):
                 if seg.get("status") == "valid" or "status" not in seg:
@@ -71,37 +76,37 @@ def convert_staging(staging_root, module_name, out_root, langs=None, models=None
                         "end": seg.get("end", seg.get("end_time", 0)),
                         "text": seg.get("text", "")
                     })
-        _log(f"  [REF] {lang}: read metadata.json ({len(meta.get('audios', []))} audios)")
+        _log(f"  [REF] {lang}: read {audio_count} audio annotations")
 
         if ref_segs:
             out_path = os.path.join(ref_out, f"{lang}.json")
-            if os.path.exists(out_path):
-                _log(f"  [REF] {lang}.json: SKIP (exists, {len(ref_segs)} segs)")
-                continue
             with open(out_path, "w", encoding="utf-8") as f:
                 json.dump(ref_segs, f, ensure_ascii=False, indent=2)
             _log(f"  [REF] {lang}.json: WROTE {len(ref_segs)} segments")
         else:
             _log(f"  [REF] {lang}: SKIP (0 valid segments)")
 
+    if ref_only:
+        return
+
     # Step 2: Generate hyp
     _log(f"[convert_staging] hyp: {results_dir} -> {hyp_out}")
     if models:
         _log(f"[convert_staging] models filter: {models}")
-    if not os.path.isdir(results_dir):
+    if not hyp_file and not os.path.isdir(results_dir):
         _log(f"  No results dir")
         return
 
     total_hyp = 0
 
     # Only support merged file format: {model}.json with audios[] format
-    for fn in sorted(os.listdir(results_dir)):
-        if not fn.endswith(".json"):
-            continue
-        model_name = fn[:-5]
+    result_files = [Path(hyp_file)] if hyp_file else sorted(Path(results_dir).glob("*.json"))
+    for result_file in result_files:
+        fn = result_file.name
+        model_name = result_file.stem
         if models and model_name not in models:
             continue
-        flat_path = os.path.join(results_dir, fn)
+        flat_path = result_file
         with open(flat_path, encoding="utf-8") as fh:
             raw = json.load(fh)
         if not isinstance(raw, dict) or "audios" not in raw:
@@ -135,7 +140,7 @@ def convert_staging(staging_root, module_name, out_root, langs=None, models=None
             lang_hyp_dir = os.path.join(hyp_out, lang)
             os.makedirs(lang_hyp_dir, exist_ok=True)
             out_path = os.path.join(lang_hyp_dir, f"{lang}_{model_name}.json")
-            if os.path.exists(out_path):
+            if skip_existing and os.path.exists(out_path):
                 _log(f"    [HYP] {lang}/{lang}_{model_name}.json: SKIP (exists)")
                 skipped += 1
                 total_hyp += 1
@@ -159,10 +164,16 @@ def main():
     parser.add_argument("--out_root", required=True)
     parser.add_argument("--langs", default="", help="Comma-separated langs (empty=all)")
     parser.add_argument("--models", default="", help="Comma-separated model names to include (empty=all)")
+    parser.add_argument("--skip_existing", type=int, choices=[0, 1], default=1)
+    parser.add_argument("--skip_ref", type=int, choices=[0, 1], default=0)
+    parser.add_argument("--ref_only", action="store_true")
+    parser.add_argument("--hyp_file", help="Evaluate one result JSON without copying it into the release")
     args = parser.parse_args()
     langs = [l.strip() for l in args.langs.split(",") if l.strip()] or None
     models = [m.strip() for m in args.models.split(",") if m.strip()] or None
-    convert_staging(args.staging_root, args.module, args.out_root, langs=langs, models=models)
+    convert_staging(args.staging_root, args.module, args.out_root, langs=langs, models=models,
+                    skip_existing=bool(args.skip_existing), skip_ref=bool(args.skip_ref),
+                    ref_only=args.ref_only, hyp_file=args.hyp_file)
 
 
 if __name__ == "__main__":
