@@ -23,14 +23,14 @@ from prepare import prepare_group
 
 HERE = Path(__file__).resolve().parent
 DATASET = "speechcolab/GigaSpeechBench"
-REVISION = "680d3057641b7507a1ef14974407c7b0a7964e64"
+REVISION = "55ce5222f21f314759f5bfe8212eff34cd730aa2"
 SUBSETS = {
     "low-resource": ["Low-Resource-Languages"],
     "zh-en": ["Vertical-Domain", "CH-EN-Dialects"],
     "vertical-domain": ["Vertical-Domain"],
     "dialects": ["CH-EN-Dialects"],
     "older-children": ["Older-Children"],
-    "all": ["Low-Resource-Languages", "Vertical-Domain", "CH-EN-Dialects"],
+    "all": ["Low-Resource-Languages", "Vertical-Domain", "CH-EN-Dialects", "Older-Children"],
 }
 MODEL = "qwen"
 LABEL = "Qwen3-ASR-1.7B"
@@ -180,21 +180,26 @@ def main() -> None:
     if args.download:
         from huggingface_hub import snapshot_download
         patterns = [f"{module}/data/{group}/{name}" for module in modules
-                    for group in (args.groups or ["*"]) for name in ("metadata.json", "audio.tar.gz")]
+                    for group in (args.groups or ["*"]) for name in ("test/*.tar", "metadata.json", "audio.tar.gz")]
         snapshot_download(args.dataset_repo, repo_type="dataset", revision=args.dataset_revision,
                           local_dir=args.data_root, allow_patterns=patterns)
-    selected = {module: sorted((args.data_root / module / "data").glob("*/metadata.json")) for module in modules}
-    selected = {module: [p for p in paths if not args.groups or p.parent.name in args.groups]
-                for module, paths in selected.items()}
+    selected = {}
+    for module in modules:
+        data = args.data_root / module / "data"
+        if args.subset == "all" and module == "Older-Children" and not data.exists():
+            continue  # Releases before November 2026 contain only the first three modules.
+        candidates = sorted(data.glob("*"))
+        selected[module] = [group for group in candidates
+                            if (not args.groups or group.name in args.groups)
+                            and ((group / "metadata.json").is_file() or any((group / "test").glob("*.tar")))]
     if args.groups:
-        found = {p.parent.name for paths in selected.values() for p in paths}
+        found = {group.name for groups in selected.values() for group in groups}
         if set(args.groups) - found:
             parser.error(f"Requested groups missing: {sorted(set(args.groups) - found)}")
-        selected = {m: p for m, p in selected.items() if p}
-    for module, paths in selected.items():
-        if not paths:
-            parser.error(f"No metadata for {module}. The pinned public snapshot does not include Older-Children; "
-                         "supply a local release in MODULE/data/GROUP/{metadata.json,audio.tar.gz} format.")
+        selected = {module: groups for module, groups in selected.items() if groups}
+    for module, groups in selected.items():
+        if not groups:
+            parser.error(f"No WebDataset shards or metadata.json in {args.data_root / module / 'data'}")
     config = {"model": MODEL, "subset": args.subset, "groups": args.groups,
               "limit_per_group": args.limit_per_group, "empty_retries": args.empty_retries,
               "end_tolerance_ms": args.end_tolerance_ms,
@@ -214,14 +219,14 @@ def main() -> None:
         if not args.resume or json.loads(marker.read_text()) != config:
             parser.error("Existing run or changed settings; use --resume with unchanged settings or a fresh work-dir")
     atomic_json(marker, config)
-    for module, metadata_paths in selected.items():
+    for module, group_paths in selected.items():
         profile = MODEL
         print(f"{module}: {LABEL} via {config['routing'][module]['backend']}", flush=True)
         prepared = args.work_dir / "prepared" / module
-        for metadata in metadata_paths:
-            group = metadata.parent.name
+        for group_path in group_paths:
+            group = group_path.name
             language_code(group, profile)
-            prepare_group(metadata.parent, prepared / group, group, args.limit_per_group, args.end_tolerance_ms)
+            prepare_group(group_path, prepared / group, group, args.limit_per_group, args.end_tolerance_ms)
         if args.prepare_only:
             continue
         python = setup_python(args)

@@ -8,6 +8,7 @@ import json
 import math
 from pathlib import Path
 import tarfile
+import sys
 from typing import Any
 
 import numpy as np
@@ -16,14 +17,25 @@ import soundfile as sf
 
 from infer import atomic_json
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from data_process.release_data import iter_audio_records
+
 
 def prepare_group(source: Path, output: Path, language: str,
                   limit: int | None = None, end_tolerance_ms: float = 10.0) -> Path:
     if not math.isfinite(end_tolerance_ms) or end_tolerance_ms < 0:
         raise ValueError("end_tolerance_ms must be finite and nonnegative")
     metadata = source / "metadata.json"
-    content = metadata.read_bytes()
-    spec = {"metadata_sha256": hashlib.sha256(content).hexdigest(),
+    shards = sorted((source / "test").glob("*.tar")) if not metadata.is_file() else []
+    files = shards or [metadata]
+    fingerprints = {}
+    for path in files:
+        digest = hashlib.sha256()
+        with path.open("rb") as stream:
+            for block in iter(lambda: stream.read(1024 * 1024), b""):
+                digest.update(block)
+        fingerprints[str(path.relative_to(source))] = digest.hexdigest()
+    spec = {"source_sha256": fingerprints,
             "prepare_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
             "language": language, "limit": limit, "sample_rate": 16000,
             "end_tolerance_ms": end_tolerance_ms}
@@ -40,7 +52,7 @@ def prepare_group(source: Path, output: Path, language: str,
     rows = []
     keys = set()
     identities = set()
-    for audio in json.loads(content)["audios"]:
+    for audio in iter_audio_records(source):
         aid = audio.get("aid", audio.get("audio_name"))
         if not isinstance(aid, str) or not aid or Path(aid).name != aid:
             raise ValueError(f"Invalid recording identity: {aid!r}")
@@ -106,7 +118,7 @@ def prepare_group(source: Path, output: Path, language: str,
 
     # Prefer an already extracted audio directory. Never modify the source tree.
     audio_root = source / "audio"
-    if audio_root.is_dir():
+    if not shards and audio_root.is_dir():
         matches = {}
         for path in audio_root.rglob("*"):
             if path.is_file() and path.suffix.lower() in {".wav", ".flac", ".mp3", ".ogg"}:
@@ -117,7 +129,7 @@ def prepare_group(source: Path, output: Path, language: str,
             if aid in matches:
                 crop(aid, str(matches[aid]))
     archive = source / "audio.tar.gz"
-    if remaining and archive.exists():
+    if not shards and remaining and archive.exists():
         # Read members directly instead of extracting paths supplied by an archive.
         with tarfile.open(archive, "r|gz") as tar:
             for member in tar:
@@ -127,6 +139,17 @@ def prepare_group(source: Path, output: Path, language: str,
                     if stream is None:
                         raise ValueError(f"Unreadable archive member: {member.name}")
                     crop(aid, io.BytesIO(stream.read()))
+                if not remaining:
+                    break
+    for shard in shards:
+        if not remaining:
+            break
+        with tarfile.open(shard, "r:") as tar:
+            for member in tar:
+                path = Path(member.name)
+                if member.isfile() and path.suffix.lower() == ".wav" and path.stem in remaining:
+                    with tar.extractfile(member) as stream:
+                        crop(path.stem, stream)
                 if not remaining:
                     break
     if remaining:

@@ -21,14 +21,13 @@ Set `ASR_ENV` to place the environment elsewhere. With an installed environment,
 run `python run.py` with the same arguments to skip package installation.
 
 Input is a downloaded [GigaSpeechBench](https://huggingface.co/datasets/speechcolab/GigaSpeechBench)
-snapshot: `CATEGORY/data/GROUP/metadata.json` plus `audio.tar.gz` (or `audio/`).
+snapshot: `CATEGORY/data/GROUP/test/*.tar` containing matching WAV and JSON records. Older snapshots with `metadata.json` plus `audio.tar.gz` (or `audio/`) also work.
 All command-line paths are relative to the caller's working directory. Add
 `--download` to fetch selected inputs at revision
-`680d3057641b7507a1ef14974407c7b0a7964e64`.
+`55ce5222f21f314759f5bfe8212eff34cd730aa2`.
 
 - `--subset`: `low-resource`, `zh-en`, `vertical-domain`, `dialects`, `all`, or
-  `older-children`. Older-Children requires a compatible local release; it is
-  absent from the pinned public snapshot.
+  `older-children`. The pinned release includes all four modules.
 - `--groups KOR --limit-per-group 2`: small smoke test; omit the limit for a full run.
 - `--resume`: continue an unchanged run; add `--retry-errors` for failed requests.
 - `--empty-retries 10`: allow ten extra attempts on empty text. Persistent empties
